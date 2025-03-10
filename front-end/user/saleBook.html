@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bid & Sale Options</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .options-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            margin: 50px auto;
+        }
+
+        .btn-custom {
+            background: #2575fc;
+            color: white;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background: #6a11cb;
+        }
+
+        .toggle-section {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .dropdown-menu {
+            background-color: #2575fc;
+            border-radius: 5px;
+        }
+
+        .dropdown-item {
+            color: white;
+        }
+
+        .dropdown-item:hover {
+            background-color: #6a11cb;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Main Content Container for Bid & Sale options -->
+<div class="options-container">
+    <!-- User ID (Retrieve from LocalStorage) -->
+    <div class="mb-3">
+        <label for="userId" class="form-label">User ID</label>
+        <input type="text" class="form-control" id="userId" value="" readonly>
+    </div>
+
+    <!-- Checkboxes to choose Bid or Sale -->
+    <div class="form-group">
+        <label>Choose Action</label>
+        <div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="bidCheckbox">
+                <label class="form-check-label" for="bidCheckbox">
+                    Bid
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="saleCheckbox">
+                <label class="form-check-label" for="saleCheckbox">
+                    Sale
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toggle sections for Bid and Sale -->
+    <div class="toggle-section" id="bidSection">
+        <h5>Bid Section</h5>
+        <form id="bidForm">
+            <div class="mb-3">
+                <label for="title" class="form-label">Book Title</label>
+                <input type="text" class="form-control" id="title" required>
+            </div>
+            <div class="mb-3">
+                <label for="author" class="form-label">Author</label>
+                <input type="text" class="form-control" id="author" required>
+            </div>
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select" id="category" required>
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="bookStatus" class="form-label">Book Status</label>
+                <select class="form-select" id="bookStatus" required>
+                    <option value="new">New</option>
+                    <option value="used">Used</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="bidPrice" class="form-label">Bid Amount</label>
+                <input type="number" class="form-control" id="bidPrice" required>
+            </div>
+            <div class="mb-3">
+                <label for="qty" class="form-label">Quantity</label>
+                <input type="number" class="form-control" id="qty" required>
+            </div>
+            <div class="mb-3">
+                <label for="imageBid" class="form-label">Upload Image</label>
+                <input type="file" class="form-control" id="imageBid" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-custom">Place Bid</button>
+        </form>
+        <div id="bidResponse" class="mt-3"></div>
+    </div>
+
+    <div class="toggle-section" id="saleSection">
+        <h5>Sale Section</h5>
+        <form id="saleForm">
+            <div class="mb-3">
+                <label for="titleSale" class="form-label">Book Title</label>
+                <input type="text" class="form-control" id="titleSale" required>
+            </div>
+            <div class="mb-3">
+                <label for="authorSale" class="form-label">Author</label>
+                <input type="text" class="form-control" id="authorSale" required>
+            </div>
+            <div class="mb-3">
+                <label for="categorySale" class="form-label">Category</label>
+                <select class="form-select" id="categorySale" required>
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="bookStatusSale" class="form-label">Book Status</label>
+                <select class="form-select" id="bookStatusSale" required>
+                    <option value="new">New</option>
+                    <option value="used">Used</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="salePrice" class="form-label">Price</label>
+                <input type="number" class="form-control" id="salePrice" required>
+            </div>
+            <div class="mb-3">
+                <label for="descriptionSale" class="form-label">Description</label>
+                <textarea class="form-control" id="descriptionSale" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <!-- Add this input field to the sale form to handle quantity input -->
+                <label for="qtySale" class="form-label">Quantity:</label>
+                <input type="number" id="qtySale" name="qtySale" min="1" required>
+            </div>
+            <div class="mb-3">
+                <label for="publishedYearSale" class="form-label">Published Year</label>
+                <input type="number" class="form-control" id="publishedYearSale" required>
+            </div>
+            <div class="mb-3">
+                <label for="imageSale" class="form-label">Upload Image</label>
+                <input type="file" class="form-control" id="imageSale" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-custom">List Item for Sale</button>
+        </form>
+        <div id="saleResponse" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+<!-- jQuery for AJAX calls -->
+<script src="../js/jquery.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('authToken');  // Ensure you have the token stored
+
+    if (userId) {
+        $('#userId').val(userId);
+    } else {
+        $('#userId').val('Unknown User');
+    }
+
+    // Handle checkbox toggle for Bid and Sale
+    $(document).ready(function () {
+
+        // Listen for changes on the Bid checkbox
+        $('#bidCheckbox').on('change', function () {
+            if ($(this).is(':checked')) {
+                $('#saleCheckbox').prop('checked', false); // Uncheck Sale if Bid is checked
+                $('#bidSection').show(); // Show the Bid section
+                $('#saleSection').hide(); // Hide the Sale section
+            } else {
+                $('#bidSection').hide(); // Hide the Bid section if unchecked
+            }
+        });
+
+        // Fetch Categories
+        function fetchCategories() {
+            $.ajax({
+                url: 'http://localhost:8080/api/v1/category/list', // API endpoint to get all categories
+                method: 'GET',
+                success: function (data) {
+                    const categories = data.data; // Assuming the response object has a 'data' property containing the categories
+                    let categoryOptions = '';
+                    categories.forEach(function (category) {
+                        categoryOptions += `<option value="${category.cid}">${category.name}</option>`; // Ensure category ID is sent
+                    });
+                    // Populate category dropdowns for both bidding and sale
+                    $('#category').html(categoryOptions);
+                    $('#categorySale').html(categoryOptions);
+                },
+                error: function (err) {
+                    console.error('Error fetching categories:', err);
+                    $('#category').html('<option value="">Failed to load categories</option>');
+                    $('#categorySale').html('<option value="">Failed to load categories</option>');
+                }
+            });
+        }
+
+        fetchCategories();
+
+        // Listen for changes on the Sale checkbox
+        $('#saleCheckbox').on('change', function () {
+            if ($(this).is(':checked')) {
+                $('#bidCheckbox').prop('checked', false); // Uncheck Bid if Sale is checked
+                $('#saleSection').show(); // Show the Sale section
+                $('#bidSection').hide(); // Hide the Bid section
+            } else {
+                $('#saleSection').hide(); // Hide the Sale section if unchecked
+            }
+        });
+
+        // Handle form submission for the "Bid" section
+        $('#bidForm').on('submit', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            let bidData = {
+                userId: $('#userId').val(),
+                categoryId: $('#category').val(),
+                bidAmount: $('#bidPrice').val(),
+                author: $('#author').val(),
+                bidDate: new Date().toISOString(),
+                status: 'active',
+                image: $('#imageBid')[0].files[0] ? $('#imageBid')[0].files[0].name : null
+            };
+
+            $.ajax({
+                url: 'http://localhost:8080/api/v1/bidding/place', // Your backend URL for Bid
+                type: 'POST',
+                contentType: 'application/json',
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json"
+                },
+                data: JSON.stringify(bidData),
+                success: function (response) {
+                    $('#bidResponse').html('<p>Bid placed successfully!</p>');
+                },
+                error: function (err) {
+                    $('#bidResponse').html('<p>Failed to place bid.</p>');
+                }
+            });
+        });
+
+        // Handle form submission for the "Sale" section
+        $('#saleForm').on('submit', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            let saleData = {
+                userId: $('#userId').val(),
+                categoryId: $('#categorySale').val(),
+                bookStatus: $('#bookStatusSale').val(),
+                author: $('#authorSale').val(),
+                title: $('#titleSale').val(),
+                price: $('#salePrice').val(),
+                description: $('#descriptionSale').val(),
+                qty: $('#qtySale').val(),
+                publishedYear: $('#publishedYearSale').val(),
+                activeStatus: 'DEACTIVATED',
+                image: $('#imageSale')[0].files[0] ? $('#imageSale')[0].files[0].name : null
+            };
+            console.log("User ID: ", $('#userId').val());
+            console.log("Category ID: ", $('#category').val());
+
+
+            $.ajax({
+                url: 'http://localhost:8080/api/v1/books/place', // Use the correct endpoint for Sale
+                type: 'POST',
+                contentType: 'application/json',
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json"
+                },
+                data: JSON.stringify(saleData),
+                success: function (response) {
+                    $('#saleResponse').html('<p>Item listed for sale successfully!</p>');
+                },
+                error: function (err) {
+                    $('#saleResponse').html('<p>Failed to list item for sale.</p>');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+
+</html>
