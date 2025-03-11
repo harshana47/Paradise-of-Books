@@ -4,7 +4,11 @@ import org.example.landofbooks.dto.BiddingDTO;
 import org.example.landofbooks.dto.BookDTO;
 import org.example.landofbooks.entity.Bidding;
 import org.example.landofbooks.entity.Book;
+import org.example.landofbooks.entity.Category;
+import org.example.landofbooks.entity.User;
 import org.example.landofbooks.repo.BiddingRepo;
+import org.example.landofbooks.repo.CategoryRepo;
+import org.example.landofbooks.repo.UserRepository;
 import org.example.landofbooks.service.BiddingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +34,12 @@ public class BiddingServiceImpl implements BiddingService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private CategoryRepo categoryRepo;
+
+    @Autowired
+    private UserRepository userRepo;
+
     // Place a new bid
     @Override
     public boolean placeBid(BiddingDTO biddingDTO) {
@@ -42,7 +52,10 @@ public class BiddingServiceImpl implements BiddingService {
                 String imagePath = saveImage(biddingDTO.getImage()); // Save the image and get the path
                 bidding.setImage(imagePath); // Set the image path in the book entity
             }
-
+            Category category = categoryRepo.findById(biddingDTO.getCategoryId()).orElse(null);
+            User user = userRepo.findById(biddingDTO.getUserId()).orElse(null);
+            bidding.setCategory(category);
+            bidding.setUser(user);
             // Save the book in the repository
             biddingRepo.save(bidding);
             return true;
@@ -64,7 +77,7 @@ public class BiddingServiceImpl implements BiddingService {
             String fileName = UUID.randomUUID().toString() + ".jpg"; // You can change the extension if needed
 
             // Define the directory where the image will be saved (adjust path as needed)
-            Path path = Paths.get("images", fileName);
+            Path path = Paths.get("uploads","images","bid", fileName);
 
             // Ensure the directory exists
             Files.createDirectories(path.getParent());

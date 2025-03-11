@@ -27,11 +27,6 @@ public class Bidding {
     @Column(nullable = false)
     private String status; // active, closed, won
 
-    // Relationship with Book (Each bid is for a specific book)
-    @ManyToOne
-    @JoinColumn(name = "bookId", referencedColumnName = "bid", nullable = false)
-    private Book book;
-
     // Relationship with User (Each bid is placed by a user)
     @ManyToOne
     @JoinColumn(name = "userId", referencedColumnName = "uid", nullable = false)

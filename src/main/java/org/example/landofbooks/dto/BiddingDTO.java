@@ -13,7 +13,6 @@ import java.util.UUID;
 public class BiddingDTO {
 
     private UUID bidId; // Unique bid identifier
-    private UUID bookId; // The book being bid on
     private UUID userId; // The user placing the bid
     private UUID categoryId; // The category of the book
     private double bidAmount; // The amount of the bid

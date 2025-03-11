@@ -75,7 +75,7 @@ public class BookServiceImpl implements BookService {
             String fileName = UUID.randomUUID().toString() + ".jpg"; // You can change the extension if needed
 
             // Define the directory where the image will be saved (adjust path as needed)
-            Path path = Paths.get("images", fileName);
+            Path path = Paths.get("uploads","images", fileName);
 
             // Ensure the directory exists
             Files.createDirectories(path.getParent());
