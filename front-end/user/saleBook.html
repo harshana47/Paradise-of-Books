@@ -260,68 +260,78 @@
             }
         });
 
-        // Handle form submission for the "Bid" section
         $('#bidForm').on('submit', function (e) {
-            e.preventDefault(); // Prevent the default form submission
+            e.preventDefault();  // Prevent default form submission
 
-            let bidData = {
-                userId: $('#userId').val(),
-                categoryId: $('#category').val(),
-                bidAmount: $('#bidPrice').val(),
-                author: $('#author').val(),
-                bidDate: new Date().toISOString(),
-                status: 'closed',
-                image: $('#imageBid')[0].files[0] ? $('#imageBid')[0].files[0].name : null
-            };
-console.log(bidData)
+            let bidData = new FormData();
+            bidData.append('userId', $('#userId').val());
+            bidData.append('categoryId', $('#category').val());
+            bidData.append('bidAmount', $('#bidPrice').val());
+            bidData.append('author', $('#author').val());
+            bidData.append('bidDate', new Date().toISOString().slice(0, 19)); // Removes 'Z' timezone
+            bidData.append('status', 'closed');
+
+// Append the file if selected
+            if ($('#imageBid')[0].files[0]) {
+                bidData.append('image', $('#imageBid')[0].files[0]);
+            }
+
+            console.log(bidData);  // Verify FormData contents
+
             $.ajax({
                 url: 'http://localhost:8080/api/v1/bidding/place', // Your backend URL for Bid
                 type: 'POST',
-                contentType: 'application/json',
                 headers: {
-                    "Authorization": "Bearer " + token,
-                    "Content-Type": "application/json"
+                    "Authorization": "Bearer " + token // Ensure token is correct
                 },
-                data: JSON.stringify(bidData),
-                success: function (response) {
+                data: bidData, // Make sure bidData is a proper FormData object
+                processData: false,  // Important: Don't process data, let browser handle it
+                contentType: false,  // Let the browser set the content type for FormData
+                success: function(response) {
                     $('#bidResponse').html('<p>Bid placed successfully!</p>');
                 },
-                error: function (err) {
+                error: function(err) {
                     $('#bidResponse').html('<p>Failed to place bid.</p>');
+                    console.error('Error placing bid:', err);
                 }
             });
         });
 
-        // Handle form submission for the "Sale" section
+
         $('#saleForm').on('submit', function (e) {
             e.preventDefault(); // Prevent the default form submission
 
-            let saleData = {
-                userId: $('#userId').val(),
-                categoryId: $('#categorySale').val(),
-                bookStatus: $('#bookStatusSale').val(),
-                author: $('#authorSale').val(),
-                title: $('#titleSale').val(),
-                price: $('#salePrice').val(),
-                description: $('#descriptionSale').val(),
-                qty: $('#qtySale').val(),
-                publishedYear: $('#publishedYearSale').val(),
-                activeStatus: 'DEACTIVATED',
-                image: $('#imageSale')[0].files[0] ? $('#imageSale')[0].files[0].name : null
-            };
-            console.log("User ID: ", $('#userId').val());
-            console.log("Category ID: ", $('#category').val());
+            let formData = new FormData();
 
+            // Append all the form fields to FormData
+            formData.append('userId', $('#userId').val());
+            formData.append('categoryId', $('#categorySale').val());
+            formData.append('bookStatus', $('#bookStatusSale').val());
+            formData.append('author', $('#authorSale').val());
+            formData.append('title', $('#titleSale').val());
+            formData.append('price', $('#salePrice').val());
+            formData.append('description', $('#descriptionSale').val());
+            formData.append('qty', $('#qtySale').val());
+            formData.append('publishedYear', $('#publishedYearSale').val());
+            formData.append('activeStatus', 'DEACTIVATED');
+
+            // Append the image file if it exists
+            if ($('#imageSale')[0].files[0]) {
+                formData.append('image', $('#imageSale')[0].files[0]);
+            }
+
+            console.log("User ID: ", $('#userId').val());
+            console.log("Category ID: ", $('#categorySale').val());
 
             $.ajax({
                 url: 'http://localhost:8080/api/v1/books/place', // Use the correct endpoint for Sale
                 type: 'POST',
-                contentType: 'application/json',
                 headers: {
-                    "Authorization": "Bearer " + token,
-                    "Content-Type": "application/json"
+                    "Authorization": "Bearer " + token // Make sure your token is available here
                 },
-                data: JSON.stringify(saleData),
+                data: formData,
+                processData: false,  // Important: Prevent jQuery from processing the data
+                contentType: false,  // Important: Tell jQuery not to set content-type (it will be set automatically for FormData)
                 success: function (response) {
                     $('#saleResponse').html('<p>Item listed for sale successfully!</p>');
                 },

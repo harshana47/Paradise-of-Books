@@ -7,6 +7,12 @@ import org.example.landofbooks.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin("*")
@@ -21,20 +27,64 @@ public class SaleBookController {
         this.responseDTO = responseDTO;
     }
 
-    // Add a new book
     @PostMapping("/place")
-    public ResponseEntity<ResponseDTO> addBook(@Valid @RequestBody BookDTO bookDTO) {
-        boolean isAdded = bookService.addBook(bookDTO);
+    public ResponseEntity<ResponseDTO> addBook(@RequestPart("userId") String userId,
+                                               @RequestPart("categoryId") String categoryId,
+                                               @RequestPart("bookStatus") String bookStatus,
+                                               @RequestPart("author") String author,
+                                               @RequestPart("title") String title,
+                                               @RequestPart("price") String price,
+                                               @RequestPart("description") String description,
+                                               @RequestPart("qty") String qty,
+                                               @RequestPart("publishedYear") String publishedYear,
+                                               @RequestPart("activeStatus") String activeStatus,
+                                               @RequestPart(required = false) MultipartFile image) {
+
+        // Create a new BookDTO from the incoming form data
+        BookDTO bookDTO = new BookDTO();
+        bookDTO.setUserId(UUID.fromString(userId));
+        bookDTO.setCategoryId(UUID.fromString(categoryId));
+        bookDTO.setBookStatus(bookStatus);
+        bookDTO.setAuthor(author);
+        bookDTO.setTitle(title);
+        bookDTO.setPrice(Double.parseDouble(price));
+        bookDTO.setDescription(description);
+        bookDTO.setQty(Integer.parseInt(qty));
+        bookDTO.setPublishedYear(publishedYear);
+        bookDTO.setActiveStatus(activeStatus);
+
+        // Call the service layer to handle the business logic
+        boolean isAdded = bookService.addBook(bookDTO, image);  // Pass image as MultipartFile
+
         if (isAdded) {
-            responseDTO.setMessage("Book added successfully!");
+            responseDTO.setMessage("Item listed for sale successfully!");
             responseDTO.setData(HttpStatus.CREATED);
             return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
         } else {
-            responseDTO.setMessage("Failed to add book.");
+            responseDTO.setMessage("Failed to list item for sale.");
             responseDTO.setData(HttpStatus.BAD_REQUEST);
             return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
         }
     }
+
+
+    // Get Deactivated Books
+    @GetMapping("/byStatus")
+    public List<BookDTO> getDeactivatedBooks(@RequestParam String status) {
+        return bookService.getBooksByStatus(status);
+    }
+    @PutMapping("/changeStatus/{id}")
+    public ResponseEntity<?> updateBookStatus(@PathVariable UUID id, @RequestBody Map<String, String> request) {
+        bookService.updateBookStatus(id, request.get("activeStatus"));
+        return ResponseEntity.ok().build();
+    }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteBook(@PathVariable UUID id) {
+        bookService.deleteBook(id);
+        return ResponseEntity.ok().build();
+    }
+
+
 
     // Get a list of all books
 //    @GetMapping

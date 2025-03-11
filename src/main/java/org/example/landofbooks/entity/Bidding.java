@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -20,7 +22,7 @@ public class Bidding {
     private UUID bidId; // Unique identifier for the bid
 
     private double bidAmount; // Amount the user bids
-    private LocalDateTime bidDate; // Date and time of the bid
+    private LocalDate bidDate; // Date and time of the bid
     private String image;
     private String author;
 
@@ -40,6 +42,6 @@ public class Bidding {
     // Automatically set the bid date when creating a new bid
     @PrePersist
     public void setBidDate() {
-        this.bidDate = LocalDateTime.now();
+        this.bidDate = LocalDate.now();
     }
 }

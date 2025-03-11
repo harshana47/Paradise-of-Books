@@ -1,9 +1,7 @@
 package org.example.landofbooks.service.impl;
 
 import org.example.landofbooks.dto.BiddingDTO;
-import org.example.landofbooks.dto.BookDTO;
 import org.example.landofbooks.entity.Bidding;
-import org.example.landofbooks.entity.Book;
 import org.example.landofbooks.entity.Category;
 import org.example.landofbooks.entity.User;
 import org.example.landofbooks.repo.BiddingRepo;
@@ -14,14 +12,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -42,57 +38,84 @@ public class BiddingServiceImpl implements BiddingService {
 
     // Place a new bid
     @Override
-    public boolean placeBid(BiddingDTO biddingDTO) {
+    public boolean placeBid(BiddingDTO biddingDTO, MultipartFile image) {
         try {
             // Convert the BookDTO to Book entity
             Bidding bidding = modelMapper.map(biddingDTO, Bidding.class);
 
             // If book image is provided as Base64, process and save it
-            if (biddingDTO.getImage() != null) {
-                String imagePath = saveImage(biddingDTO.getImage()); // Save the image and get the path
-                bidding.setImage(imagePath); // Set the image path in the book entity
+            if (image != null && !image.isEmpty()) {
+                String imagePath = saveImage(image); // Save the image and get the relative path
+                if (imagePath != null) {
+                    bidding.setImage(imagePath); // Set the image path in the book entity
+                } else {
+                    // If image saving fails, return false
+                    return false;
+                }
             }
             Category category = categoryRepo.findById(biddingDTO.getCategoryId()).orElse(null);
             User user = userRepo.findById(biddingDTO.getUserId()).orElse(null);
+            if (category == null || user == null) {
+                return false;
+            }
             bidding.setCategory(category);
             bidding.setUser(user);
-            // Save the book in the repository
+
             biddingRepo.save(bidding);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error while bidding: " + e.getMessage());
             return false;
         }
     }
-
-    public String saveImage(String base64Image) {
+    public String saveImage(MultipartFile image) {
         try {
-            // Remove any extra characters (e.g., spaces) that may have been added during transfer
-            String sanitizedBase64 = base64Image.replaceAll("[^A-Za-z0-9+/=]", "");
-
-            // Decode the image
-            byte[] decodedImage = Base64.getDecoder().decode(sanitizedBase64);
-
             // Generate a unique file name using UUID
-            String fileName = UUID.randomUUID().toString() + ".jpg"; // You can change the extension if needed
+            String fileName = UUID.randomUUID().toString();
 
-            // Define the directory where the image will be saved (adjust path as needed)
-            Path path = Paths.get("uploads","images","bid", fileName);
+            // Get file extension based on the original file content type
+            String fileExtension = getFileExtension(image);
+            if (fileExtension == null) {
+                // Return null if the file type is not supported
+                return null;
+            }
+
+            // Get the absolute path of the project directory
+            String projectRootPath = System.getProperty("user.dir");
+
+            // Define the absolute path where the image will be saved (inside the project)
+            Path path = Paths.get(projectRootPath, "uploads", "images", fileName + fileExtension);
 
             // Ensure the directory exists
-            Files.createDirectories(path.getParent());
+            Files.createDirectories(path.getParent());  // Create parent directories if they don't exist
 
             // Save the image to the file system
-            Files.write(path, decodedImage);
+            image.transferTo(path.toFile());  // Save the file
 
-            // Return the image path (relative or absolute based on your requirement)
-            return path.toString();
-        } catch (IllegalArgumentException e) {
-            System.err.println("Error decoding base64 string: " + e.getMessage());
+            // Return the relative path (you can store this in the database)
+            return path.toString();  // Return the file path relative to your project root
         } catch (IOException e) {
+            // Log the error (consider using a logging framework)
             System.err.println("Error saving image: " + e.getMessage());
         }
-        return null; // Return null if there was an error
+        return null;  // Return null if there was an error
+    }
+
+    private String getFileExtension(MultipartFile image) {
+        String contentType = image.getContentType();
+        if (contentType != null) {
+            switch (contentType) {
+                case "image/jpeg":
+                    return ".jpg";
+                case "image/png":
+                    return ".png";
+                case "image/gif":
+                    return ".gif";
+                default:
+                    return null;  // Unsupported file type
+            }
+        }
+        return null;  // Return null if contentType is null
     }
 
     // Fetch all bids for a specific book

@@ -2,11 +2,18 @@ package org.example.landofbooks.controller;
 
 import jakarta.validation.Valid;
 import org.example.landofbooks.dto.BiddingDTO;
+import org.example.landofbooks.dto.BookDTO;
 import org.example.landofbooks.dto.ResponseDTO;
 import org.example.landofbooks.service.BiddingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin("*")
@@ -24,26 +31,31 @@ public class BidController {
 
     // Endpoint to create a new bid
     @PostMapping("/place")
-    public ResponseEntity<ResponseDTO> placeBid(@RequestBody @Valid BiddingDTO biddingDTO) {
-        try {
-            // Call the service to place a bid and get the response
-            boolean isBidPlaced = biddingService.placeBid(biddingDTO);
-            if (isBidPlaced) {
-                // Return a successful response
-                responseDTO.setMessage("Bid placed successfully");
-                responseDTO.setData(HttpStatus.CREATED.value());
-                return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
-            } else {
-                // Return a failed response
-                responseDTO.setMessage("Failed to place the bid");
-                responseDTO.setData(HttpStatus.BAD_REQUEST.value());
-                return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
-            }
-        } catch (Exception e) {
-            // Handle any unexpected errors
-            responseDTO.setMessage("Error placing bid: " + e.getMessage());
-            responseDTO.setData(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ResponseDTO> placeBid(@RequestPart("userId") String userId,
+                                                @RequestPart("categoryId") String categoryId,
+                                                @RequestPart("bidAmount") String bidAmount,
+                                                @RequestPart("author") String author,
+                                                @RequestPart("bidDate") String bidDate,
+                                                @RequestPart("status") String status,
+                                                @RequestPart(required = false) MultipartFile image) {
+
+        BiddingDTO biddingDTO = new BiddingDTO();
+        biddingDTO.setUserId(UUID.fromString(userId));
+        biddingDTO.setCategoryId(UUID.fromString(categoryId));
+        biddingDTO.setBidAmount(Double.parseDouble(bidAmount));
+        biddingDTO.setAuthor(author);
+        biddingDTO.setBidDate(LocalDateTime.parse(bidDate));
+        biddingDTO.setStatus(status);
+
+        boolean isAdded = biddingService.placeBid(biddingDTO,image);
+        if (isAdded) {
+            responseDTO.setMessage("Item listed for sale successfully!");
+            responseDTO.setData(HttpStatus.CREATED);
+            return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+        } else {
+            responseDTO.setMessage("Failed to list item for sale.");
+            responseDTO.setData(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
         }
     }
 

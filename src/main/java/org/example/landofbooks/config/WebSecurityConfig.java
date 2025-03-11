@@ -42,8 +42,8 @@ public class WebSecurityConfig {
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-
                 .authorizeHttpRequests(auth -> auth
+                        // Unrestricted API paths
                         .requestMatchers(
                                 "/api/v1/auth/authenticate",
                                 "/api/v1/user/register",
@@ -55,19 +55,21 @@ public class WebSecurityConfig {
                                 "/api/v1/category/delete/**",
                                 "/api/v1/category/list",
                                 "/api/v1/books/place",
+                                "/api/v1/books/byStatus",
+                                "/api/v1/books/delete/**",
+                                "/api/v1/books/changeStatus/**",
                                 "/api/v1/books/uploadImage",
-                                "/api/v1/category/getByTitle",
-                                "/api/v1/bidding/place",
-                                "/api/v1/upload",
+                                "/api/v1/images/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html").permitAll()
-                        .anyRequest().authenticated()
+                                "/swagger-ui.html"
+                        ).permitAll()
+                        // Allow image and static file access
+                        .requestMatchers("/uploads/**", "/api/v1/images/**", "/uploads/images/**").permitAll() // ✅ Allow image requests
+                        .anyRequest().authenticated() // Secure the rest of the API endpoints
                 )
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session management
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // JWT filter for authentication
                 .build();
     }
-
-
 }
