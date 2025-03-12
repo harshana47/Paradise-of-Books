@@ -22,4 +22,18 @@ public class BookDTO {
     private UUID categoryId;
     private UUID userId;
     private String activeStatus;
+
+    public BookDTO(UUID bid, String title, String author, double price, int qty, String publishedYear, String description, String bookStatus, String image) {
+
+        this.bid = bid;
+        this.title = title;
+        this.author = author;
+        this.price = price;
+        this.qty = qty;
+        this.publishedYear = publishedYear;
+        this.description = description;
+        this.bookStatus = bookStatus;
+        this.image = image;
+
+    }
 }

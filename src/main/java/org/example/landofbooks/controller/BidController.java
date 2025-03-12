@@ -1,8 +1,6 @@
 package org.example.landofbooks.controller;
 
-import jakarta.validation.Valid;
 import org.example.landofbooks.dto.BiddingDTO;
-import org.example.landofbooks.dto.BookDTO;
 import org.example.landofbooks.dto.ResponseDTO;
 import org.example.landofbooks.service.BiddingService;
 import org.springframework.http.HttpStatus;
@@ -10,9 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -35,6 +34,7 @@ public class BidController {
                                                 @RequestPart("categoryId") String categoryId,
                                                 @RequestPart("bidAmount") String bidAmount,
                                                 @RequestPart("author") String author,
+                                                @RequestPart("title") String title,
                                                 @RequestPart("bidDate") String bidDate,
                                                 @RequestPart("status") String status,
                                                 @RequestPart(required = false) MultipartFile image) {
@@ -44,6 +44,7 @@ public class BidController {
         biddingDTO.setCategoryId(UUID.fromString(categoryId));
         biddingDTO.setBidAmount(Double.parseDouble(bidAmount));
         biddingDTO.setAuthor(author);
+        biddingDTO.setTitle(title);
         biddingDTO.setBidDate(LocalDateTime.parse(bidDate));
         biddingDTO.setStatus(status);
 
@@ -58,7 +59,24 @@ public class BidController {
             return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/byStatus")
+    public List<BiddingDTO> getClosedBids(@RequestParam String status) {
+        return biddingService.getBidByStatus(status);
+    }
+    @PutMapping("/changeStatus/{id}")
+    public ResponseEntity<Map<String, String>> updateBidStatus(@PathVariable UUID id, @RequestBody Map<String, String> request) {
+        System.out.println("Received update request: " + request);
+        biddingService.updateBidStatus(id, request.get("status"));
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Status updated successfully");
+        return ResponseEntity.ok(response);
+    }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteBid(@PathVariable UUID id) {
+        biddingService.deleteBid(id);
+        return ResponseEntity.ok().build();
+    }
     // Endpoint to get the list of all bids for a specific book
 //    @GetMapping("/book/{bookId}")
 //    public ResponseEntity<ResponseDTO> getBidsForBook(@PathVariable("bookId") Long bookId) {

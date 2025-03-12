@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,8 +26,10 @@ public class Bidding {
     private LocalDate bidDate; // Date and time of the bid
     private String image;
     private String author;
+    private String title;
 
     @Column(nullable = false)
+    @ColumnDefault("'closed'")
     private String status; // active, closed, won
 
     // Relationship with User (Each bid is placed by a user)

@@ -17,6 +17,7 @@ public class BiddingDTO {
     private UUID categoryId; // The category of the book
     private double bidAmount; // The amount of the bid
     private String author;
+    private String title;
     private LocalDateTime bidDate; // The date and time of the bid
     private String status; // Status of the bid (active, closed, won)
     private String image;

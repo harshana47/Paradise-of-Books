@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -131,8 +130,6 @@ public class BookServiceImpl implements BookService {
         return null;  // Return null if contentType is null
     }
 
-
-
     // Get Books by Status (e.g., DEACTIVATED)
     @Override
     public List<BookDTO> getBooksByStatus(String status) {
@@ -164,6 +161,30 @@ public class BookServiceImpl implements BookService {
         }
         booksRepo.deleteById(id);
     }
+
+    @Override
+    public List<BookDTO> getActiveBooksByUserId(UUID userId) {
+        List<Book> activeBooks = booksRepo.findByUserUidAndActiveStatus(userId, "ACTIVE");
+
+        // Convert List<Book> to List<BookDTO using the convertToDTO method
+        return activeBooks.stream()
+                .map(this::convertToDTO) // using convertToDTO
+                .collect(Collectors.toList());
+    }
+
+    private BookDTO convertToDTO(Book book) {
+        return new BookDTO(
+                book.getBid(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getPrice(),
+                book.getQty(),
+                book.getPublishedYear(),
+                book.getDescription(),
+                book.getBookStatus(),
+                book.getImage() // Image can be handled if necessary
+        );
+
 
 //    @Override
 //    public BookDTO getBookById(Long bookId) {
@@ -222,4 +243,5 @@ public class BookServiceImpl implements BookService {
 //    }
 
 
+    }
 }

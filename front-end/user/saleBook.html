@@ -128,10 +128,6 @@
                 <input type="number" class="form-control" id="bidPrice" required>
             </div>
             <div class="mb-3">
-                <label for="qty" class="form-label">Quantity</label>
-                <input type="number" class="form-control" id="qty" required>
-            </div>
-            <div class="mb-3">
                 <label for="imageBid" class="form-label">Upload Image</label>
                 <input type="file" class="form-control" id="imageBid" accept="image/*">
             </div>
@@ -268,6 +264,7 @@
             bidData.append('categoryId', $('#category').val());
             bidData.append('bidAmount', $('#bidPrice').val());
             bidData.append('author', $('#author').val());
+            bidData.append('title', $('#title').val());
             bidData.append('bidDate', new Date().toISOString().slice(0, 19)); // Removes 'Z' timezone
             bidData.append('status', 'closed');
 

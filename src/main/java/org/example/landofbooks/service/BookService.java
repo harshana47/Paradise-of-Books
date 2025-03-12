@@ -1,6 +1,7 @@
 package org.example.landofbooks.service;
 
 import org.example.landofbooks.dto.BookDTO;
+import org.example.landofbooks.entity.Book;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface BookService {
     void updateBookStatus(UUID id, String activeStatus);
 
     void deleteBook(UUID id);
+
+    public List<BookDTO> getActiveBooksByUserId(UUID userId);
 }

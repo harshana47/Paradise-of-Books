@@ -1,7 +1,9 @@
 package org.example.landofbooks.service.impl;
 
 import org.example.landofbooks.dto.BiddingDTO;
+import org.example.landofbooks.dto.BookDTO;
 import org.example.landofbooks.entity.Bidding;
+import org.example.landofbooks.entity.Book;
 import org.example.landofbooks.entity.Category;
 import org.example.landofbooks.entity.User;
 import org.example.landofbooks.repo.BiddingRepo;
@@ -18,7 +20,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -116,6 +120,36 @@ public class BiddingServiceImpl implements BiddingService {
             }
         }
         return null;  // Return null if contentType is null
+    }
+
+    @Override
+    public List<BiddingDTO> getBidByStatus(String status) {
+        List<Bidding> biddings = biddingRepo.findByStatus(status);  // Fetch from DB
+        return biddings.stream()
+                .map(bidding -> modelMapper.map(bidding, BiddingDTO.class))  // Convert Entity to DTO
+                .collect(Collectors.toList());
+    }
+
+    // Update Book Status (e.g., Change to ACTIVE)
+    @Override
+    public void updateBidStatus(UUID id, String activeStatus) {
+        Bidding bidding = biddingRepo.findById(id).orElseThrow(() -> new RuntimeException("Bid not found"));
+        System.out.println("Old Status: " + bidding.getStatus());
+        System.out.println("New Status: " + activeStatus);
+
+        bidding.setStatus(activeStatus);
+        biddingRepo.save(bidding);
+
+        System.out.println("Updated Status: " + bidding.getStatus());
+    }
+
+    // Delete Book by UUID
+    @Override
+    public void deleteBid(UUID id) {
+        if (!biddingRepo.existsById(id)) {
+            throw new RuntimeException("Bid not found");
+        }
+        biddingRepo.deleteById(id);
     }
 
     // Fetch all bids for a specific book

@@ -3,6 +3,7 @@ package org.example.landofbooks.controller;
 import jakarta.validation.Valid;
 import org.example.landofbooks.dto.BookDTO;
 import org.example.landofbooks.dto.ResponseDTO;
+import org.example.landofbooks.entity.Book;
 import org.example.landofbooks.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -87,7 +88,11 @@ public class SaleBookController {
         bookService.deleteBook(id);
         return ResponseEntity.ok().build();
     }
-
+    @GetMapping("/sales")
+    public List<BookDTO> getActiveBooks(@RequestParam String userId) {
+        UUID userUUID = UUID.fromString(userId);
+        return bookService.getActiveBooksByUserId(userUUID);
+    }
 
 
     // Get a list of all books

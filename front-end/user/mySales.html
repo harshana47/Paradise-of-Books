@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Ongoing Sales</title>
+    <title>My Book Sales</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #2c3e50, #4ca1af);
+            background: linear-gradient(to right, #1e3c72, #2a5298);
             color: #fff;
             text-align: center;
             margin: 0;
@@ -31,10 +31,12 @@
             color: #333;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 280px;
+            width: 300px;
             padding: 15px;
             text-align: left;
             transition: transform 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
         }
 
         .card:hover {
@@ -43,6 +45,8 @@
 
         .card img {
             width: 100%;
+            height: 200px;
+            object-fit: cover;
             border-radius: 10px;
         }
 
@@ -56,6 +60,28 @@
             margin: 5px 0;
         }
 
+        .status {
+            font-weight: bold;
+            padding: 5px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .status.active {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .status.pending {
+            background: #f1c40f;
+            color: #fff;
+        }
+
+        .status.closed {
+            background: #e74c3c;
+            color: #fff;
+        }
+
         .delete-btn {
             background: #e74c3c;
             color: #fff;
@@ -66,6 +92,7 @@
             border-radius: 5px;
             margin-top: 10px;
             transition: background 0.3s ease-in-out;
+            align-self: center;
         }
 
         .delete-btn:hover {
@@ -75,7 +102,7 @@
 </head>
 <body>
 
-<h1>My Ongoing Sales</h1>
+<h1>My Book Sales</h1>
 <div class="sales-container" id="salesContainer"></div>
 
 <script>
@@ -86,10 +113,10 @@
             return;
         }
 
-        fetch(`http://localhost:8080/api/v1/bidding/byUser?userId=${userId}`)
+        fetch(`http://localhost:8080/api/v1/books/sales?userId=${userId}`)
             .then(response => response.json())
             .then(data => displaySales(data))
-            .catch(error => console.error("Error fetching sales:", error));
+            .catch(error => console.error("Error fetching book sales:", error));
     });
 
     function displaySales(sales) {
@@ -106,24 +133,28 @@
             card.classList.add("card");
 
             const imageFilename = sale.image ? sale.image.split("\\").pop() : "default.jpg";
+            const statusClass = sale.bookStatus.toLowerCase(); // e.g., active, pending, closed
 
             card.innerHTML = `
                     <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${sale.title}">
                     <h3>${sale.title}</h3>
                     <p><strong>Author:</strong> ${sale.author}</p>
-                    <p><strong>Price:</strong> $${sale.bidAmount}</p>
-                    <p><strong>Date:</strong> ${sale.bidDate}</p>
-                    <button class="delete-btn" onclick="deleteSale('${sale.bidId}')">Delete</button>
+                    <p><strong>Price:</strong> $${sale.price}</p>
+                    <p><strong>Quantity:</strong> ${sale.qty}</p>
+                    <p><strong>Year:</strong> ${sale.publishedYear}</p>
+                    <p><strong>Description:</strong> ${sale.description}</p>
+                    <p><strong>Status:</strong> <span class="status ${statusClass}">${sale.bookStatus}</span></p>
+                    <button class="delete-btn" onclick="deleteSale('${sale.bid}')">Delete</button>
                 `;
 
             container.appendChild(card);
         });
     }
 
-    function deleteSale(bidId) {
+    function deleteSale(bookId) {
         if (!confirm("Are you sure you want to delete this book?")) return;
 
-        fetch(`http://localhost:8080/api/v1/bidding/delete/${bidId}`, {
+        fetch(`http://localhost:8080/api/v1/books/delete/${bookId}`, {
             method: "DELETE",
             headers: { "Authorization": `Bearer ${localStorage.getItem("authToken")}` }
         })
@@ -131,7 +162,7 @@
                 alert("Book deleted successfully!");
                 location.reload();
             })
-            .catch(error => console.error("Error deleting bid:", error));
+            .catch(error => console.error("Error deleting book:", error));
     }
 </script>
 

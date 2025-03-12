@@ -2,9 +2,199 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Sales</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Title */
+        h1 {
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        /* Sales Container */
+        .sales-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* Book Card */
+        .card {
+            background: white;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            text-align: left;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Book Image */
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Book Info */
+        .card .info {
+            margin-top: 10px;
+        }
+
+        .card h3 {
+            margin: 5px 0;
+            font-size: 1.2em;
+            color: #222;
+        }
+
+        .card p {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        /* Buttons */
+        .card .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .card button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .accept {
+            background-color: #28a745;
+            color: white;
+            margin-right: 5px;
+        }
+
+        .accept:hover {
+            background-color: #218838;
+        }
+
+        .decline {
+            background-color: #dc3545;
+            color: white;
+            margin-left: 5px;
+        }
+
+        .decline:hover {
+            background-color: #c82333;
+        }
+
+    </style>
 </head>
 <body>
 
+<h1>Pending Book Bids</h1>
+<div class="sales-container" id="bidsContainer">
+    <!-- Sales cards will be injected here via JavaScript -->
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        fetch("http://localhost:8080/api/v1/bidding/byStatus?status=closed")  // Adjust API URL
+            .then(response => response.json())
+            .then(data => displaySales(data))
+            .catch(error => console.error("Error fetching bids:", error));
+    });
+
+    function displaySales(bids) {
+        const container = document.getElementById("bidsContainer");
+        container.innerHTML = "";
+
+        bids.forEach(bid => {
+            console.log("Book data:", bids);  // 🔹 Log book object
+
+            if (!bid.bidId) {
+                console.error("Error: book.bid is missing!");
+                return;
+            }
+
+            const card = document.createElement("div");
+            card.classList.add("card");
+
+            // Extract filename for image
+            const imageFilename = bid.image ? bid.image.split("\\").pop() : "default.jpg";
+
+            card.innerHTML = `
+            <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${bid.title}">
+            <div class="info">
+                <h3>${bid.title}</h3>
+                <p><strong>Author:</strong> ${bid.author}</p>
+                <p><strong>Price:</strong> $${bid.bidAmount}</p>
+                <p><strong>Date:</strong> ${bid.bidDate}</p>
+            </div>
+            <div class="buttons">
+                <button class="accept" onclick="changeStatus('${bid.bidId}', 'active')">Accept</button>
+                <button class="decline" onclick="changeStatus('${bid.bidId}', 'DELETE')">Decline (Delete)</button>
+            </div>
+        `;
+
+            container.appendChild(card);
+        });
+    }
+
+    // 🔹 Function to Accept/Decline Book Status
+    function changeStatus(bidId, status) {
+        if (status === "DELETE") {
+            if (!confirm("Are you sure you want to delete this book?")) return;
+
+            fetch(`http://localhost:8080/api/v1/bidding/delete/${bidId}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${localStorage.getItem("authToken")}` }
+            })
+                .then(() => {
+                    alert("Book deleted successfully!");
+                    location.reload();
+                })
+                .catch(error => console.error("Error deleting bid:", error));
+        } else {
+            if (!bidId) {
+                console.error("Error: bookId is undefined!");
+                return;
+            }
+            fetch(`http://localhost:8080/api/v1/bidding/changeStatus/${bidId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+                },
+                body: JSON.stringify({ status: status })
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error("Failed to update status");
+                    return response.text().then(text => text ? JSON.parse(text) : {});
+                })
+                .then(() => {
+                    alert(`Bid status changed to ${status}`);
+                    location.reload();
+                })
+                .catch(error => console.error("Error updating bid:", error));
+        }
+    }
+</script>
 </body>
 </html>
