@@ -31,7 +31,7 @@ public class Book {
 
     @Column(nullable = false)
     @ColumnDefault("'DEACTIVATED'")
-    private String activeStatus = "DEACTIVATED";
+    private String activeStatus;
 
     @ManyToOne
     @JoinColumn(name = "categoryId", referencedColumnName = "cid")

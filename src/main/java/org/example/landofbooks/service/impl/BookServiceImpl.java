@@ -146,9 +146,15 @@ public class BookServiceImpl implements BookService {
     @Override
     public void updateBookStatus(UUID id, String activeStatus) {
         Book book = booksRepo.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
-        book.setActiveStatus(activeStatus);  // Update status
-        booksRepo.save(book);  // Save changes
+        System.out.println("Old Status: " + book.getActiveStatus());
+        System.out.println("New Status: " + activeStatus);
+
+        book.setActiveStatus(activeStatus);
+        booksRepo.save(book);
+
+        System.out.println("Updated Status: " + book.getActiveStatus());
     }
+
 
     // Delete Book by UUID
     @Override

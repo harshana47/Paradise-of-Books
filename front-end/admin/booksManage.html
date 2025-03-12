@@ -126,11 +126,18 @@
         container.innerHTML = "";
 
         books.forEach(book => {
+            console.log("Book data:", book);  // 🔹 Log book object
+
+            if (!book.bid) {
+                console.error("Error: book.bid is missing!");
+                return;
+            }
+
             const card = document.createElement("div");
             card.classList.add("card");
 
-            // Extract the filename from the full path in book.image
-            const imageFilename = book.image.split("\\").pop(); // Using \\ to split the Windows file path
+            // Extract filename for image
+            const imageFilename = book.image ? book.image.split("\\").pop() : "default.jpg";
 
             card.innerHTML = `
             <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${book.title}">
@@ -148,9 +155,10 @@
             </div>
         `;
 
-            container.appendChild(card);  // Append the card to the container
+            container.appendChild(card);
         });
     }
+
 
 
     // 🔹 Function to Accept/Decline Book Status
@@ -160,7 +168,7 @@
 
             fetch(`http://localhost:8080/api/v1/books/delete/${bookId}`, {
                 method: "DELETE",
-                headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+                headers: { "Authorization": `Bearer ${localStorage.getItem("authToken")}` }
             })
                 .then(() => {
                     alert("Book deleted successfully!");
@@ -168,14 +176,22 @@
                 })
                 .catch(error => console.error("Error deleting book:", error));
         } else {
+            if (!bookId) {
+                console.error("Error: bookId is undefined!");
+                return;
+            }
             fetch(`http://localhost:8080/api/v1/books/changeStatus/${bookId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    "Authorization": `Bearer ${localStorage.getItem("authToken")}`
                 },
                 body: JSON.stringify({ activeStatus: status })
             })
+                .then(response => {
+                    if (!response.ok) throw new Error("Failed to update status");
+                    return response.text().then(text => text ? JSON.parse(text) : {});
+                })
                 .then(() => {
                     alert(`Book status changed to ${status}`);
                     location.reload();

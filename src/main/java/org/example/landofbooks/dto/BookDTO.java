@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 public class BookDTO {
-    private UUID id;
+    private UUID bid;
     private String title;
     private String author;
     private String bookStatus; // "new" or "used"

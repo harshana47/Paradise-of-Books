@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -74,10 +75,13 @@ public class SaleBookController {
         return bookService.getBooksByStatus(status);
     }
     @PutMapping("/changeStatus/{id}")
-    public ResponseEntity<?> updateBookStatus(@PathVariable UUID id, @RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String, String>> updateBookStatus(@PathVariable UUID id, @RequestBody Map<String, String> request) {
         bookService.updateBookStatus(id, request.get("activeStatus"));
-        return ResponseEntity.ok().build();
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Status updated successfully");
+        return ResponseEntity.ok(response);
     }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable UUID id) {
         bookService.deleteBook(id);
