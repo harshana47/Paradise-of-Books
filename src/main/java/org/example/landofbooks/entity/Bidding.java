@@ -9,6 +9,7 @@ import org.hibernate.annotations.ColumnDefault;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -41,6 +42,9 @@ public class Bidding {
     @ManyToOne
     @JoinColumn(name = "categoryId", referencedColumnName = "cid", nullable = false)
     private Category category;
+
+    @OneToMany(mappedBy = "bidding", cascade = CascadeType.ALL)
+    private List<BidStorage> bidStorages;
 
     // Automatically set the bid date when creating a new bid
     @PrePersist

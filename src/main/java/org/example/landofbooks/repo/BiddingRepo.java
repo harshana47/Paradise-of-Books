@@ -9,4 +9,6 @@ import java.util.UUID;
 
 public interface BiddingRepo extends JpaRepository<Bidding, UUID> {
     List<Bidding> findByStatus(String status);
+
+    List<Bidding> findByUserUidAndStatus(UUID userId, String active);
 }

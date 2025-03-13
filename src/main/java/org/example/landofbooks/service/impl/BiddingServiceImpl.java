@@ -1,14 +1,10 @@
 package org.example.landofbooks.service.impl;
 
+import org.example.landofbooks.dto.BidCartDTO;
 import org.example.landofbooks.dto.BiddingDTO;
 import org.example.landofbooks.dto.BookDTO;
-import org.example.landofbooks.entity.Bidding;
-import org.example.landofbooks.entity.Book;
-import org.example.landofbooks.entity.Category;
-import org.example.landofbooks.entity.User;
-import org.example.landofbooks.repo.BiddingRepo;
-import org.example.landofbooks.repo.CategoryRepo;
-import org.example.landofbooks.repo.UserRepository;
+import org.example.landofbooks.entity.*;
+import org.example.landofbooks.repo.*;
 import org.example.landofbooks.service.BiddingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -39,6 +36,12 @@ public class BiddingServiceImpl implements BiddingService {
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private BidStorageRepo bidStorageRepo;
+
+    @Autowired
+    private BidCartRepo bidCartRepo;
 
     // Place a new bid
     @Override
@@ -151,6 +154,65 @@ public class BiddingServiceImpl implements BiddingService {
         }
         biddingRepo.deleteById(id);
     }
+
+    @Override
+    public List<BiddingDTO> getOngoingBidsByUser(UUID userId) {
+        List<Bidding> bids = biddingRepo.findByUserUidAndStatus(userId, "active");
+
+        return bids.stream().map(bid -> new BiddingDTO(
+                bid.getBidId(),
+                bid.getTitle(),
+                bid.getAuthor(),
+                bid.getImage(),
+                bid.getBidDate() != null ? bid.getBidDate().atStartOfDay() : null,
+                bid.getBidAmount()
+        )).collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public void deleteStor(UUID bidId) {
+        // Delete related bid storage records first
+        bidStorageRepo.deleteByBidding_BidId(bidId);
+
+        // Then delete the bid from Bidding table
+        biddingRepo.deleteById(bidId);
+    }
+
+    @Transactional
+    @Override
+    public void endBid(UUID bidId) {
+        // Get the highest bid for the given bidId
+        Optional<BidStorage> highestBid = bidStorageRepo.findTopByBidding_BidIdOrderByMaxPriceDesc(bidId);
+
+        if (highestBid.isPresent()) {
+            BidStorage maxBid = highestBid.get();
+            Bidding bidding = maxBid.getBidding();
+            User highestBidder = maxBid.getUser(); // Corrected: Get highest bidder
+
+            // Create a new BidCart entity (bcid is auto-generated)
+            BidCart cartItem = new BidCart();
+            cartItem.setBidding(bidding);
+            cartItem.setUser(highestBidder); // Corrected: Save correct highest bidder
+            cartItem.setTitle(bidding.getTitle());
+            cartItem.setMaxPrice(maxBid.getMaxPrice());
+
+            bidCartRepo.save(cartItem); // Save the bid to the cart
+
+            // Mark the bid as "closed"
+            bidding.setStatus("closed");
+            biddingRepo.save(bidding);
+
+            // Delete all bid storage records **after ensuring data is saved**
+            bidStorageRepo.deleteByBidding_BidId(bidId);
+
+            // Delete the bidding record (optional, if you don't need history)
+            biddingRepo.deleteById(bidId);
+        }
+    }
+
+
+
 
     // Fetch all bids for a specific book
 //    @Override

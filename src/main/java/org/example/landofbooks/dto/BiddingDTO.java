@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -22,4 +23,12 @@ public class BiddingDTO {
     private String status; // Status of the bid (active, closed, won)
     private String image;
 
+    public BiddingDTO(UUID bidId, String title, String author, String image, LocalDateTime bidDate, double bidAmount) {
+        this.bidId = bidId;
+        this.title = title;
+        this.author = author;
+        this.image = image;
+        this.bidDate = bidDate;
+        this.bidAmount = bidAmount;
+    }
 }

@@ -1,7 +1,9 @@
 package org.example.landofbooks.controller;
 
+import org.example.landofbooks.dto.BidStorageDTO;
 import org.example.landofbooks.dto.BiddingDTO;
 import org.example.landofbooks.dto.ResponseDTO;
+import org.example.landofbooks.service.BidStorageService;
 import org.example.landofbooks.service.BiddingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +23,16 @@ public class BidController {
 
     private final BiddingService biddingService;
     private final ResponseDTO responseDTO;
+    private final BidStorageService bidStorageService;
 
-    // Constructor injection for BiddingService and ResponseDTO
-    public BidController(BiddingService biddingService, ResponseDTO responseDTO) {
+    public BidController(BiddingService biddingService, ResponseDTO responseDTO, BidStorageService bidStorageService) {
         this.biddingService = biddingService;
         this.responseDTO = responseDTO;
+        this.bidStorageService = bidStorageService;
     }
+
+    // Constructor injection for BiddingService and ResponseDTO
+
 
     // Endpoint to create a new bid
     @PostMapping("/place")
@@ -77,6 +83,28 @@ public class BidController {
         biddingService.deleteBid(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/byUser")
+    public ResponseEntity<?> getOngoingBidsByUser(@RequestParam UUID userId) {
+        return ResponseEntity.ok(biddingService.getOngoingBidsByUser(userId));
+    }
+    @DeleteMapping("/deleteStorage/{bidId}")
+    public ResponseEntity<?> deleteBidStorage(@PathVariable UUID bidId) {
+        biddingService.deleteStor(bidId);
+        return ResponseEntity.ok("Bid storage deleted successfully.");
+    }
+    @PostMapping("/end/{bidId}")
+    public ResponseEntity<?> endBid(@PathVariable UUID bidId) {
+        biddingService.endBid(bidId);
+        return ResponseEntity.ok("Bid successfully moved to the highest bidder’s cart and closed.");
+    }
+    @GetMapping("/bids/{bidId}")
+    public ResponseEntity<List<BidStorageDTO>> getBidsByBidId(@PathVariable String bidId) {
+        UUID bidUUID = UUID.fromString(bidId);
+        List<BidStorageDTO> bids = bidStorageService.getBidsByBidId(bidUUID);
+        return ResponseEntity.ok(bids);
+    }
+
     // Endpoint to get the list of all bids for a specific book
 //    @GetMapping("/book/{bookId}")
 //    public ResponseEntity<ResponseDTO> getBidsForBook(@PathVariable("bookId") Long bookId) {

@@ -29,4 +29,7 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Book> books;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<BidStorage> bidStorages;
 }

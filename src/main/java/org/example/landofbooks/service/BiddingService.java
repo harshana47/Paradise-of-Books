@@ -14,4 +14,10 @@ public interface BiddingService {
     void updateBidStatus(UUID id, String status);
 
     void deleteBid(UUID id);
+
+    Object getOngoingBidsByUser(UUID userId);
+
+    void deleteStor(UUID bidId);
+
+    void endBid(UUID bidId);
 }
