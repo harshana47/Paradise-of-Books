@@ -66,6 +66,7 @@ public class WebSecurityConfig {
                                 "api/v1/bidding/delete/**",
                                 "api/v1/bidding/changeStatus/**",
                                 "/api/v1/bidding/end/**",
+                                "/api/v1/bidding/end",
                                 "/api/v1/bidding/deleteStorage/**",
                                 "/api/v1/bidding/byUser",
                                 "/api/v1/bidding/bids/**",

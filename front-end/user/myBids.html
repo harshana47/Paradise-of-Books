@@ -207,14 +207,29 @@
 
         fetch(`http://localhost:8080/api/v1/bidding/end/${bidId}`, {
             method: "POST",
-            headers: { "Authorization": `Bearer ${localStorage.getItem("authToken")}` }
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+                "Content-Type": "application/json"  // Make sure the correct content type is sent
+            }
         })
-            .then(() => {
-                alert("Bid moved to cart and closed successfully!");
-                location.reload();
+            .then(response => {
+                // Check if the response is OK (status 200-299)
+                if (response.ok) {
+                    alert("Bid moved to cart and closed successfully!");
+                    location.reload();  // Reload the page to reflect changes
+                } else {
+                    return response.json().then(errorData => {
+                        // Handle any error messages returned from the server
+                        throw new Error(errorData.message || 'Failed to end the bid');
+                    });
+                }
             })
-            .catch(error => console.error("Error ending bid:", error));
+            .catch(error => {
+                console.error("Error ending bid:", error);
+                alert("An error occurred: " + error.message);  // Show a user-friendly error message
+            });
     }
+
 
 </script>
 

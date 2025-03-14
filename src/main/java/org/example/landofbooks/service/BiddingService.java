@@ -19,5 +19,5 @@ public interface BiddingService {
 
     void deleteStor(UUID bidId);
 
-    void endBid(UUID bidId);
+    public boolean endBid(UUID bidId);
 }

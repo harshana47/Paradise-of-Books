@@ -95,9 +95,22 @@ public class BidController {
     }
     @PostMapping("/end/{bidId}")
     public ResponseEntity<?> endBid(@PathVariable UUID bidId) {
-        biddingService.endBid(bidId);
-        return ResponseEntity.ok("Bid successfully moved to the highest bidder’s cart and closed.");
+        try {
+            // Ensure the biddingService properly handles the end bid logic
+            boolean isBidEnded = biddingService.endBid(bidId);
+
+            if (isBidEnded) {
+                return ResponseEntity.ok("Bid successfully moved to the highest bidder’s cart and closed.");
+            } else {
+                // In case the bid wasn't found or couldn't be processed
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bid not found or unable to close.");
+            }
+        } catch (Exception e) {
+            // Handle unexpected errors
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the bid.");
+        }
     }
+
     @GetMapping("/bids/{bidId}")
     public ResponseEntity<List<BidStorageDTO>> getBidsByBidId(@PathVariable String bidId) {
         UUID bidUUID = UUID.fromString(bidId);

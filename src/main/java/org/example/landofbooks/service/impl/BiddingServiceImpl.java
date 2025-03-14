@@ -1,8 +1,7 @@
 package org.example.landofbooks.service.impl;
 
-import org.example.landofbooks.dto.BidCartDTO;
+import jakarta.persistence.EntityNotFoundException;
 import org.example.landofbooks.dto.BiddingDTO;
-import org.example.landofbooks.dto.BookDTO;
 import org.example.landofbooks.entity.*;
 import org.example.landofbooks.repo.*;
 import org.example.landofbooks.service.BiddingService;
@@ -181,35 +180,53 @@ public class BiddingServiceImpl implements BiddingService {
 
     @Transactional
     @Override
-    public void endBid(UUID bidId) {
-        // Get the highest bid for the given bidId
-        Optional<BidStorage> highestBid = bidStorageRepo.findTopByBidding_BidIdOrderByMaxPriceDesc(bidId);
+    public boolean endBid(UUID bidId) {
+        try {
+            // Get the highest bid for the given bidId
+            Optional<BidStorage> highestBid = bidStorageRepo.findTopByBidding_BidIdOrderByMaxPriceDesc(bidId);
 
-        if (highestBid.isPresent()) {
-            BidStorage maxBid = highestBid.get();
-            Bidding bidding = maxBid.getBidding();
-            User highestBidder = maxBid.getUser(); // Corrected: Get highest bidder
+            if (highestBid.isPresent()) {
+                BidStorage maxBid = highestBid.get();
+                Bidding bidding = maxBid.getBidding(); // Fetch the bidding entity
+                User highestBidder = maxBid.getUser(); // Get the highest bidder
 
-            // Create a new BidCart entity (bcid is auto-generated)
-            BidCart cartItem = new BidCart();
-            cartItem.setBidding(bidding);
-            cartItem.setUser(highestBidder); // Corrected: Save correct highest bidder
-            cartItem.setTitle(bidding.getTitle());
-            cartItem.setMaxPrice(maxBid.getMaxPrice());
+                // Ensure the bidding entity is persisted before associating it with the bid
+                if (!biddingRepo.existsById(bidId)) {
+                    throw new EntityNotFoundException("Bidding not found for ID: " + bidId);
+                }
 
-            bidCartRepo.save(cartItem); // Save the bid to the cart
+                // Create a new BidCart entity (bcid is auto-generated)
+                BidCart cartItem = new BidCart();
+                cartItem.setBidding(bidding); // Bidding entity is now persisted
+                cartItem.setUser(highestBidder);
+                cartItem.setTitle(bidding.getTitle());
+                cartItem.setMaxPrice(maxBid.getMaxPrice());
 
-            // Mark the bid as "closed"
-            bidding.setStatus("closed");
-            biddingRepo.save(bidding);
+                // Save the bid to the cart
+                bidCartRepo.save(cartItem);
 
-            // Delete all bid storage records **after ensuring data is saved**
-            bidStorageRepo.deleteByBidding_BidId(bidId);
+                // Mark the bid as "closed"
+                bidding.setStatus("closed");
+                biddingRepo.save(bidding);
 
-            // Delete the bidding record (optional, if you don't need history)
-            biddingRepo.deleteById(bidId);
+                // Delete all bid storage records for the given bidding
+                bidStorageRepo.deleteByBidding_BidId(bidId);
+
+                // Optionally delete the bidding record
+                // biddingRepo.deleteById(bidId); // You can skip this if you want to retain the bidding entity
+
+                return true; // Success, bid moved to the cart and closed
+            } else {
+                // If no highest bid is found for the given bidId, return false
+                return false;
+            }
+        } catch (Exception e) {
+            // Log the error and return false
+            e.printStackTrace();
+            return false;
         }
     }
+
 
 
 
