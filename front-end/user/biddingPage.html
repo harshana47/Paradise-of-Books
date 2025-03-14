@@ -2,9 +2,258 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Bids</title>
+    <style>
+        /* Basic Reset */
+        body, h1, h2, p, button {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Container for the whole page */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Style for the Bidding Cards */
+        .card {
+            display: inline-block;
+            width: 250px;
+            margin: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #777;
+            margin-bottom: 15px;
+        }
+
+        .card .bid-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Style for the Bid Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            display: flex;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .modal-content img {
+            max-width: 200px;
+            margin-right: 20px;
+        }
+
+        .modal-content div {
+            flex: 1;
+        }
+
+        .modal .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        /* Form and Input Styles */
+        input[type="number"], input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
+
+<div class="container">
+    <h1>Active Biddings</h1>
+    <div id="biddingCards" class="bidding-cards"></div>
+</div>
+
+<!-- Modal for showing detailed bid -->
+<div id="bidModal" class="modal">
+    <div class="modal-content">
+        <img id="modalImage" src="" alt="Book Image">
+        <div>
+            <h2 id="modalTitle"></h2>
+            <p id="modalAuthor"></p>
+            <p id="modalDescription"></p>
+            <p>Max Bid: $<span id="modalMaxBid"></span></p>
+            <input type="number" id="bidAmount" placeholder="Enter your bid amount">
+            <button type="submit" id="placeBidBtn">Place Bid</button>
+        </div>
+    </div>
+    <span class="close" id="closeModal">&times;</span>
+</div>
+
+<script>
+    // Fetch active bids when the page loads
+    window.onload = function() {
+        fetchActiveBids();
+    }
+
+    function fetchActiveBids() {
+        fetch('http://localhost:8080/api/v1/bidding/active', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                displayBiddingCards(data);
+            })
+            .catch(error => console.error('Error fetching active bids:', error));
+    }
+
+    function displayBiddingCards(bids) {
+        const biddingCards = document.getElementById('biddingCards');
+        biddingCards.innerHTML = ''; // Clear previous cards
+
+        bids.forEach(bid => {
+            const imageFilename = bid.image ? bid.image.split("\\").pop() : "default.jpg";
+
+            fetch(`http://localhost:8080/api/v1/bidStorage/maxBid/${bid.bidId}`)
+                .then(response => response.json())
+                .then(maxBidData => {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    card.innerHTML = `
+                        <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${bid.title}">
+                        <div class="card-content">
+                            <h2>${bid.title}</h2>
+                            <p>Max Bid: $${maxBidData.maxPrice}</p>
+                            <button class="bid-button" onclick="openBidModal('${bid.bidId}', '${bid.title}', '${bid.author}', '${bid.image}', ${maxBidData.maxPrice})">Bid</button>
+                        </div>
+                    `;
+                    biddingCards.appendChild(card);
+                })
+                .catch(error => console.error('Error fetching max bid:', error));
+        });
+    }
+
+    function openBidModal(bidId, title, author, image, maxBid) {
+        document.getElementById('modalImage').src = image;
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalAuthor').textContent = 'Author: ' + author;
+        document.getElementById('modalMaxBid').textContent = maxBid;
+        document.getElementById('bidModal').style.display = 'flex';
+
+        // Set up the bid button to save the bid
+        const placeBidBtn = document.getElementById('placeBidBtn');
+        placeBidBtn.onclick = function() {
+            const bidAmount = document.getElementById('bidAmount').value;
+            if (!bidAmount || bidAmount <= maxBid) {
+                alert('Your bid must be higher than the current maximum bid.');
+                return;
+            }
+
+            placeBid(bidId, bidAmount);
+        };
+    }
+
+    function placeBid(bidId, bidAmount) {
+        fetch(`http://localhost:8080/api/v1/bidStorage/placeBid`, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                biddingId: bidId,
+                maxPrice: bidAmount,
+                userId: localStorage.getItem('userId') // Assuming user ID is saved in localStorage
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert('Your bid has been placed successfully!');
+                document.getElementById('bidModal').style.display = 'none';
+                fetchActiveBids(); // Refresh the list of active bids
+            })
+            .catch(error => {
+                console.error('Error placing bid:', error);
+                alert('Error placing bid. Please try again.');
+            });
+    }
+
+    // Close the modal when clicked
+    document.getElementById('closeModal').onclick = function() {
+        document.getElementById('bidModal').style.display = 'none';
+    };
+
+    // Close modal if clicked outside of the modal content
+    window.onclick = function(event) {
+        if (event.target === document.getElementById('bidModal')) {
+            document.getElementById('bidModal').style.display = 'none';
+        }
+    };
+</script>
 
 </body>
 </html>

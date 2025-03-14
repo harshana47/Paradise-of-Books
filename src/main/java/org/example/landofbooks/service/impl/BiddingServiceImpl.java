@@ -1,6 +1,7 @@
 package org.example.landofbooks.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.example.landofbooks.dto.BidStorageDTO;
 import org.example.landofbooks.dto.BiddingDTO;
 import org.example.landofbooks.entity.*;
 import org.example.landofbooks.repo.*;
@@ -227,8 +228,81 @@ public class BiddingServiceImpl implements BiddingService {
         }
     }
 
+    @Override
+    public List<BiddingDTO> getActiveBids() {
+        List<Bidding> activeBids = biddingRepo.findByStatus("active");
 
+        // Convert entities to DTOs
+        return activeBids.stream()
+                .map(bidding -> mapToDTO(bidding))
+                .collect(Collectors.toList());
+    }
 
+    @Override
+    public String placeBids(BiddingDTO biddingDTO) {
+        // Get the bidding and user entities from the database using their IDs
+        Optional<Bidding> biddingOptional = biddingRepo.findById(biddingDTO.getBidId());
+        Optional<User> userOptional = userRepo.findById(biddingDTO.getUserId());
+
+        if (!biddingOptional.isPresent()) {
+            return "Bidding not found!";
+        }
+        if (!userOptional.isPresent()) {
+            return "User not found!";
+        }
+
+        Bidding bidding = biddingOptional.get();
+        User user = userOptional.get();
+
+        // Check if there's already a bid for this bidding
+        Optional<BidStorage> existingBidStorage = bidStorageRepo.findByBiddingAndUser(bidding, user);
+
+        // If there's an existing bid, compare the maxPrice
+        if (existingBidStorage.isPresent()) {
+            BidStorage existingBid = existingBidStorage.get();
+            if (biddingDTO.getBidAmount() <= existingBid.getMaxPrice()) {
+                return "Your bid must be higher than the existing maximum bid!";
+            } else {
+                // Update the existing bid's price
+                existingBid.setMaxPrice(biddingDTO.getBidAmount());
+                bidStorageRepo.save(existingBid);
+                return "Bid updated successfully!";
+            }
+        }
+
+        // Create a new BidStorage entry if no existing bid is found
+        BidStorage newBid = new BidStorage();
+        newBid.setMaxPrice(biddingDTO.getBidAmount());
+        newBid.setBidding(bidding);  // Set the associated Bidding
+        newBid.setUser(user);  // Set the associated User
+
+        // Save the new bid
+        bidStorageRepo.save(newBid);
+        return "Bid placed successfully!";
+    }
+
+    @Override
+    public Double getMaxBid(UUID biddingId) {
+        if (biddingId == null) {
+            return null; // Avoid NullPointerException
+        }
+
+        Optional<BidStorage> highestBid = bidStorageRepo.findHighestBidByBidding(biddingId);
+
+        return highestBid.map(BidStorage::getMaxPrice).orElse(0.0); // Return max price or 0 if no bids exist
+    }
+
+    private BiddingDTO mapToDTO(Bidding bidding) {
+        return new BiddingDTO(
+                bidding.getBidId(),
+                bidding.getTitle(),
+                bidding.getAuthor(),
+                bidding.getImage(),
+                bidding.getBidDate(),
+                bidding.getBidAmount(),
+                bidding.getStatus()
+        );
+    }
 
 
     // Fetch all bids for a specific book

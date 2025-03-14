@@ -1,5 +1,6 @@
 package org.example.landofbooks.service;
 
+import org.example.landofbooks.dto.BidStorageDTO;
 import org.example.landofbooks.dto.BiddingDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,4 +21,10 @@ public interface BiddingService {
     void deleteStor(UUID bidId);
 
     public boolean endBid(UUID bidId);
+
+    List<BiddingDTO> getActiveBids();
+
+    String placeBids(BiddingDTO biddingDTO);
+
+    Double getMaxBid(UUID biddingId);
 }

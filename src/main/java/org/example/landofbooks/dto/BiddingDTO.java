@@ -31,4 +31,14 @@ public class BiddingDTO {
         this.bidDate = bidDate;
         this.bidAmount = bidAmount;
     }
+
+    public BiddingDTO(UUID bidId, String title, String author, String image, LocalDate bidDate, double bidAmount, String status) {
+        this.bidId = bidId;
+        this.title = title;
+        this.author = author;
+        this.image = image;
+        this.bidDate = bidDate.atStartOfDay();
+        this.bidAmount = bidAmount;
+        this.status = status;
+    }
 }

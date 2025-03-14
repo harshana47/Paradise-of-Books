@@ -3,6 +3,7 @@ package org.example.landofbooks.controller;
 import org.example.landofbooks.dto.BidStorageDTO;
 import org.example.landofbooks.dto.BiddingDTO;
 import org.example.landofbooks.dto.ResponseDTO;
+import org.example.landofbooks.entity.Bidding;
 import org.example.landofbooks.service.BidStorageService;
 import org.example.landofbooks.service.BiddingService;
 import org.springframework.http.HttpStatus;
@@ -116,6 +117,12 @@ public class BidController {
         UUID bidUUID = UUID.fromString(bidId);
         List<BidStorageDTO> bids = bidStorageService.getBidsByBidId(bidUUID);
         return ResponseEntity.ok(bids);
+    }
+
+    @GetMapping("/active")
+    public List<BiddingDTO> getActiveBids() {
+        // Fetch all active bids from the service
+        return biddingService.getActiveBids();
     }
 
     // Endpoint to get the list of all bids for a specific book

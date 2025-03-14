@@ -69,10 +69,13 @@ public class WebSecurityConfig {
                                 "/api/v1/bidding/end",
                                 "/api/v1/bidding/deleteStorage/**",
                                 "/api/v1/bidding/byUser",
+                                "/api/v1/bidding/active",
                                 "/api/v1/bidding/bids/**",
                                 "/api/v1/images/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
+                                "/api/v1/bidStorage/placeBid",
+                                "/api/v1/bidStorage/maxBid/**",
                                 "/swagger-ui.html"
                         ).permitAll()
                         // Allow image and static file access
