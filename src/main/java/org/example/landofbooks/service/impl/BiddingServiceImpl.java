@@ -163,6 +163,7 @@ public class BiddingServiceImpl implements BiddingService {
                 bid.getBidId(),
                 bid.getTitle(),
                 bid.getAuthor(),
+                bid.getDescription(),
                 bid.getImage(),
                 bid.getBidDate() != null ? bid.getBidDate().atStartOfDay() : null,
                 bid.getBidAmount()
@@ -240,6 +241,14 @@ public class BiddingServiceImpl implements BiddingService {
 
     @Override
     public String placeBids(BiddingDTO biddingDTO) {
+        // Validate that bidId and userId are not null
+        if (biddingDTO.getBidId() == null) {
+            return "Bid ID cannot be null!";
+        }
+        if (biddingDTO.getUserId() == null) {
+            return "User ID cannot be null!";
+        }
+
         // Get the bidding and user entities from the database using their IDs
         Optional<Bidding> biddingOptional = biddingRepo.findById(biddingDTO.getBidId());
         Optional<User> userOptional = userRepo.findById(biddingDTO.getUserId());
@@ -270,6 +279,13 @@ public class BiddingServiceImpl implements BiddingService {
             }
         }
 
+        // If no existing bid is found, check the bidding's current price and set the new bid amount
+        double initialBidAmount = bidding.getBidAmount();  // Assuming there's a starting bid amount in the Bidding entity
+
+        if (biddingDTO.getBidAmount() <= initialBidAmount) {
+            return "Your bid must be higher than the starting bid amount!";
+        }
+
         // Create a new BidStorage entry if no existing bid is found
         BidStorage newBid = new BidStorage();
         newBid.setMaxPrice(biddingDTO.getBidAmount());
@@ -281,12 +297,9 @@ public class BiddingServiceImpl implements BiddingService {
         return "Bid placed successfully!";
     }
 
+
     @Override
     public Double getMaxBid(UUID biddingId) {
-        if (biddingId == null) {
-            return null; // Avoid NullPointerException
-        }
-
         Optional<BidStorage> highestBid = bidStorageRepo.findHighestBidByBidding(biddingId);
 
         return highestBid.map(BidStorage::getMaxPrice).orElse(0.0); // Return max price or 0 if no bids exist
@@ -297,6 +310,7 @@ public class BiddingServiceImpl implements BiddingService {
                 bidding.getBidId(),
                 bidding.getTitle(),
                 bidding.getAuthor(),
+                bidding.getDescription(),
                 bidding.getImage(),
                 bidding.getBidDate(),
                 bidding.getBidAmount(),

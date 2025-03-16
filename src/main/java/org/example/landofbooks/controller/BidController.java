@@ -42,6 +42,7 @@ public class BidController {
                                                 @RequestPart("bidAmount") String bidAmount,
                                                 @RequestPart("author") String author,
                                                 @RequestPart("title") String title,
+                                                @RequestPart("description") String description,
                                                 @RequestPart("bidDate") String bidDate,
                                                 @RequestPart("status") String status,
                                                 @RequestPart(required = false) MultipartFile image) {
@@ -50,6 +51,7 @@ public class BidController {
         biddingDTO.setUserId(UUID.fromString(userId));
         biddingDTO.setCategoryId(UUID.fromString(categoryId));
         biddingDTO.setBidAmount(Double.parseDouble(bidAmount));
+        biddingDTO.setDescription(description);
         biddingDTO.setAuthor(author);
         biddingDTO.setTitle(title);
         biddingDTO.setBidDate(LocalDateTime.parse(bidDate));

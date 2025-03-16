@@ -28,6 +28,7 @@ public class Bidding {
     private String image;
     private String author;
     private String title;
+    private String description;
 
     @Column(nullable = false)
     @ColumnDefault("'closed'")

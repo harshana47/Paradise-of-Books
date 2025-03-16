@@ -19,7 +19,7 @@
             padding: 20px;
         }
 
-        /* Style for the Bidding Cards */
+        /* Small Cards */
         .card {
             display: inline-block;
             width: 250px;
@@ -29,6 +29,7 @@
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
+            text-align: center;
         }
 
         .card:hover {
@@ -43,29 +44,28 @@
 
         .card-content {
             padding: 15px;
-            text-align: center;
         }
 
         .card h2 {
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-size: 18px;
+            margin-bottom: 5px;
         }
 
         .card p {
             color: #777;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
-        .card .bid-button {
+        .bid-button {
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 15px;
             border-radius: 5px;
             cursor: pointer;
         }
 
-        /* Style for the Bid Modal */
+        /* Modal Styling */
         .modal {
             display: none;
             position: fixed;
@@ -81,40 +81,46 @@
 
         .modal-content {
             background-color: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 10px;
             display: flex;
-            max-width: 800px;
+            flex-wrap: wrap;
+            max-width: 700px;
             width: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
 
         .modal-content img {
-            max-width: 200px;
-            margin-right: 20px;
+            width: 250px;
+            height: auto;
+            object-fit: cover;
+            border-radius: 8px;
         }
 
-        .modal-content div {
+        .modal-info {
             flex: 1;
+            padding: 20px;
         }
 
-        .modal .close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 30px;
-            cursor: pointer;
-        }
-
-        /* Form and Input Styles */
-        input[type="number"], input[type="text"] {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            width: 100%;
+        .modal-info h2 {
             margin-bottom: 10px;
         }
 
-        button[type="submit"] {
+        .modal-info p {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .modal input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .place-bid {
             background-color: #28a745;
             color: white;
             padding: 10px 20px;
@@ -123,8 +129,13 @@
             cursor: pointer;
         }
 
-        button[type="submit"]:hover {
-            background-color: #218838;
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 25px;
+            cursor: pointer;
+            color: #333;
         }
     </style>
 </head>
@@ -135,27 +146,26 @@
     <div id="biddingCards" class="bidding-cards"></div>
 </div>
 
-<!-- Modal for showing detailed bid -->
+<!-- Modal for Detailed View -->
 <div id="bidModal" class="modal">
     <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
         <img id="modalImage" src="" alt="Book Image">
-        <div>
+        <div class="modal-info">
             <h2 id="modalTitle"></h2>
-            <p id="modalAuthor"></p>
-            <p id="modalDescription"></p>
-            <p>Max Bid: $<span id="modalMaxBid"></span></p>
+            <p><strong>Author:</strong> <span id="modalAuthor"></span></p>
+            <p><strong>Max Bid:</strong> $<span id="modalMaxBid"></span></p>
+            <p><strong>Description:</strong> <span id="modalDescription"></span></p>
             <input type="number" id="bidAmount" placeholder="Enter your bid amount">
-            <button type="submit" id="placeBidBtn">Place Bid</button>
+            <button class="place-bid" id="placeBidBtn">Place Bid</button>
         </div>
     </div>
-    <span class="close" id="closeModal">&times;</span>
 </div>
 
 <script>
-    // Fetch active bids when the page loads
     window.onload = function() {
         fetchActiveBids();
-    }
+    };
 
     function fetchActiveBids() {
         fetch('http://localhost:8080/api/v1/bidding/active', {
@@ -173,86 +183,126 @@
 
     function displayBiddingCards(bids) {
         const biddingCards = document.getElementById('biddingCards');
-        biddingCards.innerHTML = ''; // Clear previous cards
+        biddingCards.innerHTML = '';
 
         bids.forEach(bid => {
             const imageFilename = bid.image ? bid.image.split("\\").pop() : "default.jpg";
+            const imageUrl = `http://localhost:8080/uploads/images/${imageFilename}`;
 
+            // Fetch max bid information for the bid
             fetch(`http://localhost:8080/api/v1/bidStorage/maxBid/${bid.bidId}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        console.warn(`No max bid found for bidId: ${bid.bidId}, using default bidAmount: ${bid.bidAmount}`);
+                        return { maxPrice: bid.bidAmount };  // Default to current bidAmount if no max bid is found
+                    }
+                    return response.json();
+                })
                 .then(maxBidData => {
+                    // Ensure we get the maximum bid value if available
+                    const maxPrice = maxBidData?.maxPrice != null && maxBidData.maxPrice > bid.bidAmount
+                        ? maxBidData.maxPrice
+                        : bid.bidAmount; // If a max bid exists, use it; otherwise, use bidAmount
+
+                    // Create the card with the correct max price
                     const card = document.createElement('div');
                     card.classList.add('card');
                     card.innerHTML = `
-                        <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${bid.title}">
-                        <div class="card-content">
-                            <h2>${bid.title}</h2>
-                            <p>Max Bid: $${maxBidData.maxPrice}</p>
-                            <button class="bid-button" onclick="openBidModal('${bid.bidId}', '${bid.title}', '${bid.author}', '${bid.image}', ${maxBidData.maxPrice})">Bid</button>
-                        </div>
-                    `;
+            <img src="${imageUrl}" alt="${bid.title}">
+            <div class="card-content">
+                <h2>${bid.title}</h2>
+                <p>Max Bid: $${maxPrice}</p>  <!-- Display the max price here -->
+                <button class="bid-button" onclick="openBidModal('${bid.bidId}', '${bid.title}', '${bid.author}', '${bid.description}', '${imageUrl}', ${maxPrice})">Bid</button>
+            </div>
+        `;
                     biddingCards.appendChild(card);
                 })
-                .catch(error => console.error('Error fetching max bid:', error));
+                .catch(error => {
+                    console.error('Error fetching max bid:', error);
+                });
         });
     }
 
-    function openBidModal(bidId, title, author, image, maxBid) {
+    function openBidModal(bidId, title, author, description, image, maxBid) {
         document.getElementById('modalImage').src = image;
         document.getElementById('modalTitle').textContent = title;
-        document.getElementById('modalAuthor').textContent = 'Author: ' + author;
+        document.getElementById('modalAuthor').textContent = author;
         document.getElementById('modalMaxBid').textContent = maxBid;
+        document.getElementById('modalDescription').textContent = description;
         document.getElementById('bidModal').style.display = 'flex';
 
-        // Set up the bid button to save the bid
-        const placeBidBtn = document.getElementById('placeBidBtn');
-        placeBidBtn.onclick = function() {
-            const bidAmount = document.getElementById('bidAmount').value;
-            if (!bidAmount || bidAmount <= maxBid) {
-                alert('Your bid must be higher than the current maximum bid.');
+        document.getElementById('placeBidBtn').onclick = function() {
+            const bidAmount = parseFloat(document.getElementById('bidAmount').value);
+
+            if (!bidAmount || isNaN(bidAmount)) {
+                alert('Please enter a valid bid amount.');
                 return;
             }
 
-            placeBid(bidId, bidAmount);
+            if (bidAmount <= maxBid) {
+                alert(`Your bid must be higher than the current max bid ($${maxBid}).`);
+                return;
+            }
+
+            placeBid(bidId, bidAmount); // Proceed to place bid if valid
         };
     }
 
     function placeBid(bidId, bidAmount) {
-        fetch(`http://localhost:8080/api/v1/bidStorage/placeBid`, {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            alert('You need to log in first.');
+            return;
+        }
+
+        if (!bidId) {
+            console.error("Bid ID is missing");
+            alert('Bid ID cannot be null.');
+            return;
+        }
+
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            console.error("User ID is missing");
+            alert('User ID cannot be null.');
+            return;
+        }
+
+        const payload = {
+            bidId: bidId,
+            bidAmount: bidAmount, // Use bidAmount in the payload (correct property)
+            userId: userId
+        };
+
+        console.log("Request Payload:", JSON.stringify(payload)); // Log request payload
+
+        fetch('http://localhost:8080/api/v1/bidStorage/placeBid', {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                'Authorization': 'Bearer ' + token,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                biddingId: bidId,
-                maxPrice: bidAmount,
-                userId: localStorage.getItem('userId') // Assuming user ID is saved in localStorage
-            })
+            body: JSON.stringify(payload)
         })
-            .then(response => response.json())
-            .then(data => {
-                alert('Your bid has been placed successfully!');
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Unknown error occurred while placing bid');
+                    });
+                }
+                return response.json();
+            })
+            .then(() => {
+                alert('Bid placed successfully!');
                 document.getElementById('bidModal').style.display = 'none';
-                fetchActiveBids(); // Refresh the list of active bids
+                fetchActiveBids(); // Refresh bidding list
             })
             .catch(error => {
+                alert('Error placing bid: ' + error.message);
                 console.error('Error placing bid:', error);
-                alert('Error placing bid. Please try again.');
             });
     }
 
-    // Close the modal when clicked
-    document.getElementById('closeModal').onclick = function() {
-        document.getElementById('bidModal').style.display = 'none';
-    };
-
-    // Close modal if clicked outside of the modal content
-    window.onclick = function(event) {
-        if (event.target === document.getElementById('bidModal')) {
-            document.getElementById('bidModal').style.display = 'none';
-        }
-    };
 </script>
 
 </body>

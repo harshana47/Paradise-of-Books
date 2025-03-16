@@ -128,6 +128,10 @@
                 <input type="number" class="form-control" id="bidPrice" required>
             </div>
             <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" rows="3" required pattern="[A-Za-z0-9\s.,!?]+"></textarea>
+            </div>
+            <div class="mb-3">
                 <label for="imageBid" class="form-label">Upload Image</label>
                 <input type="file" class="form-control" id="imageBid" accept="image/*">
             </div>
@@ -259,16 +263,27 @@
         $('#bidForm').on('submit', function (e) {
             e.preventDefault();  // Prevent default form submission
 
+            const description = $('#description').val();
+
+            // Check if the description matches the pattern
+            const descriptionPattern = /^[A-Za-z0-9\s.,!?]+$/;
+
+            if (!descriptionPattern.test(description)) {
+                alert("Description contains invalid characters. Only alphanumeric characters and punctuation are allowed.");
+                return;
+            }
+
             let bidData = new FormData();
             bidData.append('userId', $('#userId').val());
             bidData.append('categoryId', $('#category').val());
             bidData.append('bidAmount', $('#bidPrice').val());
+            bidData.append('description', description);
             bidData.append('author', $('#author').val());
             bidData.append('title', $('#title').val());
             bidData.append('bidDate', new Date().toISOString().slice(0, 19)); // Removes 'Z' timezone
             bidData.append('status', 'closed');
 
-// Append the file if selected
+            // Append the file if selected
             if ($('#imageBid')[0].files[0]) {
                 bidData.append('image', $('#imageBid')[0].files[0]);
             }
@@ -294,9 +309,18 @@
             });
         });
 
-
         $('#saleForm').on('submit', function (e) {
             e.preventDefault(); // Prevent the default form submission
+
+            const descriptionSale = $('#descriptionSale').val();
+
+            // Check if the descriptionSale matches the pattern
+            const descriptionSalePattern = /^[A-Za-z0-9\s.,!?]+$/;
+
+            if (!descriptionSalePattern.test(descriptionSale)) {
+                alert("Description contains invalid characters. Only alphanumeric characters and punctuation are allowed.");
+                return;
+            }
 
             let formData = new FormData();
 
@@ -307,36 +331,34 @@
             formData.append('author', $('#authorSale').val());
             formData.append('title', $('#titleSale').val());
             formData.append('price', $('#salePrice').val());
-            formData.append('description', $('#descriptionSale').val());
+            formData.append('description', descriptionSale);
             formData.append('qty', $('#qtySale').val());
             formData.append('publishedYear', $('#publishedYearSale').val());
-            formData.append('activeStatus', 'DEACTIVATED');
 
-            // Append the image file if it exists
+            // Append the file if selected
             if ($('#imageSale')[0].files[0]) {
                 formData.append('image', $('#imageSale')[0].files[0]);
             }
 
-            console.log("User ID: ", $('#userId').val());
-            console.log("Category ID: ", $('#categorySale').val());
-
             $.ajax({
-                url: 'http://localhost:8080/api/v1/books/place', // Use the correct endpoint for Sale
+                url: 'http://localhost:8080/api/v1/sale/place', // Your backend URL for Sale
                 type: 'POST',
                 headers: {
-                    "Authorization": "Bearer " + token // Make sure your token is available here
+                    "Authorization": "Bearer " + token // Ensure token is correct
                 },
-                data: formData,
-                processData: false,  // Important: Prevent jQuery from processing the data
-                contentType: false,  // Important: Tell jQuery not to set content-type (it will be set automatically for FormData)
-                success: function (response) {
+                data: formData, // Make sure formData is a proper FormData object
+                processData: false,  // Important: Don't process data, let browser handle it
+                contentType: false,  // Let the browser set the content type for FormData
+                success: function(response) {
                     $('#saleResponse').html('<p>Item listed for sale successfully!</p>');
                 },
-                error: function (err) {
+                error: function(err) {
                     $('#saleResponse').html('<p>Failed to list item for sale.</p>');
+                    console.error('Error listing item for sale:', err);
                 }
             });
         });
+
     });
 </script>
 

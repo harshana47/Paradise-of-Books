@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -20,24 +22,31 @@ public class PlaceBidController {
     }
 
     @PostMapping("/placeBid")
-    public ResponseEntity<String> placeBid(@RequestBody BiddingDTO biddingDTO) {
+    public ResponseEntity<?> placeBid(@RequestBody BiddingDTO biddingDTO) {
+        System.out.println("Received BiddingDTO: " + biddingDTO);  // Log the entire object
         String responseMessage = biddingService.placeBids(biddingDTO);
 
+        // Create a response object with status and message
+        Map<String, Object> response = new HashMap<>();
         if (responseMessage.equals("Bid placed successfully!") || responseMessage.equals("Bid updated successfully!")) {
-            return ResponseEntity.ok(responseMessage);
+            response.put("status", "success");
+            response.put("message", responseMessage);
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.badRequest().body(responseMessage);
+            response.put("status", "error");
+            response.put("message", responseMessage);
+            return ResponseEntity.badRequest().body(response);
         }
     }
+
     @GetMapping("/maxBid/{biddingId}")
     public ResponseEntity<Double> getMaxBid(@PathVariable UUID biddingId) {
         if (biddingId == null) {
-            return ResponseEntity.badRequest().build();  // Return 400 Bad Request if UUID is null
+            return ResponseEntity.badRequest().build();
         }
 
         Double maxBid = biddingService.getMaxBid(biddingId);
-
-        return ResponseEntity.ok(maxBid != null ? maxBid : 0.0); // Ensure it always returns a number
+        return ResponseEntity.ok(maxBid != null ? maxBid : 0.0); // Ensure response is always a number
     }
 
 }
