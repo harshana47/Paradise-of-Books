@@ -19,8 +19,8 @@ public interface BidStorageRepo extends JpaRepository<BidStorage, UUID> {
 
     Optional<BidStorage> findByBiddingAndUser(Bidding bidding, User user);
 
-    @Query("SELECT b FROM BidStorage b WHERE b.bidding.bidId = :biddingId ORDER BY b.maxPrice DESC LIMIT 1")
-    Optional<BidStorage> findHighestBidByBidding(@Param("biddingId") UUID biddingId);
+    Optional<BidStorage> findFirstByBidding_BidIdOrderByMaxPriceDesc(UUID biddingId);
+
 
 
 }

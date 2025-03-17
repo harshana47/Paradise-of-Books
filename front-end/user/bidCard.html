@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bid Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .cart-container {
+            width: 60%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease-in-out;
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            transition: transform 0.3s ease-in-out;
+        }
+        .cart-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+        }
+        .btn {
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+            transition: 0.3s;
+        }
+        .btn-remove {
+            background-color: red;
+            color: white;
+        }
+        .btn-remove:hover {
+            background-color: darkred;
+        }
+        .btn-checkout {
+            background-color: green;
+            color: white;
+        }
+        .btn-checkout:hover {
+            background-color: darkgreen;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+<h1>Bid Cart</h1>
+<div class="cart-container" id="cartContainer">
+    <h2>Your Bids</h2>
+    <div id="cartItems"></div>
+    <h3>Total: $<span id="totalPrice">0.00</span></h3>
+    <button class="btn btn-checkout" onclick="checkout()">Checkout</button>
+    <button class="btn btn-remove" onclick="clearCart()">Clear Cart</button>
+    <button class="btn" onclick="continueShopping()">Continue Shopping</button>
+</div>
+
+<script>
+    let userId = localStorage.getItem("userId"); // Replace with logged-in user ID
+
+    function loadCart() {
+        fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                let cartHTML = "";
+                let total = 0;
+                data.forEach(item => {
+                    total += item.maxPrice;
+                    cartHTML += `
+                            <div class="cart-item" id="item-${item.bcid}">
+                                <img src="http://localhost:8080/uploads/images/${item.biddingId}" alt="${item.title}">
+                                <span>${item.title} - $${item.maxPrice}</span>
+                                <button class="btn btn-remove" onclick="removeItem('${item.bcid}')">Remove</button>
+                            </div>`;
+                });
+                document.getElementById("cartItems").innerHTML = cartHTML;
+                document.getElementById("totalPrice").innerText = total.toFixed(2);
+            });
+    }
+
+    function removeItem(bcid) {
+        fetch(`http://localhost:8080/api/v1/bidCart/delete/${bcid}`, { method: 'DELETE' })
+            .then(() => {
+                document.getElementById(`item-${bcid}`).style.transform = "scale(0)";
+                setTimeout(loadCart, 300);
+            });
+    }
+
+    function clearCart() {
+        fetch(`http://localhost:8080/api/v1/bidCart/deleteAll/${userId}`, { method: 'DELETE' })
+            .then(() => {
+                document.getElementById("cartItems").innerHTML = "";
+                document.getElementById("totalPrice").innerText = "0.00";
+            });
+    }
+
+    function checkout() {
+        fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                let order = {
+                    userId: userId,
+                    totalPrice: data.reduce((sum, item) => sum + item.maxPrice, 0),
+                    orderDetails: data.map(item => ({
+                        orderId: null,
+                        userId: userId,
+                        price: item.maxPrice,
+                        title: item.title,
+                        orderDate: new Date().toISOString()
+                    }))
+                };
+
+                fetch(`http://localhost:8080/api/v1/orders/place`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(order)
+                }).then(() => clearCart());
+            });
+    }
+
+    function continueShopping() {
+        window.location.href = "/shop";
+    }
+
+    document.addEventListener("DOMContentLoaded", loadCart);
+</script>
+</body>
+</html>

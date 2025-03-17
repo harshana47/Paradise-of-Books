@@ -189,29 +189,28 @@
             const imageFilename = bid.image ? bid.image.split("\\").pop() : "default.jpg";
             const imageUrl = `http://localhost:8080/uploads/images/${imageFilename}`;
 
-            // Fetch max bid information for the bid
             fetch(`http://localhost:8080/api/v1/bidStorage/maxBid/${bid.bidId}`)
                 .then(response => {
                     if (!response.ok) {
                         console.warn(`No max bid found for bidId: ${bid.bidId}, using default bidAmount: ${bid.bidAmount}`);
-                        return { maxPrice: bid.bidAmount };  // Default to current bidAmount if no max bid is found
+                        return { maxPrice: bid.bidAmount };
                     }
                     return response.json();
                 })
                 .then(maxBidData => {
-                    // Ensure we get the maximum bid value if available
-                    const maxPrice = maxBidData?.maxPrice != null && maxBidData.maxPrice > bid.bidAmount
-                        ? maxBidData.maxPrice
-                        : bid.bidAmount; // If a max bid exists, use it; otherwise, use bidAmount
+                    console.log(`Max bid response for ${bid.bidId}:`, maxBidData); // Debugging log
 
-                    // Create the card with the correct max price
+                    const maxPrice = (maxBidData && maxBidData > bid.bidAmount)
+                        ? maxBidData // Use backend max bid if valid
+                        : bid.bidAmount; // Fallback to bidAmount
+
                     const card = document.createElement('div');
                     card.classList.add('card');
                     card.innerHTML = `
             <img src="${imageUrl}" alt="${bid.title}">
             <div class="card-content">
                 <h2>${bid.title}</h2>
-                <p>Max Bid: $${maxPrice}</p>  <!-- Display the max price here -->
+                <p>Max Bid: $${maxPrice}</p>
                 <button class="bid-button" onclick="openBidModal('${bid.bidId}', '${bid.title}', '${bid.author}', '${bid.description}', '${imageUrl}', ${maxPrice})">Bid</button>
             </div>
         `;
@@ -220,6 +219,7 @@
                 .catch(error => {
                     console.error('Error fetching max bid:', error);
                 });
+
         });
     }
 

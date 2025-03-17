@@ -297,12 +297,17 @@ public class BiddingServiceImpl implements BiddingService {
         return "Bid placed successfully!";
     }
 
-
     @Override
     public Double getMaxBid(UUID biddingId) {
-        Optional<BidStorage> highestBid = bidStorageRepo.findHighestBidByBidding(biddingId);
+        Optional<BidStorage> highestBid = bidStorageRepo.findFirstByBidding_BidIdOrderByMaxPriceDesc(biddingId);
 
-        return highestBid.map(BidStorage::getMaxPrice).orElse(0.0); // Return max price or 0 if no bids exist
+        if (highestBid.isPresent()) {
+            System.out.println("Max bid found: " + highestBid.get().getMaxPrice());
+            return highestBid.get().getMaxPrice();
+        }
+
+        System.out.println("No bids found, returning bidAmount from Bidding table.");
+        return biddingRepo.findById(biddingId).map(Bidding::getBidAmount).orElse(0.0);
     }
 
     private BiddingDTO mapToDTO(Bidding bidding) {

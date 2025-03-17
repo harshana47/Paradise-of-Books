@@ -71,6 +71,7 @@ public class WebSecurityConfig {
                                 "/api/v1/bidding/byUser",
                                 "/api/v1/bidding/active",
                                 "/api/v1/bidding/bids/**",
+                                "/api/v1/bidCart/list",
                                 "/api/v1/images/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
