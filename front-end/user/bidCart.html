@@ -73,10 +73,26 @@
 </div>
 
 <script>
-    let userId = localStorage.getItem("userId"); // Replace with logged-in user ID
+    let userId = localStorage.getItem("userId");
+    if (!userId) {
+        console.error("User ID not found. Redirecting to login...");
+        window.location.href = "/login";
+    }
+    let token = localStorage.getItem("authToken");
+    if (!token) {
+        console.error("Token not found. Redirecting to login...");
+        window.location.href = "/login";
+    }
+
 
     function loadCart() {
-        fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`)
+        fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 let cartHTML = "";
@@ -84,19 +100,23 @@
                 data.forEach(item => {
                     total += item.maxPrice;
                     cartHTML += `
-                            <div class="cart-item" id="item-${item.bcid}">
-                                <img src="http://localhost:8080/uploads/images/${item.biddingId}" alt="${item.title}">
-                                <span>${item.title} - $${item.maxPrice}</span>
-                                <button class="btn btn-remove" onclick="removeItem('${item.bcid}')">Remove</button>
-                            </div>`;
+                <div class="cart-item" id="item-${item.bcid}">
+                    <img src="http://localhost:8080/uploads/images/${item.biddingId}" alt="${item.title}">
+                    <span>${item.title} - $${item.maxPrice}</span>
+                    <button class="btn btn-remove" onclick="removeItem('${item.bcid}')">Remove</button>
+                </div>`;
                 });
                 document.getElementById("cartItems").innerHTML = cartHTML;
                 document.getElementById("totalPrice").innerText = total.toFixed(2);
-            });
+            })
+            .catch(error => console.error("Error loading cart:", error));
     }
 
+
     function removeItem(bcid) {
-        fetch(`http://localhost:8080/api/v1/bidCart/delete/${bcid}`, { method: 'DELETE' })
+        fetch(`http://localhost:8080/api/v1/bidCart/delete/${bcid}`, { method: 'DELETE',
+            headers: { 'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token}, })
             .then(() => {
                 document.getElementById(`item-${bcid}`).style.transform = "scale(0)";
                 setTimeout(loadCart, 300);
@@ -104,7 +124,9 @@
     }
 
     function clearCart() {
-        fetch(`http://localhost:8080/api/v1/bidCart/deleteAll/${userId}`, { method: 'DELETE' })
+        fetch(`http://localhost:8080/api/v1/bidCart/deleteAll/${userId}`, { method: 'DELETE',
+            headers: { 'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token},})
             .then(() => {
                 document.getElementById("cartItems").innerHTML = "";
                 document.getElementById("totalPrice").innerText = "0.00";
@@ -112,28 +134,45 @@
     }
 
     function checkout() {
-        fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`)
-            .then(response => response.json())
+        fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error("Failed to fetch cart data");
+                return response.json();
+            })
             .then(data => {
                 let order = {
                     userId: userId,
                     totalPrice: data.reduce((sum, item) => sum + item.maxPrice, 0),
                     orderDetails: data.map(item => ({
-                        orderId: null,
-                        userId: userId,
                         price: item.maxPrice,
                         title: item.title,
                         orderDate: new Date().toISOString()
                     }))
                 };
 
-                fetch(`http://localhost:8080/api/v1/orders/place`, {
+                return fetch(`http://localhost:8080/api/v1/orders/place`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
                     body: JSON.stringify(order)
-                }).then(() => clearCart());
-            });
+                });
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Order placement failed");
+                return response.json();
+            })
+            .then(() => clearCart())
+            .catch(error => console.error("Error during checkout:", error));
     }
+
 
     function continueShopping() {
         window.location.href = "/shop";
