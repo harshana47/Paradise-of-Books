@@ -15,5 +15,5 @@ public class BidCartDTO {
     private UUID biddingId;
     private UUID userId;
     private String title;
-
+    private String image;
 }

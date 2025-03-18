@@ -28,4 +28,5 @@ public class BidCart {
     private double maxPrice;
 
     private String title;
+    private String image;
 }

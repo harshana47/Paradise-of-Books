@@ -74,6 +74,7 @@
 
 <script>
     let userId = localStorage.getItem("userId");
+    console.log(userId)
     if (!userId) {
         console.error("User ID not found. Redirecting to login...");
         window.location.href = "/login";
@@ -99,9 +100,13 @@
                 let total = 0;
                 data.forEach(item => {
                     total += item.maxPrice;
+
+                    // Assuming item.image contains the path or filename of the image
+                    const imageFilename = item.image ? item.image.split("\\").pop() : "default.jpg";
+
                     cartHTML += `
                 <div class="cart-item" id="item-${item.bcid}">
-                    <img src="http://localhost:8080/uploads/images/${item.biddingId}" alt="${item.title}">
+                    <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${item.title}">
                     <span>${item.title} - $${item.maxPrice}</span>
                     <button class="btn btn-remove" onclick="removeItem('${item.bcid}')">Remove</button>
                 </div>`;
@@ -111,6 +116,8 @@
             })
             .catch(error => console.error("Error loading cart:", error));
     }
+
+
 
 
     function removeItem(bcid) {
@@ -143,18 +150,25 @@
         })
             .then(response => {
                 if (!response.ok) throw new Error("Failed to fetch cart data");
-                return response.json();
+                return response.json();  // Parse the cart data as JSON
             })
             .then(data => {
+                if (!data || data.length === 0) {
+                    throw new Error("Cart is empty. Cannot proceed with checkout.");
+                }
+
                 let order = {
                     userId: userId,
                     totalPrice: data.reduce((sum, item) => sum + item.maxPrice, 0),
-                    orderDetails: data.map(item => ({
+                    orderDetailsList: data.map(item => ({
                         price: item.maxPrice,
-                        title: item.title,
-                        orderDate: new Date().toISOString()
+                        title: item.title
                     }))
                 };
+
+                if (!order.orderDetailsList || order.orderDetailsList.length === 0) {
+                    throw new Error("Order details cannot be empty");
+                }
 
                 return fetch(`http://localhost:8080/api/v1/orders/place`, {
                     method: 'POST',
@@ -166,11 +180,21 @@
                 });
             })
             .then(response => {
+                // Check if the response is JSON
                 if (!response.ok) throw new Error("Order placement failed");
-                return response.json();
+
+                return response.json().catch(e => {
+                    // If the response is not valid JSON, handle the error
+                    throw new Error("Received non-JSON response from server");
+                });
             })
-            .then(() => clearCart())
-            .catch(error => console.error("Error during checkout:", error));
+            .then(jsonResponse => {
+                console.log(jsonResponse);  // The parsed JSON response
+                clearCart();
+            })
+            .catch(error => {
+                console.error("Error during checkout:", error);
+            });
     }
 
 

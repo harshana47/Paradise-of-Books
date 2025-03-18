@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+
 @Service
 @Transactional
 public class OrderServiceImpl implements OrderService {
@@ -33,9 +35,16 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private BidCartRepo bidCartRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;  // Inject ModelMapper
+
     @Override
     @Transactional
     public void placeOrder(UUID userId, double totalPrice, List<OrderDetailsDTO> orderDetailsList) {
+        if (orderDetailsList == null || orderDetailsList.isEmpty()) {
+            throw new RuntimeException("Order details cannot be null or empty");
+        }
+
         // Fetch the user entity
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -43,20 +52,24 @@ public class OrderServiceImpl implements OrderService {
         // Create and save the order
         Orders savedOrder = orderRepository.save(new Orders(null, totalPrice, user));
 
-        // Convert DTOs to OrderDetails entities
+        // Convert DTOs to OrderDetails entities using ModelMapper
         List<OrderDetails> orderDetailsEntities = orderDetailsList.stream()
-                .map(dto -> new OrderDetails(
-                        UUID.randomUUID(),
-                        dto.getPrice(),  // price comes second
-                        user,
-                        savedOrder, // order should come after user
-                        dto.getTitle(),
-                        LocalDateTime.now()
-                ))
+                .map(dto -> modelMapper.map(dto, OrderDetails.class))  // Use ModelMapper to map DTO to entity
                 .collect(Collectors.toList());
 
+        // Set additional properties on the OrderDetails entities
+        orderDetailsEntities.forEach(orderDetails -> {
+            orderDetails.setOrders(savedOrder);  // Set the order relation
+            orderDetails.setUser(user);         // Set the user relation
+            orderDetails.setOrderDate(LocalDateTime.now());
+        });
+
+        // Save the order details
         orderDetailsRepository.saveAll(orderDetailsEntities);
+
+        // Clean up the cart after placing the order
         bidCartRepository.deleteByUser_uid(userId);
     }
 }
+
 

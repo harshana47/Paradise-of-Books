@@ -203,12 +203,13 @@ public class BiddingServiceImpl implements BiddingService {
                 cartItem.setUser(highestBidder);
                 cartItem.setTitle(bidding.getTitle());
                 cartItem.setMaxPrice(maxBid.getMaxPrice());
+                cartItem.setImage(bidding.getImage());
 
                 // Save the bid to the cart
                 bidCartRepo.save(cartItem);
 
                 // Mark the bid as "closed"
-                bidding.setStatus("closed");
+                bidding.setStatus("end");
                 biddingRepo.save(bidding);
 
                 // Delete all bid storage records for the given bidding
