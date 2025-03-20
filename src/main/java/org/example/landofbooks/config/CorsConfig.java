@@ -15,7 +15,7 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:63342", "http://localhost:5173")); // Allow frontend URLs
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:63342"));
         corsConfiguration.setAllowedHeaders(List.of(
                 "Authorization", "Content-Type", "Accept", "Origin",
                 "X-Requested-With", "Cache-Control", "Pragma"

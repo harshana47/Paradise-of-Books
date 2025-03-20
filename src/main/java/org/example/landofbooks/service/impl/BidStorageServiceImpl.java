@@ -21,16 +21,13 @@ public class BidStorageServiceImpl implements BidStorageService {
 
     @Override
     public List<BidStorageDTO> getBidsByBidId(UUID bidId) {
-        // Fetch bids from the BidStorage table using the provided bidId
         List<BidStorage> bids = bidStorageRepo.findByBidding_BidId(bidId);
 
-        // Convert BidStorage entities to BidStorageDTOs
         return bids.stream()
                 .map(bid -> {
-                    // Assuming 'bid.getUser()' returns the user entity and 'bid.getBidding()' returns the bidding entity
-                    UUID userId = bid.getUser() != null ? bid.getUser().getUid() : null; // Get userId
-                    UUID biddingId = bid.getBidding() != null ? bid.getBidding().getBidId() : null; // Get biddingId
-                    return new BidStorageDTO(bid.getBSId(), bid.getMaxPrice(), biddingId, userId); // Map to DTO
+                    UUID userId = bid.getUser() != null ? bid.getUser().getUid() : null;
+                    UUID biddingId = bid.getBidding() != null ? bid.getBidding().getBidId() : null;
+                    return new BidStorageDTO(bid.getBSId(), bid.getMaxPrice(), biddingId, userId);
                 })
                 .collect(Collectors.toList());
     }

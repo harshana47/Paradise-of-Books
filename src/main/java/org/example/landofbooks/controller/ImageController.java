@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/api/v1/images")
-@CrossOrigin(origins = "*") // Allowing all origins (for testing)
+@CrossOrigin(origins = "*")
 public class ImageController {
 
     private static final String IMAGE_DIRECTORY = "uploads/images/";
@@ -25,21 +25,19 @@ public class ImageController {
     @GetMapping("/{filename}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {
-            // Assuming IMAGE_DIRECTORY is the relative directory for storing images on the server
-            Path imagePath = Paths.get(IMAGE_DIRECTORY).resolve(filename); // Resolve the image file relative to IMAGE_DIRECTORY
+            Path imagePath = Paths.get(IMAGE_DIRECTORY).resolve(filename);
             Resource resource = new UrlResource(imagePath.toUri());
 
             if (resource.exists()) {
-                // Dynamically set the MIME type (e.g., for JPEG or PNG)
                 String contentType = Files.probeContentType(imagePath);
                 return ResponseEntity.ok()
                         .contentType(MediaType.parseMediaType(contentType))
                         .body(resource);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Image not found
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
         } catch (MalformedURLException | IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Internal server error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         } catch (java.io.IOException e) {
             throw new RuntimeException(e);
         }

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Sales</title>
     <style>
-        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -15,13 +14,11 @@
             padding: 20px;
         }
 
-        /* Title */
         h1 {
             color: #444;
             margin-bottom: 20px;
         }
 
-        /* Sales Container */
         .sales-container {
             display: flex;
             flex-wrap: wrap;
@@ -29,7 +26,6 @@
             gap: 20px;
         }
 
-        /* Book Card */
         .card {
             background: white;
             width: 300px;
@@ -52,7 +48,6 @@
             border-radius: 8px;
         }
 
-        /* Book Info */
         .card .info {
             margin-top: 10px;
         }
@@ -68,7 +63,6 @@
             color: #555;
         }
 
-        /* Buttons */
         .card .buttons {
             display: flex;
             justify-content: space-between;
@@ -111,7 +105,6 @@
 
 <h1>Pending Book Sales</h1>
 <div class="sales-container" id="salesContainer">
-    <!-- Sales cards will be injected here via JavaScript -->
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -136,7 +129,6 @@
             const card = document.createElement("div");
             card.classList.add("card");
 
-            // Extract filename for image
             const imageFilename = book.image ? book.image.split("\\").pop() : "default.jpg";
 
             card.innerHTML = `
@@ -159,9 +151,6 @@
         });
     }
 
-
-
-    // 🔹 Function to Accept/Decline Book Status
     function changeStatus(bookId, status) {
         if (status === "DELETE") {
             if (!confirm("Are you sure you want to delete this book?")) return;

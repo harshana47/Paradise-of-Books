@@ -146,7 +146,6 @@
     <div id="biddingCards" class="bidding-cards"></div>
 </div>
 
-<!-- Modal for Detailed View -->
 <div id="bidModal" class="modal">
     <div class="modal-content">
         <span class="close" id="closeModal">&times;</span>
@@ -198,11 +197,10 @@
                     return response.json();
                 })
                 .then(maxBidData => {
-                    console.log(`Max bid response for ${bid.bidId}:`, maxBidData); // Debugging log
-
+                    console.log(`Max bid response for ${bid.bidId}:`, maxBidData);
                     const maxPrice = (maxBidData && maxBidData > bid.bidAmount)
-                        ? maxBidData // Use backend max bid if valid
-                        : bid.bidAmount; // Fallback to bidAmount
+                        ? maxBidData
+                        : bid.bidAmount;
 
                     const card = document.createElement('div');
                     card.classList.add('card');
@@ -244,7 +242,7 @@
                 return;
             }
 
-            placeBid(bidId, bidAmount); // Proceed to place bid if valid
+            placeBid(bidId, bidAmount);
         };
     }
 
@@ -270,11 +268,11 @@
 
         const payload = {
             bidId: bidId,
-            bidAmount: bidAmount, // Use bidAmount in the payload (correct property)
+            bidAmount: bidAmount,
             userId: userId
         };
 
-        console.log("Request Payload:", JSON.stringify(payload)); // Log request payload
+        console.log("Request Payload:", JSON.stringify(payload));
 
         fetch('http://localhost:8080/api/v1/bidStorage/placeBid', {
             method: 'POST',
@@ -295,7 +293,7 @@
             .then(() => {
                 alert('Bid placed successfully!');
                 document.getElementById('bidModal').style.display = 'none';
-                fetchActiveBids(); // Refresh bidding list
+                fetchActiveBids();
             })
             .catch(error => {
                 alert('Error placing bid: ' + error.message);

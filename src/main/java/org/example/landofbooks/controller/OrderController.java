@@ -24,10 +24,8 @@ public class OrderController {
         if (orderRequest.getOrderDetailsList() == null || orderRequest.getOrderDetailsList().isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Order details cannot be null or empty"));
         }
-        // Process order placement
         orderService.placeOrder(orderRequest.getUserId(), orderRequest.getTotalPrice(), orderRequest.getOrderDetailsList());
 
-        // Return a JSON response with a success message
         return ResponseEntity.ok(Map.of("message", "Order placed successfully"));
     }
 

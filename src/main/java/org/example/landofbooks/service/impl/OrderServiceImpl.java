@@ -36,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
     private BidCartRepo bidCartRepository;
 
     @Autowired
-    private ModelMapper modelMapper;  // Inject ModelMapper
+    private ModelMapper modelMapper;
 
     @Override
     @Transactional
@@ -45,29 +45,23 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Order details cannot be null or empty");
         }
 
-        // Fetch the user entity
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Create and save the order
         Orders savedOrder = orderRepository.save(new Orders(null, totalPrice, user));
 
-        // Convert DTOs to OrderDetails entities using ModelMapper
         List<OrderDetails> orderDetailsEntities = orderDetailsList.stream()
-                .map(dto -> modelMapper.map(dto, OrderDetails.class))  // Use ModelMapper to map DTO to entity
+                .map(dto -> modelMapper.map(dto, OrderDetails.class))
                 .collect(Collectors.toList());
 
-        // Set additional properties on the OrderDetails entities
         orderDetailsEntities.forEach(orderDetails -> {
-            orderDetails.setOrders(savedOrder);  // Set the order relation
-            orderDetails.setUser(user);         // Set the user relation
+            orderDetails.setOrders(savedOrder);
+            orderDetails.setUser(user);
             orderDetails.setOrderDate(LocalDateTime.now());
         });
 
-        // Save the order details
         orderDetailsRepository.saveAll(orderDetailsEntities);
 
-        // Clean up the cart after placing the order
         bidCartRepository.deleteByUser_uid(userId);
     }
 }

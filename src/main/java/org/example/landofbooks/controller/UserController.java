@@ -23,8 +23,6 @@ public class UserController {
     private final JwtUtil jwtUtil;
     private final ResponseDTO responseDTO;
 
-
-    //constructor injection
     public UserController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
@@ -60,24 +58,19 @@ public class UserController {
     @GetMapping
     public ResponseEntity<ResponseDTO> getUser() {
         try {
-            // Fetch all categories from the service
             List<UserDTO> users = userService.getAllUsers();
 
-            // Set success response
             responseDTO.setCode(200);
             responseDTO.setMessage("User fetched successfully");
             responseDTO.setData(users); // Return the list of categories
 
-            // Return a success response
             return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 
         } catch (Exception e) {
-            // Handle any errors
             responseDTO.setCode(500);
             responseDTO.setMessage("Error fetching Users: " + e.getMessage());
             responseDTO.setData(null);
 
-            // Return an internal server error response
             return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:63342")
 @RequestMapping("api/v1/books")
 public class SaleBookController {
 
@@ -42,7 +42,6 @@ public class SaleBookController {
                                                @RequestPart("activeStatus") String activeStatus,
                                                @RequestPart(required = false) MultipartFile image) {
 
-        // Create a new BookDTO from the incoming form data
         BookDTO bookDTO = new BookDTO();
         bookDTO.setUserId(UUID.fromString(userId));
         bookDTO.setCategoryId(UUID.fromString(categoryId));
@@ -55,8 +54,7 @@ public class SaleBookController {
         bookDTO.setPublishedYear(publishedYear);
         bookDTO.setActiveStatus(activeStatus);
 
-        // Call the service layer to handle the business logic
-        boolean isAdded = bookService.addBook(bookDTO, image);  // Pass image as MultipartFile
+        boolean isAdded = bookService.addBook(bookDTO, image);
 
         if (isAdded) {
             responseDTO.setMessage("Item listed for sale successfully!");
@@ -69,8 +67,6 @@ public class SaleBookController {
         }
     }
 
-
-    // Get Deactivated Books
     @GetMapping("/byStatus")
     public List<BookDTO> getDeactivatedBooks(@RequestParam String status) {
         return bookService.getBooksByStatus(status);
@@ -93,60 +89,4 @@ public class SaleBookController {
         UUID userUUID = UUID.fromString(userId);
         return bookService.getActiveBooksByUserId(userUUID);
     }
-
-
-    // Get a list of all books
-//    @GetMapping
-//    public ResponseEntity<ResponseDTO> getAllBooks() {
-//        responseDTO.setData(bookService.getAllBooks());
-//        responseDTO.setMessage("Books retrieved successfully.");
-//        responseDTO.setStatus(HttpStatus.OK);
-//        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-//    }
-//
-//    // Get book details by ID
-//    @GetMapping("/{bookId}")
-//    public ResponseEntity<ResponseDTO> getBookById(@PathVariable Long bookId) {
-//        BookDTO bookDTO = bookService.getBookById(bookId);
-//        if (bookDTO != null) {
-//            responseDTO.setData(bookDTO);
-//            responseDTO.setMessage("Book details retrieved successfully.");
-//            responseDTO.setStatus(HttpStatus.OK);
-//            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-//        } else {
-//            responseDTO.setMessage("Book not found.");
-//            responseDTO.setStatus(HttpStatus.NOT_FOUND);
-//            return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
-//        }
-//    }
-//
-//    // Update a book
-//    @PutMapping("/{bookId}")
-//    public ResponseEntity<ResponseDTO> updateBook(@PathVariable Long bookId, @Valid @RequestBody BookDTO bookDTO) {
-//        boolean isUpdated = bookService.updateBook(bookId, bookDTO);
-//        if (isUpdated) {
-//            responseDTO.setMessage("Book updated successfully.");
-//            responseDTO.setStatus(HttpStatus.OK);
-//            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-//        } else {
-//            responseDTO.setMessage("Failed to update book.");
-//            responseDTO.setStatus(HttpStatus.BAD_REQUEST);
-//            return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
-//        }
-//    }
-//
-//    // Delete a book
-//    @DeleteMapping("/{bookId}")
-//    public ResponseEntity<ResponseDTO> deleteBook(@PathVariable Long bookId) {
-//        boolean isDeleted = bookService.deleteBook(bookId);
-//        if (isDeleted) {
-//            responseDTO.setMessage("Book deleted successfully.");
-//            responseDTO.setStatus(HttpStatus.OK);
-//            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-//        } else {
-//            responseDTO.setMessage("Failed to delete book.");
-//            responseDTO.setStatus(HttpStatus.BAD_REQUEST);
-//            return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
-//        }
-//    }
 }

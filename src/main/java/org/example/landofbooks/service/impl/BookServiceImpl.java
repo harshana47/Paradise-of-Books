@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "http://localhost:63342")
 @Service
 @Transactional
 public class BookServiceImpl implements BookService {
@@ -40,40 +39,33 @@ public class BookServiceImpl implements BookService {
     @Autowired
     private UserRepository userRepo;
 
+    @Override
     public boolean addBook(BookDTO bookDTO, MultipartFile image) {
         try {
-            // Convert the BookDTO to Book entity
             Book book = modelMapper.map(bookDTO, Book.class);
 
-            // If book image is provided as a file, process and save it
             if (image != null && !image.isEmpty()) {
-                String imagePath = saveImage(image); // Save the image and get the relative path
+                String imagePath = saveImage(image);
                 if (imagePath != null) {
-                    book.setImage(imagePath); // Set the image path in the book entity
+                    book.setImage(imagePath);
                 } else {
-                    // If image saving fails, return false
                     return false;
                 }
             }
 
-            // Retrieve Category and User entities
             Category category = categoryRepo.findById(bookDTO.getCategoryId()).orElse(null);
             User user = userRepo.findById(bookDTO.getUserId()).orElse(null);
 
-            // If Category or User is not found, return false
             if (category == null || user == null) {
                 return false;
             }
 
-            // Set Category and User in the Book entity
             book.setCategory(category);
             book.setUser(user);
 
-            // Save the book in the repository
             booksRepo.save(book);
             return true;
         } catch (Exception e) {
-            // Log the exception (you can use a logging framework like SLF4J)
             System.err.println("Error while adding book: " + e.getMessage());
             return false;
         }
@@ -81,38 +73,28 @@ public class BookServiceImpl implements BookService {
 
     public String saveImage(MultipartFile image) {
         try {
-            // Generate a unique file name using UUID
             String fileName = UUID.randomUUID().toString();
 
-            // Get file extension based on the original file content type
             String fileExtension = getFileExtension(image);
             if (fileExtension == null) {
-                // Return null if the file type is not supported
                 return null;
             }
 
-            // Get the absolute path of the project directory
             String projectRootPath = System.getProperty("user.dir");
 
-            // Define the absolute path where the image will be saved (inside the project)
             Path path = Paths.get(projectRootPath, "uploads", "images", fileName + fileExtension);
 
-            // Ensure the directory exists
-            Files.createDirectories(path.getParent());  // Create parent directories if they don't exist
+            Files.createDirectories(path.getParent());
 
-            // Save the image to the file system
-            image.transferTo(path.toFile());  // Save the file
+            image.transferTo(path.toFile());
 
-            // Return the relative path (you can store this in the database)
-            return path.toString();  // Return the file path relative to your project root
+            return path.toString();
         } catch (IOException e) {
-            // Log the error (consider using a logging framework)
             System.err.println("Error saving image: " + e.getMessage());
         }
-        return null;  // Return null if there was an error
+        return null;
     }
 
-    // Helper method to get file extension
     private String getFileExtension(MultipartFile image) {
         String contentType = image.getContentType();
         if (contentType != null) {
@@ -124,22 +106,20 @@ public class BookServiceImpl implements BookService {
                 case "image/gif":
                     return ".gif";
                 default:
-                    return null;  // Unsupported file type
+                    return null;
             }
         }
-        return null;  // Return null if contentType is null
+        return null;
     }
 
-    // Get Books by Status (e.g., DEACTIVATED)
     @Override
     public List<BookDTO> getBooksByStatus(String status) {
-        List<Book> books = booksRepo.findByActiveStatus(status);  // Fetch from DB
+        List<Book> books = booksRepo.findByActiveStatus(status);
         return books.stream()
-                .map(book -> modelMapper.map(book, BookDTO.class))  // Convert Entity to DTO
+                .map(book -> modelMapper.map(book, BookDTO.class))
                 .collect(Collectors.toList());
     }
 
-    // Update Book Status (e.g., Change to ACTIVE)
     @Override
     public void updateBookStatus(UUID id, String activeStatus) {
         Book book = booksRepo.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
@@ -152,8 +132,6 @@ public class BookServiceImpl implements BookService {
         System.out.println("Updated Status: " + book.getActiveStatus());
     }
 
-
-    // Delete Book by UUID
     @Override
     public void deleteBook(UUID id) {
         if (!booksRepo.existsById(id)) {
@@ -164,84 +142,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDTO> getActiveBooksByUserId(UUID userId) {
-        List<Book> activeBooks = booksRepo.findByUserUidAndActiveStatus(userId, "ACTIVE");
-
-        // Convert List<Book> to List<BookDTO using the convertToDTO method
-        return activeBooks.stream()
-                .map(this::convertToDTO) // using convertToDTO
+        return booksRepo.findByUserUidAndActiveStatus(userId, "ACTIVE").stream()
+                .map(book -> modelMapper.map(book, BookDTO.class))
                 .collect(Collectors.toList());
-    }
-
-    private BookDTO convertToDTO(Book book) {
-        return new BookDTO(
-                book.getBid(),
-                book.getTitle(),
-                book.getAuthor(),
-                book.getPrice(),
-                book.getQty(),
-                book.getPublishedYear(),
-                book.getDescription(),
-                book.getBookStatus(),
-                book.getImage() // Image can be handled if necessary
-        );
-
-
-//    @Override
-//    public BookDTO getBookById(Long bookId) {
-//        Book book = booksRepo.findById(bookId).orElse(null);
-//        if (book != null) {
-//            return modelMapper.map(book, BookDTO.class);
-//        }
-//        return null;
-//    }
-//
-//    @Override
-//    public Iterable<BookDTO> getAllBooks() {
-//        Iterable<Book> books = booksRepo.findAll();
-//        return modelMapper.map(books, Iterable.class);
-//    }
-//
-//    @Override
-//    public boolean updateBook(Long bookId, BookDTO bookDTO) {
-//        try {
-//            Book existingBook = booksRepo.findById(bookId).orElse(null);
-//            if (existingBook != null) {
-//                // Update book fields
-//                existingBook.setTitle(bookDTO.getTitle());
-//                existingBook.setAuthor(bookDTO.getAuthor());
-//                existingBook.setPrice(bookDTO.getPrice());
-//                existingBook.setDescription(bookDTO.getDescription());
-//
-//                // If book image is provided, process and update it
-//                if (bookDTO.getImage() != null) {
-//                    String imagePath = saveImage(bookDTO.getImage());
-//                    existingBook.setImage(imagePath);
-//                }
-//
-//                // Save the updated book
-//                booksRepo.save(existingBook);
-//                return true;
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean deleteBook(Long bookId) {
-//        try {
-//            Book book = booksRepo.findById(bookId).orElse(null);
-//            if (book != null) {
-//                booksRepo.delete(book);
-//                return true;
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return false;
-//    }
-
-
     }
 }

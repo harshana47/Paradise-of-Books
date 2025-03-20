@@ -26,7 +26,6 @@ public class PlaceBidController {
         System.out.println("Received BiddingDTO: " + biddingDTO);  // Log the entire object
         String responseMessage = biddingService.placeBids(biddingDTO);
 
-        // Create a response object with status and message
         Map<String, Object> response = new HashMap<>();
         if (responseMessage.equals("Bid placed successfully!") || responseMessage.equals("Bid updated successfully!")) {
             response.put("status", "success");
@@ -46,7 +45,7 @@ public class PlaceBidController {
         }
 
         Double maxBid = biddingService.getMaxBid(biddingId);
-        return ResponseEntity.ok(maxBid != null ? maxBid : 0.0); // Ensure response is always a number
+        return ResponseEntity.ok(maxBid != null ? maxBid : 0.0);
     }
 
 }

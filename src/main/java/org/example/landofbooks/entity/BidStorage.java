@@ -19,7 +19,7 @@ public class BidStorage {
 
     private double maxPrice;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}) // Add cascade here
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}) // add cascade here
     @JoinColumn(name = "biddingId", referencedColumnName = "bidId")
     private Bidding bidding;
 

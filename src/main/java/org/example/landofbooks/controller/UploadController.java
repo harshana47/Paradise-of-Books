@@ -26,18 +26,15 @@ public class UploadController {
         }
 
         try {
-            // Get the original file name and create a unique file name (to avoid overwriting)
             String originalFileName = file.getOriginalFilename();
             String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
             String uniqueFileName = UUID.randomUUID().toString() + extension;
 
-            // Ensure the directory exists
             Path uploadPath = Paths.get(uploadDir);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
-            // Create the file on the server
             File destinationFile = new File(uploadDir + uniqueFileName);
             file.transferTo(destinationFile);
 

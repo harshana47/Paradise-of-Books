@@ -133,7 +133,7 @@
             card.classList.add("card");
 
             const imageFilename = sale.image ? sale.image.split("\\").pop() : "default.jpg";
-            const statusClass = sale.bookStatus.toLowerCase(); // e.g., active, pending, closed
+            const statusClass = sale.bookStatus.toLowerCase();
 
             card.innerHTML = `
                     <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${sale.title}">

@@ -13,7 +13,7 @@ public class BookDTO {
     private UUID bid;
     private String title;
     private String author;
-    private String bookStatus; // "new" or "used"
+    private String bookStatus;
     private double price;
     private int qty;
     private String description;

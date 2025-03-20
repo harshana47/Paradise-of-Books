@@ -127,7 +127,7 @@
         fetch(`http://localhost:8080/api/v1/bidding/byUser?userId=${userId}`)
             .then(response => response.json())
             .then(data => {
-                console.log("API Response:", data);  // Debugging: Output the whole response
+                console.log("API Response:", data);
 
                 if (Array.isArray(data)) {
                     displaySales(data);
@@ -157,9 +157,7 @@
 
             const imageFilename = sale.image ? sale.image.split("\\").pop() : "default.jpg";
 
-            // Fetch bids for each sale
             fetchBids(sale.bidId).then(bids => {
-                // Prepare bid list
                 let bidPrices = '';
                 if (Array.isArray(bids)) {
                     bids.forEach(bid => {
@@ -210,24 +208,22 @@
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
-                "Content-Type": "application/json"  // Make sure the correct content type is sent
+                "Content-Type": "application/json"
             }
         })
             .then(response => {
-                // Check if the response is OK (status 200-299)
                 if (response.ok) {
                     alert("Bid moved to cart and closed successfully!");
-                    location.reload();  // Reload the page to reflect changes
+                    location.reload();
                 } else {
                     return response.json().then(errorData => {
-                        // Handle any error messages returned from the server
                         throw new Error(errorData.message || 'Failed to end the bid');
                     });
                 }
             })
             .catch(error => {
                 console.error("Error ending bid:", error);
-                alert("An error occurred: " + error.message);  // Show a user-friendly error message
+                alert("An error occurred: " + error.message);
             });
     }
 

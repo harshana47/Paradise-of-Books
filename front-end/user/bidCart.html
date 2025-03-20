@@ -180,16 +180,14 @@
                 });
             })
             .then(response => {
-                // Check if the response is JSON
                 if (!response.ok) throw new Error("Order placement failed");
 
                 return response.json().catch(e => {
-                    // If the response is not valid JSON, handle the error
                     throw new Error("Received non-JSON response from server");
                 });
             })
             .then(jsonResponse => {
-                console.log(jsonResponse);  // The parsed JSON response
+                console.log(jsonResponse);
                 clearCart();
             })
             .catch(error => {

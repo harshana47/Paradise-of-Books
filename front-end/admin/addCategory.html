@@ -164,7 +164,7 @@
             .then(data => {
                 if (data.code === 200) {
                     alert('Category deleted successfully!');
-                    loadCategories(); // Refresh the category list after deletion
+                    loadCategories();
                 } else {
                     alert('Error deleting category: ' + data.message);
                 }
@@ -174,7 +174,6 @@
             });
     }
 
-    // Load categories when the page loads
     window.onload = loadCategories;
 </script>
 

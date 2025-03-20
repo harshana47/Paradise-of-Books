@@ -270,15 +270,12 @@
         signupBtn.click();
         return false;
     });
-    // Handle Login
     $('#submit-btn').on('click', function(event) {
         event.preventDefault();
 
-        // Get email and password values
         let email = $('#email').val();
         let password = $('#password').val();
 
-        // Check if fields are empty
         if (!email || !password) {
             alert("Please enter both email and password.");
             return;
@@ -290,25 +287,23 @@
         };
 
         $.ajax({
-            url: `http://localhost:8080/api/v1/auth/authenticate`, // Login endpoint
+            url: `http://localhost:8080/api/v1/auth/authenticate`,
             method: `POST`,
             headers: {
                 "Content-Type": "application/json"
             },
             data: JSON.stringify(loginUser),
             success: function(response) {
-                console.log("Login Response:", response); // Log the full response to verify structure
-
+                console.log("Login Response:", response);
                 if (response.code === 201 && response.data && response.data.token) {
                     let token = response.data.token;
-                    let userEmail = response.data.email; // Store the email for getting userId later
+                    let userEmail = response.data.email;
                     localStorage.setItem("authToken", token);
                     localStorage.setItem("userEmail", userEmail);
                     console.log("Token and User Email saved:", token, userEmail);
 
-                    // Get User ID based on email after successful login
                     setTimeout(() => {
-                        getUserIdFromEmail(userEmail, token);  // Get userId and redirect
+                        getUserIdFromEmail(userEmail, token);
                     }, 1000);
                 } else {
                     console.error("No token received in response.");
@@ -321,20 +316,19 @@
         });
     });
 
-    // Function to retrieve userId from email and navigate based on role
     function getUserIdFromEmail(email, token) {
         $.ajax({
-            url: `http://localhost:8080/api/v1/user/findByEmail`, // Endpoint to fetch user info based on email
+            url: `http://localhost:8080/api/v1/user/findByEmail`,
             method: `GET`,
             headers: {
                 "Authorization": "Bearer " + token,
                 "Content-Type": "application/json"
             },
-            data: { "email": email },  // Send the email to get the userId
+            data: { "email": email },
             success: function(response) {
-                console.log("User Data:", response);  // Log user data to verify userId
+                console.log("User Data:", response);
                 if (response.code === 200 && response.data) {
-                    let userId = response.data.uid;  // Assuming response contains userId
+                    let userId = response.data.uid;
                     localStorage.setItem("userId", userId);
                     console.log("User ID saved:", userId);
 
@@ -352,34 +346,33 @@
         });
     }
 
-    // Function to check user role
     function checkUserRole(token) {
-        console.log("Token for role check:", token); // Debugging to verify token value
+        console.log("Token for role check:", token);
 
         $.ajax({
-            url: `http://localhost:8080/api/v1/admin/test1`, // Check if the user is admin (test1)
+            url: `http://localhost:8080/api/v1/admin/test1`,
             method: `GET`,
             headers: {
                 "Authorization": "Bearer " + token,
                 "Content-Type": "application/json"
             },
             success: function() {
-                window.location.href = "admin/adminDashBoard.html"; // Redirect to admin dashboard
+                window.location.href = "admin/adminDashBoard.html";
             },
             error: function(xhr) {
-                console.log("Error on test1:", xhr.responseText); // Debugging error response
+                console.log("Error on test1:", xhr.responseText);
                 $.ajax({
-                    url: `http://localhost:8080/api/v1/admin/test2`, // Check if the user is regular user (test2)
+                    url: `http://localhost:8080/api/v1/admin/test2`,
                     method: `GET`,
                     headers: {
                         "Authorization": "Bearer " + token,
                         "Content-Type": "application/json"
                     },
                     success: function() {
-                        window.location.href = "user/mySales.html"; // Redirect to user sale book page
+                        window.location.href = "user/mySales.html";
                     },
                     error: function(xhr) {
-                        console.log("Error on test2:", xhr.responseText); // Debugging error response
+                        console.log("Error on test2:", xhr.responseText);
                         alert("Access denied! You do not have permission.");
                     }
                 });
@@ -387,16 +380,15 @@
         });
     }
 
-    // Handle Registration
     $('#register-btn').on('click', function(event) {
         event.preventDefault();
 
         let fullName = $('#fullName').val();
-        let email = $('#emailR').val(); // Corrected to use the signup form's email field
+        let email = $('#emailR').val();
         let address = $('#address').val();
         let contact = $('#contactR').val();
-        let password = $('#passwordR').val(); // Corrected to use the signup form's password field
-        let confirmPassword = $('#confirmPassword').val(); // Ensure this field has id="confirmPassword" in the HTML
+        let password = $('#passwordR').val();
+        let confirmPassword = $('#confirmPassword').val();
 
         if (!fullName || !email || !address || !contact || !password || !confirmPassword) {
             alert("Please fill in all fields.");
@@ -417,7 +409,7 @@
         };
 
         $.ajax({
-            url: `http://localhost:8080/api/v1/user/register`, // Registration endpoint
+            url: `http://localhost:8080/api/v1/user/register`,
             method: `POST`,
             headers: {
                 "Content-Type": "application/json"
@@ -426,7 +418,6 @@
             success: function(response) {
                 console.log("Registration Response:", response);
                 alert("Registration successful!");
-                // Redirect or clear form after successful registration
             },
             error: function(xhr) {
                 console.log("Registration failed:", xhr.responseText);

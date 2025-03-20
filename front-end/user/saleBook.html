@@ -210,32 +210,30 @@
         $('#userId').val('Unknown User');
     }
 
-    // Handle checkbox toggle for Bid and Sale
     $(document).ready(function () {
 
-        // Listen for changes on the Bid checkbox
         $('#bidCheckbox').on('change', function () {
             if ($(this).is(':checked')) {
-                $('#saleCheckbox').prop('checked', false); // Uncheck Sale if Bid is checked
-                $('#bidSection').show(); // Show the Bid section
-                $('#saleSection').hide(); // Hide the Sale section
+                $('#saleCheckbox').prop('checked', false);
+                $('#bidSection').show();
+                $('#saleSection').hide();
             } else {
-                $('#bidSection').hide(); // Hide the Bid section if unchecked
+                $('#bidSection').hide();
             }
         });
 
         // Fetch Categories
         function fetchCategories() {
             $.ajax({
-                url: 'http://localhost:8080/api/v1/category/list', // API endpoint to get all categories
+                url: 'http://localhost:8080/api/v1/category/list',
                 method: 'GET',
+                headers: {"Content-Type": "application/json"},
                 success: function (data) {
-                    const categories = data.data; // Assuming the response object has a 'data' property containing the categories
+                    const categories = data.data;
                     let categoryOptions = '';
                     categories.forEach(function (category) {
-                        categoryOptions += `<option value="${category.cid}">${category.name}</option>`; // Ensure category ID is sent
+                        categoryOptions += `<option value="${category.cid}">${category.name}</option>`;
                     });
-                    // Populate category dropdowns for both bidding and sale
                     $('#category').html(categoryOptions);
                     $('#categorySale').html(categoryOptions);
                 },
@@ -249,23 +247,21 @@
 
         fetchCategories();
 
-        // Listen for changes on the Sale checkbox
         $('#saleCheckbox').on('change', function () {
             if ($(this).is(':checked')) {
-                $('#bidCheckbox').prop('checked', false); // Uncheck Bid if Sale is checked
-                $('#saleSection').show(); // Show the Sale section
-                $('#bidSection').hide(); // Hide the Bid section
+                $('#bidCheckbox').prop('checked', false);
+                $('#saleSection').show();
+                $('#bidSection').hide();
             } else {
-                $('#saleSection').hide(); // Hide the Sale section if unchecked
+                $('#saleSection').hide();
             }
         });
 
         $('#bidForm').on('submit', function (e) {
-            e.preventDefault();  // Prevent default form submission
+            e.preventDefault();
 
             const description = $('#description').val();
 
-            // Check if the description matches the pattern
             const descriptionPattern = /^[A-Za-z0-9\s.,!?]+$/;
 
             if (!descriptionPattern.test(description)) {
@@ -288,17 +284,17 @@
                 bidData.append('image', $('#imageBid')[0].files[0]);
             }
 
-            console.log(bidData);  // Verify FormData contents
+            console.log(bidData);
 
             $.ajax({
-                url: 'http://localhost:8080/api/v1/bidding/place', // Your backend URL for Bid
+                url: 'http://localhost:8080/api/v1/bidding/place',
                 type: 'POST',
                 headers: {
-                    "Authorization": "Bearer " + token // Ensure token is correct
+                    "Authorization": "Bearer " + token
                 },
-                data: bidData, // Make sure bidData is a proper FormData object
-                processData: false,  // Important: Don't process data, let browser handle it
-                contentType: false,  // Let the browser set the content type for FormData
+                data: bidData,
+                processData: false,
+                contentType: false,
                 success: function(response) {
                     $('#bidResponse').html('<p>Bid placed successfully!</p>');
                 },
@@ -310,11 +306,10 @@
         });
 
         $('#saleForm').on('submit', function (e) {
-            e.preventDefault(); // Prevent the default form submission
+            e.preventDefault();
 
             const descriptionSale = $('#descriptionSale').val();
 
-            // Check if the descriptionSale matches the pattern
             const descriptionSalePattern = /^[A-Za-z0-9\s.,!?]+$/;
 
             if (!descriptionSalePattern.test(descriptionSale)) {
@@ -324,7 +319,6 @@
 
             let formData = new FormData();
 
-            // Append all the form fields to FormData
             formData.append('userId', $('#userId').val());
             formData.append('categoryId', $('#categorySale').val());
             formData.append('bookStatus', $('#bookStatusSale').val());
@@ -334,21 +328,21 @@
             formData.append('description', descriptionSale);
             formData.append('qty', $('#qtySale').val());
             formData.append('publishedYear', $('#publishedYearSale').val());
+            formData.append('activeStatus','DEACTIVATED')
 
-            // Append the file if selected
             if ($('#imageSale')[0].files[0]) {
                 formData.append('image', $('#imageSale')[0].files[0]);
             }
 
             $.ajax({
-                url: 'http://localhost:8080/api/v1/sale/place', // Your backend URL for Sale
+                url: 'http://localhost:8080/api/v1/books/place',
                 type: 'POST',
                 headers: {
-                    "Authorization": "Bearer " + token // Ensure token is correct
+                    "Authorization": "Bearer " + token
                 },
-                data: formData, // Make sure formData is a proper FormData object
-                processData: false,  // Important: Don't process data, let browser handle it
-                contentType: false,  // Let the browser set the content type for FormData
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(response) {
                     $('#saleResponse').html('<p>Item listed for sale successfully!</p>');
                 },
