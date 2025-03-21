@@ -59,6 +59,7 @@ public class WebSecurityConfig {
                                 "/api/v1/books/changeStatus/**",
                                 "/api/v1/books/uploadImage",
                                 "api/v1/books/sales",
+                                "api/v1/books/ACTIVE",
                                 "api/v1/bidding/place",
                                 "/api/v1/bidding/place/**",
                                 "api/v1/bidding/byStatus",

@@ -1,6 +1,8 @@
 package org.example.landofbooks.service.impl;
 
+import org.example.landofbooks.dto.BiddingDTO;
 import org.example.landofbooks.dto.BookDTO;
+import org.example.landofbooks.entity.Bidding;
 import org.example.landofbooks.entity.Book;
 import org.example.landofbooks.entity.Category;
 import org.example.landofbooks.entity.User;
@@ -144,6 +146,15 @@ public class BookServiceImpl implements BookService {
     public List<BookDTO> getActiveBooksByUserId(UUID userId) {
         return booksRepo.findByUserUidAndActiveStatus(userId, "ACTIVE").stream()
                 .map(book -> modelMapper.map(book, BookDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookDTO> getActiveBooks() {
+        List<Book> activeBooks = booksRepo.findByActiveStatus("ACTIVE");
+
+        return activeBooks.stream()
+                .map(books -> modelMapper.map(books, BookDTO.class))
                 .collect(Collectors.toList());
     }
 }

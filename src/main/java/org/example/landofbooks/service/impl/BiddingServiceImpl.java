@@ -267,16 +267,16 @@ public class BiddingServiceImpl implements BiddingService {
         return biddingRepo.findById(biddingId).map(Bidding::getBidAmount).orElse(0.0);
     }
 
-    private BiddingDTO mapToDTO(Bidding bidding) {
-        return new BiddingDTO(
-                bidding.getBidId(),
-                bidding.getTitle(),
-                bidding.getAuthor(),
-                bidding.getDescription(),
-                bidding.getImage(),
-                bidding.getBidDate(),
-                bidding.getBidAmount(),
-                bidding.getStatus()
-        );
-    }
+//    private BiddingDTO mapToDTO(Bidding bidding) {
+//        return new BiddingDTO(
+//                bidding.getBidId(),
+//                bidding.getTitle(),
+//                bidding.getAuthor(),
+//                bidding.getDescription(),
+//                bidding.getImage(),
+//                bidding.getBidDate(),
+//                bidding.getBidAmount(),
+//                bidding.getStatus()
+//        );
+//    }
 }

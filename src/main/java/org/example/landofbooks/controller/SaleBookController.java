@@ -1,6 +1,7 @@
 package org.example.landofbooks.controller;
 
 import jakarta.validation.Valid;
+import org.example.landofbooks.dto.BiddingDTO;
 import org.example.landofbooks.dto.BookDTO;
 import org.example.landofbooks.dto.ResponseDTO;
 import org.example.landofbooks.entity.Book;
@@ -88,5 +89,9 @@ public class SaleBookController {
     public List<BookDTO> getActiveBooks(@RequestParam String userId) {
         UUID userUUID = UUID.fromString(userId);
         return bookService.getActiveBooksByUserId(userUUID);
+    }
+    @GetMapping("/ACTIVE")
+    public List<BookDTO> getActiveBids() {
+        return bookService.getActiveBooks();
     }
 }
