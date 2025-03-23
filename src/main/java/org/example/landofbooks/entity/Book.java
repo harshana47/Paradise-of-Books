@@ -33,7 +33,7 @@ public class Book {
     @ColumnDefault("'DEACTIVATED'")
     private String activeStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoryId", referencedColumnName = "cid")
     private Category category;
 

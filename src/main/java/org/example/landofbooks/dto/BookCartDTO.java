@@ -10,9 +10,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 public class BookCartDTO {
-    private UUID bkcid;
     private UUID bookId;
     private UUID userId;
+    private double price;
     private String title;
     private String image;
     private double total;

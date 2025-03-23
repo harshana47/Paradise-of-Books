@@ -3,6 +3,7 @@ package org.example.landofbooks.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.landofbooks.entity.Book;
 
 import java.util.UUID;
 
@@ -23,17 +24,19 @@ public class BookDTO {
     private UUID userId;
     private String activeStatus;
 
-    public BookDTO(UUID bid, String title, String author, double price, int qty, String publishedYear, String description, String bookStatus, String image) {
-
-        this.bid = bid;
-        this.title = title;
-        this.author = author;
-        this.price = price;
-        this.qty = qty;
-        this.publishedYear = publishedYear;
-        this.description = description;
-        this.bookStatus = bookStatus;
-        this.image = image;
-
+    public BookDTO(Book book) {
+        this.bid = book.getBid();
+        this.title = book.getTitle();
+        this.author = book.getAuthor();
+        this.bookStatus = book.getBookStatus();
+        this.price = book.getPrice();
+        this.qty = book.getQty();
+        this.description = book.getDescription();
+        this.image = book.getImage();
+        this.publishedYear = book.getPublishedYear();
+        this.activeStatus = book.getActiveStatus();
+        this.categoryId = (book.getCategory() != null) ? book.getCategory().getCid() : null; // Ensure categoryId is set
+        this.userId = (book.getUser() != null) ? book.getUser().getUid() : null;
     }
+
 }

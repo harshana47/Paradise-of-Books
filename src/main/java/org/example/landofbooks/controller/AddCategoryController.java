@@ -119,6 +119,9 @@ public class AddCategoryController {
             return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    @GetMapping("/{categoryId}")
+    public CategoryDTO getCategoryById(@PathVariable UUID categoryId) {
+        return categoryService.getCategoryById(categoryId);
+    }
 
 }

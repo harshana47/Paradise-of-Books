@@ -25,8 +25,10 @@ public class BookCart {
     @JoinColumn(name = "userId", referencedColumnName = "uid")
     private User user;
 
+    private double price;
     private String title;
     private String image;
     private double total;
     private int qty;
 }
+

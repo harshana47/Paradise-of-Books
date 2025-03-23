@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE,RequestMethod.OPTIONS})
@@ -70,5 +71,20 @@ public class CategoryServiceImpl implements CategoryService {
             System.out.println("No category found with name: " + name);
         }
         return null;
+    }
+
+    @Override
+    public CategoryDTO getCategoryById(UUID categoryId) {
+        // Fetch the Category entity by ID
+        Optional<Category> categoryOpt = categoryRepo.findById(categoryId);
+
+        // If the category exists, map it to CategoryDTO, else return null
+        if (categoryOpt.isPresent()) {
+            Category category = categoryOpt.get();
+            // Create and return the CategoryDTO
+            return new CategoryDTO(category.getCid(), category.getName());
+        }
+
+        return null; // Return null if category not found
     }
 }

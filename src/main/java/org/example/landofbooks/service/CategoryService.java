@@ -13,4 +13,6 @@ public interface CategoryService {
     void deleteCategory(UUID id);
 
     CategoryDTO searchCategory(String name);
+
+    CategoryDTO getCategoryById(UUID categoryId);
 }

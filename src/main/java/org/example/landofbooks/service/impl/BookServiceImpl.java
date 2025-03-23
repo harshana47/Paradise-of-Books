@@ -149,12 +149,9 @@ public class BookServiceImpl implements BookService {
                 .collect(Collectors.toList());
     }
 
-    @Override
     public List<BookDTO> getActiveBooks() {
-        List<Book> activeBooks = booksRepo.findByActiveStatus("ACTIVE");
-
-        return activeBooks.stream()
-                .map(books -> modelMapper.map(books, BookDTO.class))
-                .collect(Collectors.toList());
+        List<Book> books = booksRepo.findByActiveStatus("ACTIVE");
+        return books.stream().map(BookDTO::new).collect(Collectors.toList());
     }
+
 }
