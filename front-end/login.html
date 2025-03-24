@@ -298,19 +298,29 @@
                 if (response.code === 201 && response.data && response.data.token) {
                     let token = response.data.token;
                     let userEmail = response.data.email;
+
+                    // Save token only after login success
                     localStorage.setItem("authToken", token);
                     localStorage.setItem("userEmail", userEmail);
                     console.log("Token and User Email saved:", token, userEmail);
 
+                    // After saving token, proceed to fetch user data
                     setTimeout(() => {
                         getUserIdFromEmail(userEmail, token);
                     }, 1000);
                 } else {
                     console.error("No token received in response.");
+                    // Clear invalid token if login failed
+                    localStorage.removeItem("authToken");
+                    localStorage.removeItem("userEmail");
+                    alert("Login failed! Invalid credentials.");
                 }
             },
             error: function(xhr) {
                 console.log("Login failed:", xhr.responseText);
+                // Clear invalid token if login request failed
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("userEmail");
                 alert("Login failed! Please check your credentials.");
             }
         });
@@ -332,15 +342,23 @@
                     localStorage.setItem("userId", userId);
                     console.log("User ID saved:", userId);
 
+                    // After saving user ID, check the user's role
                     setTimeout(() => {
                         checkUserRole(token);
-                    }, 1000)
+                    }, 1000);
                 } else {
                     console.error("User not found.");
+                    // Clear invalid token if user retrieval failed
+                    localStorage.removeItem("authToken");
+                    localStorage.removeItem("userEmail");
+                    alert("User not found. Please check your credentials.");
                 }
             },
             error: function(xhr) {
                 console.log("Error fetching userId:", xhr.responseText);
+                // Clear invalid token if user data retrieval failed
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("userEmail");
                 alert("Error retrieving userId! Please try again.");
             }
         });
@@ -357,6 +375,7 @@
                 "Content-Type": "application/json"
             },
             success: function() {
+                // Role check successful - Redirect to admin dashboard
                 window.location.href = "admin/adminDashBoard.html";
             },
             error: function(xhr) {
@@ -369,16 +388,21 @@
                         "Content-Type": "application/json"
                     },
                     success: function() {
+                        // Role check successful for user - Redirect to user sales page
                         window.location.href = "user/mySales.html";
                     },
                     error: function(xhr) {
                         console.log("Error on test2:", xhr.responseText);
+                        // Clear invalid token if role check fails
+                        localStorage.removeItem("authToken");
+                        localStorage.removeItem("userEmail");
                         alert("Access denied! You do not have permission.");
                     }
                 });
             }
         });
     }
+
 
     $('#register-btn').on('click', function(event) {
         event.preventDefault();

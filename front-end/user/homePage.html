@@ -23,24 +23,85 @@
             font-weight: 500;
         }
 
+        #booksContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        /* Card styling */
         .product-card {
+            flex: 1 1 calc(25% - 20px); /* 4 cards per row */
+            max-width: 250px;
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 10px;
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(-10px);
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
         }
 
-        .cart-count {
-            background: red;
-            color: white;
-            border-radius: 50%;
-            padding: 3px 8px;
-            position: absolute;
-            top: 8px;
-            right: 10px;
+        /* Image styling */
+        .product-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
         }
+
+        /* Body styling */
+        .product-card .card-body {
+            text-align: center;
+            padding: 6px;
+        }
+
+        .product-card .card-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .product-card .card-text {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        /* Button styling */
+        .product-card .btn {
+            font-size: 14px;
+            padding: 6px 12px;
+        }
+
+        /* Responsive Fixes */
+        @media (max-width: 992px) {
+            .product-card {
+                flex: 1 1 calc(33.33% - 20px); /* 3 per row */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .product-card {
+                flex: 1 1 calc(50% - 20px); /* 2 per row */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .product-card {
+                flex: 1 1 100%; /* 1 per row */
+            }
+        }
+
     </style>
 </head>
 
@@ -56,7 +117,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Bids</a></li>
+                <li class="nav-item"><a class="nav-link" href="biddingPage.html">Bids</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Categories</a>
                     <ul class="dropdown-menu" id="categoryDropdown"></ul>
@@ -72,6 +133,7 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#">Sign In</a></li>
                         <li><a class="dropdown-item" href="#">Manage Profile</a></li>
+                        <li><a class="dropdown-item" id="logOut">Log Out</a></li>
                     </ul>
                 </li>
             </ul>
@@ -252,6 +314,22 @@
             booksContainer.append('<p>No books available.</p>');
         }
     }
+
+    // Event listener for the "Log Out" link
+    document.getElementById("logOut").addEventListener("click", function(event) {
+        // Clear the authToken and any other relevant data from localStorage
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userId");
+
+        // Optionally, you can also clear other session-related data if needed
+        console.log("Logged out successfully. Token and user data cleared.");
+
+        // Redirect to the login page after logging out
+        window.location.href = "../login.html"; // Adjust the path if necessary
+    });
+
+
     // Handle adding books to cart
     $(document).on('click', '.add-to-cart', function () {
         selectedBook = books.find(book => book.bid == $(this).data('id'));
@@ -278,8 +356,14 @@
         }
     });
 
+    console.log("authToken", localStorage.getItem('authToken'))
     // Confirm add to cart
     $('#confirmAddToCart').click(function () {
+        if (!localStorage.getItem('authToken')) {
+            // If not logged in, redirect to the login page
+            window.location.href = '../login.html';  // Replace '/login' with the actual login page URL
+            return;  // Stop the execution of the rest of the function
+        }
         let quantity = parseInt($('#quantity').text());
         let totalPrice = selectedBook.price * quantity;
 
