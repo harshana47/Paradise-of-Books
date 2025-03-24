@@ -131,7 +131,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Profile</a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Sign In</a></li>
+                        <li><a class="dropdown-item" href="../login.html">Sign In</a></li>
                         <li><a class="dropdown-item" href="#">Manage Profile</a></li>
                         <li><a class="dropdown-item" id="logOut">Log Out</a></li>
                     </ul>
@@ -172,6 +172,35 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+
+    // function fetchCartCount() {
+    //     let userId = localStorage.getItem("userId"); // Get logged-in user ID
+    //     if (!userId) {
+    //         console.warn("No user ID found in localStorage.");
+    //         return;
+    //     }
+    //
+    //     $.ajax({
+    //         url: `http://localhost:8080/api/v1/cart/count/${userId}`, // Replace with your actual endpoint
+    //         method: "GET",
+    //         headers: {
+    //             'Authorization': 'Bearer ' + localStorage.getItem('authToken') // Add authentication if required
+    //         },
+    //         success: function (response) {
+    //             console.log("Cart count:", response);
+    //             $(".cart-count").text(response.count); // Update the cart count badge
+    //         },
+    //         error: function (xhr, status, error) {
+    //             console.error("Error fetching cart count:", error);
+    //         }
+    //     });
+    // }
+    //
+    // // Call this function when the page loads
+    // $(document).ready(function () {
+    //     fetchCartCount();
+    // });
+
     let books = [];
     let selectedBook = {};
     let cartCount = 0;

@@ -14,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 public class BookCartServiceImpl implements BookCartService {
@@ -58,5 +62,23 @@ public class BookCartServiceImpl implements BookCartService {
         bookCartRepo.save(bookCart);
 
         return VarList.Created;
+    }
+
+    @Override
+    public List<BookCartDTO> getCartByUser(UUID userId) {
+        List<BookCart> cartList = bookCartRepo.findByUser_uid(userId);
+        return cartList.stream()
+                .map(item -> modelMapper.map(item, BookCartDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteCartItem(UUID bkcid) {
+        bookCartRepo.deleteById(bkcid);
+    }
+
+    @Override
+    public void clearCart(UUID userId) {
+        bookCartRepo.deleteByUser_uid(userId);
     }
 }

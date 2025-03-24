@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bid Cart</title>
+    <title>Book Cart</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -62,9 +62,9 @@
     </style>
 </head>
 <body>
-<h1>Bid Cart</h1>
+<h1>Book Cart</h1>
 <div class="cart-container" id="cartContainer">
-    <h2>Your Bids</h2>
+    <h2>Your Books</h2>
     <div id="cartItems"></div>
     <h3>Total: $<span id="totalPrice">0.00</span></h3>
     <button class="btn btn-checkout" onclick="checkout()">Checkout</button>
@@ -87,7 +87,7 @@
 
 
     function loadCart() {
-        fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`, {
+        fetch(`http://localhost:8080/api/v1/bookCart/user/${userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -99,16 +99,15 @@
                 let cartHTML = "";
                 let total = 0;
                 data.forEach(item => {
-                    total += item.maxPrice;
+                    total += item.price;
 
                     // Assuming item.image contains the path or filename of the image
                     const imageFilename = item.image ? item.image.split("\\").pop() : "default.jpg";
-
                     cartHTML += `
-                <div class="cart-item" id="item-${item.bcid}">
+                <div class="cart-item" id="item-${item.bkcid}">
                     <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${item.title}">
-                    <span>${item.title} - $${item.maxPrice}</span>
-                    <button class="btn btn-remove" onclick="removeItem('${item.bcid}')">Remove</button>
+                    <span>${item.title} - $${item.price}</span>
+                    <button class="btn btn-remove" onclick="removeItem('${item.bkcid}')">Remove</button>
                 </div>`;
                 });
                 document.getElementById("cartItems").innerHTML = cartHTML;
@@ -120,18 +119,18 @@
 
 
 
-    function removeItem(bcid) {
-        fetch(`http://localhost:8080/api/v1/bidCart/delete/${bcid}`, { method: 'DELETE',
+    function removeItem(bkcid) {
+        fetch(`http://localhost:8080/api/v1/bookCart/delete/${bkcid}`, { method: 'DELETE',
             headers: { 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token}, })
             .then(() => {
-                document.getElementById(`item-${bcid}`).style.transform = "scale(0)";
+                document.getElementById(`item-${bkcid}`).style.transform = "scale(0)";
                 setTimeout(loadCart, 300);
             });
     }
 
     function clearCart() {
-        fetch(`http://localhost:8080/api/v1/bidCart/deleteAll/${userId}`, { method: 'DELETE',
+        fetch(`http://localhost:8080/api/v1/bookCart/deleteAll/${userId}`, { method: 'DELETE',
             headers: { 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token},})
             .then(() => {
@@ -141,7 +140,7 @@
     }
 
     function checkout() {
-        fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`, {
+        fetch(`http://localhost:8080/api/v1/bookCart/user/${userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -159,9 +158,9 @@
 
                 let order = {
                     userId: userId,
-                    totalPrice: data.reduce((sum, item) => sum + item.maxPrice, 0),
+                    totalPrice: data.reduce((sum, item) => sum + item.price, 0),
                     orderDetailsList: data.map(item => ({
-                        price: item.maxPrice,
+                        price: item.price,
                         title: item.title
                     }))
                 };
@@ -197,7 +196,7 @@
 
 
     function continueShopping() {
-        window.location.href = "/shop";
+        window.location.href = "homePage.html";
     }
 
     document.addEventListener("DOMContentLoaded", loadCart);

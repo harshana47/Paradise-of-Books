@@ -10,6 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 public class BookCartDTO {
+    private UUID bkcid;
     private UUID bookId;
     private UUID userId;
     private double price;

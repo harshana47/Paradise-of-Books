@@ -11,6 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/bookCart")
 @CrossOrigin(origins = "*")
@@ -42,5 +45,21 @@ public class BookCartController {
                     .body(new ResponseDTO(VarList.Bad_Request, e.getMessage(), null));  // Returning specific error message
         }
     }
-}
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<BookCartDTO>> getCartByUser(@PathVariable UUID userId){
+        return ResponseEntity.ok(bookCartService.getCartByUser(userId));
+    }
+
+    @DeleteMapping("/delete/{bkcid}")
+    public ResponseEntity<Void> deleteCartItem(@PathVariable UUID bkcid) {
+        bookCartService.deleteCartItem(bkcid);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/deleteAll/{userId}")
+    public ResponseEntity<Void> clearCart(@PathVariable UUID userId) {
+        bookCartService.clearCart(userId);
+        return ResponseEntity.noContent().build();
+    }
+}
