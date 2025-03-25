@@ -12,8 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @CrossOrigin("*")
@@ -75,6 +74,16 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getAll")
+    public ResponseEntity<Map<String, Object>> getAllUsers() {
+        List<UserDTO> users = userService.getAllUsers();
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("users", users); // 👈 Causes issue (nested array)
+        return ResponseEntity.ok(response);
+    }
+
+
     @GetMapping("/findByEmail")
     public ResponseEntity<ResponseDTO> getUserByEmail(@RequestParam String email) {
         try {
@@ -95,6 +104,23 @@ public class UserController {
             responseDTO.setMessage("Error fetching user by email: " + e.getMessage());
             responseDTO.setData(null);
             return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PutMapping("/{userId}/role")
+    public ResponseEntity<String> updateUserRole(@PathVariable UUID userId, @RequestBody UserDTO userDTO) {
+        // Extract role from the received UserDTO
+        String newRole = userDTO.getRole();
+
+        // Check if the role is provided
+        if (newRole == null || newRole.isEmpty()) {
+            return ResponseEntity.badRequest().body("Role must be provided.");
+        }
+
+        boolean updated = userService.updateUserRole(userId, newRole);
+        if (updated) {
+            return ResponseEntity.ok("User role updated successfully.");
+        } else {
+            return ResponseEntity.badRequest().body("Failed to update user role.");
         }
     }
 }

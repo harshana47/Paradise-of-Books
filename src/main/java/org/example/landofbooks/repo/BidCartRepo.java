@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface BidCartRepo extends JpaRepository<BidCart, UUID> {
     void deleteByUser_uid(UUID userId);
     List<BidCart> findByUser_uid(UUID userId);
+
+    int countByUser_Uid(UUID userId);
 }

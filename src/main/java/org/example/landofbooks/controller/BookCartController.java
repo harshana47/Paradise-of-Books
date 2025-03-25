@@ -62,4 +62,10 @@ public class BookCartController {
         bookCartService.clearCart(userId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/count/{userId}")
+    public int getCartCount(@PathVariable UUID
+                                        userId) {
+        return bookCartService.getBookCartItemCount(userId); // Return the count of cart items
+    }
 }

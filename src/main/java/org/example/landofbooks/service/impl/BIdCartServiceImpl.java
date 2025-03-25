@@ -30,6 +30,12 @@ public class BIdCartServiceImpl implements BidCartService {
                 .map(item -> modelMapper.map(item, BidCartDTO.class))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public int getBidCartItemCount(UUID userId) {
+        return bidCartRepository.countByUser_Uid(userId);
+    }
+
     @Override
     public void deleteCartItem(UUID bcid) {
         bidCartRepository.deleteById(bcid);

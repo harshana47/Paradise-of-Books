@@ -123,7 +123,14 @@
                     <ul class="dropdown-menu" id="categoryDropdown"></ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link position-relative" href="#">
+                    <a class="nav-link" href="bidCart.html">
+                        <i class="fas fa-gavel"></i> <!-- Bidding Icon -->
+                        <span class="bidCart-count">0</span>
+                        Wins
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link position-relative" href="bookCart.html">
                         Cart <i class="fas fa-shopping-cart"></i>
                         <span class="cart-count">0</span>
                     </a>
@@ -172,34 +179,63 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Initial setup when document is ready
+    $(document).ready(function () {
+        fetchCartCount();
+        fetchBidCartCount();
+        fetchBooks(); // Fetch books and display them when the page loads
 
-    // function fetchCartCount() {
-    //     let userId = localStorage.getItem("userId"); // Get logged-in user ID
-    //     if (!userId) {
-    //         console.warn("No user ID found in localStorage.");
-    //         return;
-    //     }
-    //
-    //     $.ajax({
-    //         url: `http://localhost:8080/api/v1/cart/count/${userId}`, // Replace with your actual endpoint
-    //         method: "GET",
-    //         headers: {
-    //             'Authorization': 'Bearer ' + localStorage.getItem('authToken') // Add authentication if required
-    //         },
-    //         success: function (response) {
-    //             console.log("Cart count:", response);
-    //             $(".cart-count").text(response.count); // Update the cart count badge
-    //         },
-    //         error: function (xhr, status, error) {
-    //             console.error("Error fetching cart count:", error);
-    //         }
-    //     });
-    // }
-    //
-    // // Call this function when the page loads
-    // $(document).ready(function () {
-    //     fetchCartCount();
-    // });
+    });
+    // Function to fetch cart count from API
+    function fetchCartCount() {
+        let userId = localStorage.getItem("userId"); // Get logged-in user ID
+        if (!userId) {
+            console.warn("No user ID found in localStorage.");
+            return;
+        }
+
+        // Make AJAX call to fetch cart count
+        $.ajax({
+            url: `http://localhost:8080/api/v1/bookCart/count/${userId}`, // Replace with your actual endpoint
+            method: "GET",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken') // Add authentication if required
+            },
+            success: function (response) {
+                console.log("Cart count:", response);
+                $(".cart-count").text(response.count); // Update the cart count badge in UI
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching cart count:", error);
+            }
+        });
+    }
+
+    // Function to fetch bid cart count from API
+    function fetchBidCartCount() {
+        let userId = localStorage.getItem("userId"); // Get logged-in user ID
+        if (!userId) {
+            console.warn("No user ID found in localStorage.");
+            return;
+        }
+
+        // Make AJAX call to fetch bid cart count
+        $.ajax({
+            url: `http://localhost:8080/api/v1/bidCart/count/${userId}`, // Replace with your actual endpoint
+            method: "GET",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken') // Add authentication if required
+            },
+            success: function (response) {
+                console.log("Bid cart count:", response);
+                $(".bidCart-count").text(response.count); // Update the bid cart count badge in UI
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching bid cart count:", error);
+            }
+        });
+    }
+
 
     let books = [];
     let selectedBook = {};
@@ -423,10 +459,6 @@
         });
     });
 
-    // Initial setup when document is ready
-    $(document).ready(function () {
-        fetchBooks(); // Fetch books and display them when the page loads
-    });
 </script>
 
 </body>

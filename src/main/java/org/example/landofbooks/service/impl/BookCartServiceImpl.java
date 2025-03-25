@@ -81,4 +81,8 @@ public class BookCartServiceImpl implements BookCartService {
     public void clearCart(UUID userId) {
         bookCartRepo.deleteByUser_uid(userId);
     }
+
+    public int getBookCartItemCount(UUID userId) {
+        return bookCartRepo.countByUser_Uid(userId); // Use the correct property path
+    }
 }

@@ -33,4 +33,9 @@ public class BidCartController {
         bidCartService.clearCart(userId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/count/{userId}")
+    public int getCartCount(@PathVariable UUID userId) {
+        return bidCartService.getBidCartItemCount(userId); // Return the count of cart items
+    }
 }

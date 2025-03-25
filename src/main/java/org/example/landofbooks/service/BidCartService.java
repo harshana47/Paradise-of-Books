@@ -9,4 +9,6 @@ public interface BidCartService {
     public void clearCart(UUID userId);
     public void deleteCartItem(UUID bcid);
     public List<BidCartDTO> getCartByUser(UUID userId);
+
+    int getBidCartItemCount(UUID userId);
 }

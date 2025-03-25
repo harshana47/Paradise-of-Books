@@ -14,4 +14,6 @@ public interface BookCartService {
     void deleteCartItem(UUID bkcid);
 
     void clearCart(UUID userId);
+
+    int getBookCartItemCount(UUID userId);
 }

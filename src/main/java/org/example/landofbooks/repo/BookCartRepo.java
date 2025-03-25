@@ -10,4 +10,6 @@ public interface BookCartRepo extends JpaRepository<BookCart, UUID> {
     List<BookCart> findByUser_uid(UUID userId);
 
     void deleteByUser_uid(UUID userId);
+
+    int countByUser_Uid(UUID userId);
 }

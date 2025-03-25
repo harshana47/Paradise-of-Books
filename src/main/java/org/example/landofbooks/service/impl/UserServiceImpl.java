@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:63342")
 @Service
@@ -64,6 +61,19 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public List<UserDTO> getAllUsers() {
         return modelMapper.map(userRepository.findAll(), new TypeToken<List<UserDTO>>() {}.getType());
     }
+
+    @Override
+    public boolean updateUserRole(UUID userId, String newRole) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setRole(newRole);  // Update the role
+            userRepository.save(user);  // Save the updated user to the database
+            return true;
+        }
+        return false;
+    }
+
 
 
     @Override

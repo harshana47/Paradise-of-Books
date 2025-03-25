@@ -47,6 +47,7 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/authenticate",
                                 "/api/v1/user/register",
                                 "/api/v1/user/findByEmail",
+                                "/api/v1/user/getAll",
                                 "/api/v1/auth/refreshToken",
                                 "/api/v1/admin/test1",
                                 "/api/v1/admin/test2",
@@ -87,7 +88,10 @@ public class WebSecurityConfig {
                                 "/swagger-ui/**",
                                 "/api/v1/bidStorage/placeBid",
                                 "/api/v1/bidStorage/maxBid/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/api/v1/user/**",
+                                "/api/v1/bookCart/count/**",
+                                "/api/v1/bidCart/count/**"
                         ).permitAll()
                         .requestMatchers("/uploads/**", "/api/v1/images/**", "/uploads/images/**").permitAll()
                         .anyRequest().authenticated()
