@@ -15,4 +15,6 @@ public interface UserService {
     List<UserDTO> getAllUsers();
 
     boolean updateUserRole(UUID userId, String role);
+
+    boolean resetPassword(String email, String password);
 }

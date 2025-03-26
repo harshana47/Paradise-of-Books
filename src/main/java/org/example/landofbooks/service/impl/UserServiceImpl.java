@@ -30,6 +30,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Autowired
     private ModelMapper modelMapper;
 
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email);
@@ -74,6 +75,24 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return false;
     }
 
+    @Override
+    public boolean resetPassword(String email, String password) {
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            return false;
+        }
+        if (password.length() < 8) {
+            return false;
+        }
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        String hashedPassword = encoder.encode(password);
+        user.setPassword(hashedPassword);
+        userRepository.save(user);
+
+        return true;
+    }
 
 
     @Override
