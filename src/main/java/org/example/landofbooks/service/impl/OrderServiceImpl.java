@@ -14,8 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -63,6 +62,22 @@ public class OrderServiceImpl implements OrderService {
         orderDetailsRepository.saveAll(orderDetailsEntities);
 
         bidCartRepository.deleteByUser_uid(userId);
+    }
+
+    @Override
+    public List<Map<String, Object>> getDailyOrdersWithRevenue() {
+        List<Object[]> results = orderDetailsRepository.getDailyOrdersWithRevenue();
+
+        // Process the results and map to a List of Maps
+        return results.stream()
+                .map(obj -> {
+                    Map<String, Object> resultMap = new HashMap<>();
+                    resultMap.put("orderDate", ((java.sql.Date) obj[0]).toLocalDate()); // Date
+                    resultMap.put("orderCount", ((Number) obj[1]).longValue()); // Order count
+                    resultMap.put("revenue", ((Number) obj[2]).doubleValue()); // Revenue (10% of total price)
+                    return resultMap;
+                })
+                .collect(Collectors.toList());
     }
 }
 

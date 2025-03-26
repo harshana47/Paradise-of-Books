@@ -28,6 +28,9 @@ public class OrderController {
 
         return ResponseEntity.ok(Map.of("message", "Order placed successfully"));
     }
-
+    @GetMapping("/daily-count")
+    public ResponseEntity<List<Map<String, Object>>> getDailyStats() {
+        return ResponseEntity.ok(orderService.getDailyOrdersWithRevenue());
+    }
 }
 

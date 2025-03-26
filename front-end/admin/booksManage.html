@@ -9,11 +9,47 @@
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             color: #333;
-            text-align: center;
             margin: 0;
-            padding: 20px;
+            padding: 0px;
         }
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
 
+        }
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .sidebar ul li:hover {
+            background: #34495e;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+        /* Main content */
+        .main-content {
+            margin-left: 250px;
+            flex-grow: 1;
+            padding: 20px;
+            text-align: center;
+        }
         h1 {
             color: #444;
             margin-bottom: 20px;
@@ -102,9 +138,23 @@
     </style>
 </head>
 <body>
-
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <ul>
+        <li><a href="adminDashBoard.html">Dashboard</a></li>
+        <li><a href="#">Orders</a></li>
+        <li><a href="adminManage.html">Users</a></li>
+        <li><a href="booksManage.html">Books Manage</a></li>
+        <li><a href="biddingManage.html">Bids Manage</a></li>
+        <li><a href="addCategory.html">Categories</a></li>
+        <li><a href="#">Settings</a></li>
+    </ul>
+</div>
+<div class="main-content">
 <h1>Pending Book Sales</h1>
 <div class="sales-container" id="salesContainer">
+</div>
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", () => {

@@ -91,7 +91,8 @@ public class WebSecurityConfig {
                                 "/swagger-ui.html",
                                 "/api/v1/user/**",
                                 "/api/v1/bookCart/count/**",
-                                "/api/v1/bidCart/count/**"
+                                "/api/v1/bidCart/count/**",
+                                "/api/v1/orders/daily-count"
                         ).permitAll()
                         .requestMatchers("/uploads/**", "/api/v1/images/**", "/uploads/images/**").permitAll()
                         .anyRequest().authenticated()
