@@ -91,7 +91,22 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Error resetting password."));
         }
     }
+    @PostMapping("/resend-otp")
+    public ResponseEntity<Map<String, Object>> resendOtp(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
 
+        try {
+            // Attempt to resend OTP
+            otpService.resendOtp(email);
+
+            // Send the new OTP email
+            emailService.sendOtpEmail(email);
+
+            return ResponseEntity.ok(Map.of("success", true, "message", "OTP resent successfully."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
 
     @PostMapping("/authenticate")
     public ResponseEntity<ResponseDTO> authenticate(@RequestBody UserDTO userDTO) {

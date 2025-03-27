@@ -95,7 +95,8 @@ public class WebSecurityConfig {
                                 "/api/v1/orders/daily-count",
                                 "/api/v1/auth/reset-password",
                                 "/api/v1/auth/verify-otp",
-                                "/api/v1/auth/forgot-password"
+                                "/api/v1/auth/forgot-password",
+                                "/api/v1/auth/resend-otp"
                         ).permitAll()
                         .requestMatchers("/uploads/**", "/api/v1/images/**", "/uploads/images/**").permitAll()
                         .anyRequest().authenticated()
