@@ -6,6 +6,8 @@ import org.example.landofbooks.dto.BookDTO;
 import org.example.landofbooks.dto.ResponseDTO;
 import org.example.landofbooks.entity.Book;
 import org.example.landofbooks.service.BookService;
+import org.example.landofbooks.service.EmailService;
+import org.example.landofbooks.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +26,14 @@ public class SaleBookController {
 
     private final BookService bookService;
     private final ResponseDTO responseDTO;
+    private final UserService userService;
+    private final EmailService emailService;
 
-    public SaleBookController(BookService bookService, ResponseDTO responseDTO) {
+    public SaleBookController(BookService bookService, ResponseDTO responseDTO, UserService userService, EmailService emailService) {
         this.bookService = bookService;
         this.responseDTO = responseDTO;
+        this.userService = userService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/place")
@@ -41,6 +47,7 @@ public class SaleBookController {
                                                @RequestPart("qty") String qty,
                                                @RequestPart("publishedYear") String publishedYear,
                                                @RequestPart("activeStatus") String activeStatus,
+                                               @RequestPart("email") String email,
                                                @RequestPart(required = false) MultipartFile image) {
 
         BookDTO bookDTO = new BookDTO();
@@ -59,6 +66,7 @@ public class SaleBookController {
 
         if (isAdded) {
             responseDTO.setMessage("Item listed for sale successfully!");
+            emailService.sendSuccessEmail(email,title);
             responseDTO.setData(HttpStatus.CREATED);
             return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
         } else {
@@ -93,5 +101,10 @@ public class SaleBookController {
     @GetMapping("/ACTIVE")
     public List<BookDTO> getActiveBids() {
         return bookService.getActiveBooks();
+    }
+    @GetMapping("/pending")
+    public List<BookDTO> getPendingBooks(@RequestParam String userId) {
+        UUID userUUID = UUID.fromString(userId);
+        return bookService.getDeactivatedBooksByUserId(userUUID);
     }
 }

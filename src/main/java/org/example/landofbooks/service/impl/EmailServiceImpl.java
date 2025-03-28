@@ -5,6 +5,7 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.example.landofbooks.service.EmailService;
 import org.example.landofbooks.service.OtpService;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -38,5 +39,13 @@ public class EmailServiceImpl implements EmailService {
             throw new RuntimeException("Failed to send OTP email: " + e.getMessage(), e);  // Improved error message
         }
     }
+    @Override
+    public void sendSuccessEmail(String to, String bookId) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Book Status for - " + bookId);
+        message.setText("Dear Seller, Your book (" + bookId + ") is under review. we will notify you within 24h. Happy Reading📖✨!");
 
+        mailSender.send(message);
+    }
 }

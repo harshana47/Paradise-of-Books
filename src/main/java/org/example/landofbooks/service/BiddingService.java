@@ -27,4 +27,6 @@ public interface BiddingService {
     String placeBids(BiddingDTO biddingDTO);
 
     Double getMaxBid(UUID biddingId);
+
+    Object getPendingBidsByUser(UUID userId);
 }

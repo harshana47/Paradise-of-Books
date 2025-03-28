@@ -6,6 +6,7 @@ import org.example.landofbooks.dto.ResponseDTO;
 import org.example.landofbooks.entity.Bidding;
 import org.example.landofbooks.service.BidStorageService;
 import org.example.landofbooks.service.BiddingService;
+import org.example.landofbooks.service.EmailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,11 +26,13 @@ public class BidController {
     private final BiddingService biddingService;
     private final ResponseDTO responseDTO;
     private final BidStorageService bidStorageService;
+    private final EmailService emailService;
 
-    public BidController(BiddingService biddingService, ResponseDTO responseDTO, BidStorageService bidStorageService) {
+    public BidController(BiddingService biddingService, ResponseDTO responseDTO, BidStorageService bidStorageService, EmailService emailService) {
         this.biddingService = biddingService;
         this.responseDTO = responseDTO;
         this.bidStorageService = bidStorageService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/place")
@@ -41,6 +44,7 @@ public class BidController {
                                                 @RequestPart("description") String description,
                                                 @RequestPart("bidDate") String bidDate,
                                                 @RequestPart("status") String status,
+                                                @RequestPart("email") String email,
                                                 @RequestPart(required = false) MultipartFile image) {
 
         BiddingDTO biddingDTO = new BiddingDTO();
@@ -56,6 +60,7 @@ public class BidController {
         boolean isAdded = biddingService.placeBid(biddingDTO,image);
         if (isAdded) {
             responseDTO.setMessage("Item listed for sale successfully!");
+            emailService.sendSuccessEmail(email,title);
             responseDTO.setData(HttpStatus.CREATED);
             return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
         } else {
@@ -87,6 +92,12 @@ public class BidController {
     public ResponseEntity<?> getOngoingBidsByUser(@RequestParam UUID userId) {
         return ResponseEntity.ok(biddingService.getOngoingBidsByUser(userId));
     }
+
+    @GetMapping("/pending")
+    public ResponseEntity<?> getPendingBidsByUser(@RequestParam UUID userId) {
+        return ResponseEntity.ok(biddingService.getPendingBidsByUser(userId));
+    }
+
     @DeleteMapping("/deleteStorage/{bidId}")
     public ResponseEntity<?> deleteBidStorage(@PathVariable UUID bidId) {
         biddingService.deleteStor(bidId);
@@ -118,4 +129,5 @@ public class BidController {
     public List<BiddingDTO> getActiveBids() {
         return biddingService.getActiveBids();
     }
+
 }

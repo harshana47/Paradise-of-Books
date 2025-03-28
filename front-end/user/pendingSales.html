@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Book Sales</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <title>Pending Book Sales</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
+            background-color: #e5ebec;
             color: #333;
             text-align: center;
             margin: 0;
@@ -23,7 +24,10 @@
             font-weight: bold;
             font-family: monospace;
         }
-
+        h1 i {
+            margin-right: 10px; /* Space between the clock icon and the title */
+            color: #2df10f; /* Optional: Change icon color */
+        }
         .sales-container {
             display: flex;
             flex-wrap: wrap;
@@ -43,6 +47,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative; /* Add position relative for overlay */
         }
 
         .card:hover {
@@ -70,8 +75,8 @@
         }
 
         .card p {
-            font-size: 14px;
-            margin: 4px 0;
+            font-size: 16px;
+            margin: 6px 0;
             line-height: 1.6;
             font-family: "Nirmala UI Semilight";
         }
@@ -123,10 +128,28 @@
         .card p strong {
             font-weight: bold;
         }
+
+        /* Overlay for pending mark */
+        .card.pending::after {
+            content: "Pending";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            color: #fff;
+            font-size: 36px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+        }
         .pending-btn {
             position: absolute;
             top: 20px;
-            right: 20px;
+            left: 20px;
             background: #1668dd;
             color: #fff;
             border: none;
@@ -146,13 +169,12 @@
         .pending-btn:active {
             transform: scale(0.95);
         }
-
     </style>
 </head>
 <body>
-<button class="pending-btn" onclick="window.location.href='pendingSales.html'">View Pending Sales</button>
+<button class="pending-btn" onclick="window.location.href='mySales.html'">Back to Sales</button>
 
-<h1>Active Book Sales</h1>
+<h1><i class="fas fa-clock"></i> Pending Book Sales</h1>
 <div class="sales-container" id="salesContainer"></div>
 
 <script>
@@ -163,7 +185,7 @@
             return;
         }
 
-        fetch(`http://localhost:8080/api/v1/books/sales?userId=${userId}`)
+        fetch(`http://localhost:8080/api/v1/books/pending?userId=${userId}`)
             .then(response => response.json())
             .then(data => displaySales(data))
             .catch(error => console.error("Error fetching book sales:", error));
@@ -185,14 +207,17 @@
             const imageFilename = sale.image ? sale.image.split("\\").pop() : "default.jpg";
             const statusClass = sale.bookStatus.toLowerCase();
 
+            // Add the "pending" class to the card if the book status is pending
+            if (statusClass === "pending") {
+                card.classList.add("pending");
+            }
+
             card.innerHTML = `
                 <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${sale.title}">
                 <h3>${sale.title}</h3>
                 <p><strong>Author:</strong> ${sale.author}</p>
                 <p><strong>Price:</strong> $${sale.price}</p>
                 <p><strong>Quantity:</strong> ${sale.qty}</p>
-                <p><strong>Year:</strong> ${sale.publishedYear}</p>
-                <p><strong>Description:</strong> ${sale.description}</p>
                 <p><strong>Status:</strong> <span class="status ${statusClass}">${sale.bookStatus}</span></p>
                 <button class="delete-btn" onclick="deleteSale('${sale.bid}')">Delete</button>
             `;

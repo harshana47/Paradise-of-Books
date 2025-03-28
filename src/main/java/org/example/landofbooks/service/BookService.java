@@ -20,4 +20,6 @@ public interface BookService {
     public List<BookDTO> getActiveBooksByUserId(UUID userId);
 
     List<BookDTO> getActiveBooks();
+
+    List<BookDTO> getDeactivatedBooksByUserId(UUID userUUID);
 }

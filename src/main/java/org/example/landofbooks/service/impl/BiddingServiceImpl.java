@@ -267,6 +267,15 @@ public class BiddingServiceImpl implements BiddingService {
         return biddingRepo.findById(biddingId).map(Bidding::getBidAmount).orElse(0.0);
     }
 
+    @Override
+    public Object getPendingBidsByUser(UUID userId) {
+        List<Bidding> bids = biddingRepo.findByUserUidAndStatus(userId, "closed");
+
+        return bids.stream()
+                .map(bid -> modelMapper.map(bid, BiddingDTO.class))
+                .collect(Collectors.toList());
+    }
+
 //    private BiddingDTO mapToDTO(Bidding bidding) {
 //        return new BiddingDTO(
 //                bidding.getBidId(),

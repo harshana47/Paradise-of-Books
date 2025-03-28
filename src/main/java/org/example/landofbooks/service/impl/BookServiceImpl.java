@@ -154,4 +154,11 @@ public class BookServiceImpl implements BookService {
         return books.stream().map(BookDTO::new).collect(Collectors.toList());
     }
 
+    @Override
+    public List<BookDTO> getDeactivatedBooksByUserId(UUID userUUID) {
+        return booksRepo.findByUserUidAndActiveStatus(userUUID, "DEACTIVATED").stream()
+                .map(book -> modelMapper.map(book, BookDTO.class))
+                .collect(Collectors.toList());
+    }
+
 }

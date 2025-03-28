@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Ongoing Bids</title>
+    <title>My Pending Bids</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -129,7 +129,7 @@
         .pending-btn {
             position: absolute;
             top: 20px;
-            right: 20px;
+            left: 20px;
             background: #1668dd;
             color: #fff;
             border: none;
@@ -152,9 +152,8 @@
     </style>
 </head>
 <body>
-<button class="pending-btn" onclick="window.location.href='pendingBids.html'">View Pending Bids</button>
-
-<h1>My Ongoing Bids</h1>
+<button class="pending-btn" onclick="window.location.href='myBids.html'">Back to Bids</button>
+<h1>My Pending Bids</h1>
 <div class="sales-container" id="salesContainer"></div>
 
 <script>
@@ -165,7 +164,7 @@
             return;
         }
 
-        fetch(`http://localhost:8080/api/v1/bidding/byUser?userId=${userId}`)
+        fetch(`http://localhost:8080/api/v1/bidding/pending?userId=${userId}`)
             .then(response => response.json())
             .then(data => {
                 console.log("API Response:", data);
@@ -215,7 +214,6 @@
                 <p><strong>Descreption:</strong>${sale.description}</p>
                 <div class="bid-list">${bidPrices}</div>
                 <button class="delete-btn" onclick="deleteSale('${sale.bidId}')">Delete</button>
-                <button class="end-btn" onclick="endBid('${sale.bidId}')">End Bid</button>
             `;
                 container.appendChild(card);
             });
@@ -241,33 +239,6 @@
             })
             .catch(error => console.error("Error deleting bid:", error));
     }
-
-    function endBid(bidId) {
-        if (!confirm("Are you sure you want to end this bid and move it to the cart?")) return;
-
-        fetch(`http://localhost:8080/api/v1/bidding/end/${bidId}`, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
-                "Content-Type": "application/json"
-            }
-        })
-            .then(response => {
-                if (response.ok) {
-                    alert("Bid moved to cart and closed successfully!");
-                    location.reload();
-                } else {
-                    return response.json().then(errorData => {
-                        throw new Error(errorData.message || 'Failed to end the bid');
-                    });
-                }
-            })
-            .catch(error => {
-                console.error("Error ending bid:", error);
-                alert("An error occurred: " + error.message);
-            });
-    }
-
 
 </script>
 

@@ -5,67 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Active Bids</title>
     <style>
-        /* Basic Reset */
-        body, h1, h2, p, button {
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f3f3f3, #ffffff);
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            align-items: start;
         }
 
-        /* Container for the whole page */
         .container {
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Small Cards */
-        .card {
-            display: inline-block;
-            width: 250px;
-            margin: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            margin: 20px ;
+            padding: 50px;
             text-align: center;
         }
 
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-align: center;
+            font-family: monospace;
+        }
+
+        .bidding-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: left;
+            gap: 40px;
+        }
+
+        .card {
+            width: 250px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.15);
         }
 
         .card img {
             width: 100%;
-            height: 150px;
+            height: 180px;
             object-fit: cover;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
         }
-
+        .card:hover img {
+            transform: scale(1.05);
+        }
         .card-content {
-            padding: 15px;
+            padding: 20px;
         }
 
         .card h2 {
-            font-size: 18px;
-            margin-bottom: 5px;
+            font-size: 1.4rem;
+            color: #222;
+            margin-bottom: 8px;
         }
 
         .card p {
             color: #777;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .bid-button {
-            background-color: #007bff;
+            background: #007bff;
             color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
             cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
         }
 
-        /* Modal Styling */
+        .bid-button:hover {
+            background: #0056b3;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -73,37 +103,31 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6);
             align-items: center;
             justify-content: center;
             z-index: 1000;
         }
 
         .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            text-align: left;
+            max-width: 600px;
             display: flex;
-            flex-wrap: wrap;
-            max-width: 700px;
-            width: 100%;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            gap: 20px;
             position: relative;
         }
 
         .modal-content img {
-            width: 250px;
-            height: auto;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .modal-info {
-            flex: 1;
-            padding: 20px;
+            width: 200px;
+            border-radius: 10px;
         }
 
         .modal-info h2 {
+            font-size: 1.5rem;
             margin-bottom: 10px;
         }
 
@@ -112,47 +136,43 @@
             margin-bottom: 10px;
         }
 
-        .modal input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+        .place-bid {
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
         }
 
-        .place-bid {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        .place-bid:hover {
+            background: #218838;
         }
 
         .close {
             position: absolute;
             top: 10px;
             right: 20px;
-            font-size: 25px;
+            font-size: 28px;
             cursor: pointer;
             color: #333;
         }
     </style>
 </head>
 <body>
-
+<h1>Active Bids</h1>
 <div class="container">
-    <h1>Active Biddings</h1>
     <div id="biddingCards" class="bidding-cards"></div>
 </div>
 
 <div id="bidModal" class="modal">
     <div class="modal-content">
         <span class="close" id="closeModal">&times;</span>
-        <img id="modalImage" src="" alt="Book Image">
+        <img id="modalImage" src="" alt="Item Image">
         <div class="modal-info">
             <h2 id="modalTitle"></h2>
-            <p><strong>Author:</strong> <span id="modalAuthor"></span></p>
             <p><strong>Max Bid:</strong> $<span id="modalMaxBid"></span></p>
             <p><strong>Description:</strong> <span id="modalDescription"></span></p>
             <input type="number" id="bidAmount" placeholder="Enter your bid amount">
