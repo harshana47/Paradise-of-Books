@@ -144,6 +144,13 @@
                     </a>
                 </li>
                 <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">My Sales</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="mySales.html">sales</a></li>
+                        <li><a class="dropdown-item" href="myBids.html">bids</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Profile</a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="../login.html">Sign In</a></li>
@@ -155,6 +162,12 @@
         </div>
     </div>
 </nav>
+<!-- Search Bar -->
+<div class="container mt-4">
+    <!-- Add search input box in the HTML (inside the navbar or elsewhere) -->
+    <input type="text" id="searchInput" class="form-control" placeholder="Search books..." onkeyup="searchBooks()">
+
+</div>
 
 <!-- Books Section -->
 <div class="container mt-4">
@@ -192,8 +205,8 @@
         fetchCartCount();
         fetchBidCartCount();
         fetchBooks(); // Fetch books and display them when the page loads
-
     });
+
     // Function to fetch cart count from API
     function fetchCartCount() {
         let userId = localStorage.getItem("userId"); // Get logged-in user ID
@@ -243,7 +256,6 @@
             }
         });
     }
-
 
     let books = [];
     let selectedBook = {};
@@ -306,38 +318,29 @@
         }
     }
 
-    // Function to get category name based on categoryId
-    function getCategoryNameById(categoryId) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: `http://localhost:8080/api/v1/category/${categoryId}`, // Replace with your API endpoint to fetch category by id
-                method: 'GET',
-                success: function (data) {
-                    if (data && data.name) {
-                        resolve(data.name);  // Resolve with the category name
-                    } else {
-                        resolve('Unknown Category');  // Return 'Unknown Category' if not found
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching category by id:', error);
-                    resolve('Unknown Category');  // Return 'Unknown Category' in case of an error
-                }
-            });
-        });
+    // Function to filter books based on category
+    function fetchBooksByCategory(categoryId) {
+        let filteredBooks = books.filter(book => book.categoryId === categoryId);
+        displayBooks(filteredBooks); // Display filtered books
     }
 
+    // Function to search books by title
+    function searchBooks() {
+        const searchTerm = $('#searchInput').val().toLowerCase();
+        let filteredBooks = books.filter(book => book.title.toLowerCase().includes(searchTerm));
+        displayBooks(filteredBooks); // Display books based on search
+    }
 
-    // Function to display books, including fetching category names
-    function displayBooks() {
+    // Function to display books
+    function displayBooks(filteredBooks = books) {
         let booksContainer = $('#booksContainer');
         booksContainer.empty(); // Clear previous books
 
-        if (books.length > 0) {
+        if (filteredBooks.length > 0) {
             let booksByCategory = {};
 
             // Group books by category
-            books.forEach(book => {
+            filteredBooks.forEach(book => {
                 if (!booksByCategory[book.categoryId]) {
                     booksByCategory[book.categoryId] = {
                         categoryName: '',  // We will fetch the category name later
@@ -384,24 +387,9 @@
                 });
             });
         } else {
-            booksContainer.append('<p>No books available.</p>');
+            booksContainer.append('<p>No books found.</p>');
         }
     }
-
-    // Event listener for the "Log Out" link
-    document.getElementById("logOut").addEventListener("click", function(event) {
-        // Clear the authToken and any other relevant data from localStorage
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("userEmail");
-        localStorage.removeItem("userId");
-
-        // Optionally, you can also clear other session-related data if needed
-        console.log("Logged out successfully. Token and user data cleared.");
-
-        // Redirect to the login page after logging out
-        window.location.href = "../login.html"; // Adjust the path if necessary
-    });
-
 
     // Handle adding books to cart
     $(document).on('click', '.add-to-cart', function () {
@@ -429,7 +417,6 @@
         }
     });
 
-    console.log("authToken", localStorage.getItem('authToken'))
     // Confirm add to cart
     $('#confirmAddToCart').click(function () {
         if (!localStorage.getItem('authToken')) {
@@ -466,7 +453,25 @@
             }
         });
     });
-
+    function getCategoryNameById(categoryId) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: `http://localhost:8080/api/v1/category/${categoryId}`, // Replace with your API endpoint to fetch category by id
+                method: 'GET',
+                success: function (data) {
+                    if (data && data.name) {
+                        resolve(data.name);  // Resolve with the category name
+                    } else {
+                        resolve('Unknown Category');  // Return 'Unknown Category' if not found
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching category by id:', error);
+                    resolve('Unknown Category');  // Return 'Unknown Category' in case of an error
+                }
+            });
+        });
+    }
 </script>
 
 </body>
