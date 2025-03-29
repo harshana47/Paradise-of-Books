@@ -39,20 +39,24 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void placeOrder(UUID userId, double totalPrice, List<OrderDetailsDTO> orderDetailsList) {
+    public void placeOrder(UUID userId, double totalPrice, List<OrderDetailsDTO> orderDetailsList, String address, String contact) {
         if (orderDetailsList == null || orderDetailsList.isEmpty()) {
             throw new RuntimeException("Order details cannot be null or empty");
         }
 
+        // Fetch the user entity from the repository
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Orders savedOrder = orderRepository.save(new Orders(null, totalPrice, user));
+        // Create a new Order and set the address and contact
+        Orders savedOrder = orderRepository.save(new Orders(null, totalPrice, user, address, contact));
 
+        // Convert the OrderDetailsDTOs to OrderDetails entities
         List<OrderDetails> orderDetailsEntities = orderDetailsList.stream()
                 .map(dto -> modelMapper.map(dto, OrderDetails.class))
                 .collect(Collectors.toList());
 
+        // Set the order and user for each order detail, and save them
         orderDetailsEntities.forEach(orderDetails -> {
             orderDetails.setOrders(savedOrder);
             orderDetails.setUser(user);
@@ -61,8 +65,10 @@ public class OrderServiceImpl implements OrderService {
 
         orderDetailsRepository.saveAll(orderDetailsEntities);
 
+        // Clear the user's bid cart
         bidCartRepository.deleteByUser_uid(userId);
     }
+
 
     @Override
     public List<Map<String, Object>> getDailyOrdersWithRevenue() {

@@ -23,6 +23,7 @@ public class Orders {
     @ManyToOne
     @JoinColumn(name = "userId", referencedColumnName = "uid", nullable = false)
     private User user;
-
+    private String address;
+    private String contact;
 
 }

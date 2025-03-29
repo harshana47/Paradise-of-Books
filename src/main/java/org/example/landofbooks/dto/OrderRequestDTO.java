@@ -14,5 +14,8 @@ public class OrderRequestDTO {
     private UUID userId;
     private double totalPrice;
     private List<OrderDetailsDTO> orderDetailsList;
+    private String address;
+    private String contact;
+    private boolean useDefaultAddress;
 }
 

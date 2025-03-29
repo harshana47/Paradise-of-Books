@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface OrderService {
-    public void placeOrder(UUID userId, double totalPrice, List<OrderDetailsDTO> orderDetailsList);
+    public void placeOrder(UUID userId, double totalPrice, List<OrderDetailsDTO> orderDetailsList, String address, String contact);
 
     public List<Map<String, Object>> getDailyOrdersWithRevenue();
 }

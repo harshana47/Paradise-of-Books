@@ -13,4 +13,6 @@ public class OrdersDTO {
     private UUID oid;
     private UUID userId;
     private double totalPrice;
+    private String address;
+    private String contact;
 }
