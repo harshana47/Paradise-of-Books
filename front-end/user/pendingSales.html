@@ -27,18 +27,23 @@
             margin: 5px;
             font-size: 18px;
             font-weight: 500;
-            gap: 30px;
+            gap: 25px;
         }
 
         h1 {
-            font-size: 32px;
-            margin-top: 20px;
-            margin-bottom: 30px;
+            font-size: 36px;
+            margin-top: 30px;
+            margin-bottom: 40px;
             color: #333;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: bold;
-            font-family: monospace;
+            background: linear-gradient(180deg, #0644b5 60%, #537cd5 40%);
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4), 0px 0px 15px rgba(0, 100, 255, 0.5); /* Add multiple shadow layers */
         }
         h1 i {
             margin-right: 10px; /* Space between the clock icon and the title */
@@ -54,16 +59,16 @@
         .card {
             background: #ffffff;
             color: #333;
-            border-radius: 15px;
+            border-radius: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 280px;
             padding: 20px;
             text-align: center;
+            background: linear-gradient(45deg, #ffffff, #bcc3cf);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            position: relative; /* Add position relative for overlay */
         }
 
         .card:hover {
@@ -199,10 +204,6 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="biddingPage.html">Bids</a></li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Categories</a>
-                    <ul class="dropdown-menu" id="categoryDropdown"></ul>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="bidCart.html">
                         <i class="fas fa-gavel"></i> <!-- Bidding Icon -->
@@ -230,6 +231,11 @@
                         <li><a class="dropdown-item" href="#">Manage Profile</a></li>
                         <li><a class="dropdown-item" id="logOut">Log Out</a></li>
                     </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="saleBook.html">
+                        <i class="fas fa-plus-circle"></i> Post Book
+                    </a>
                 </li>
             </ul>
         </div>

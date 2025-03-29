@@ -16,7 +16,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #e8e6ed;
         }
 
         .navbar {
@@ -30,7 +30,7 @@
             margin: 5px;
             font-size: 18px;
             font-weight: 500;
-            gap: 30px;
+            gap: 25px;
         }
 
         #booksContainer {
@@ -49,7 +49,7 @@
             justify-content: space-between;
             align-items: center;
             background: white;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 30px 50px 50px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             padding: 10px;
             transition: transform 0.3s, box-shadow 0.3s;
@@ -89,6 +89,7 @@
         .product-card .btn {
             font-size: 14px;
             padding: 6px 12px;
+            margin-top: 20px;
         }
 
         /* Responsive Fixes */
@@ -158,6 +159,11 @@
                         <li><a class="dropdown-item" id="logOut">Log Out</a></li>
                     </ul>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="saleBook.html">
+                        <i class="fas fa-plus-circle"></i> Post Book
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
@@ -171,7 +177,7 @@
 
 <!-- Books Section -->
 <div class="container mt-4">
-    <h2 class="text-center mb-4" style="font-family: cursive">What are you looking for ?</h2>
+    <h2 class="text-center mb-4" style="font-family: Monospaced;font-size: 40px">What are you looking for ?</h2>
     <div id="booksContainer" class="row"></div>
 </div>
 
@@ -360,7 +366,7 @@
 
                     // Now display the books with the correct category name
                     booksContainer.append(`
-                    <h3 class="mt-5" style="font-family: Garamond;font-size: 30px;text-transform: uppercase;font-weight: bold;margin-bottom: 40px">${category.categoryName}</h3>
+                    <h3 class="mt-5" style="font-family: Garamond;font-size: 30px;text-transform: uppercase;font-weight: bold;margin-bottom: 40px;color: #0a53be">${"--"+category.categoryName+"--"}</h3>
                     <div class="row">
                 `);
 
@@ -372,7 +378,7 @@
                             <div class="card product-card" style="margin-bottom: 40px">
                                 <img src="http://localhost:8080/uploads/images/${imageFilename}" class="card-img-top" alt="${book.title}">
                                 <div class="card-body text-center">
-                                    <h5 class="card-title">${book.title}</h5>
+                                    <h5 class="card-title" style="margin-bottom: 20px">${book.title}</h5>
                                     <p class="card-text">$${book.price}</p>
                                     <p class="card-text">Only ${book.qty} left</p>
                                     <button class="btn btn-primary add-to-cart" data-id="${book.bid}">Add to Cart</button>

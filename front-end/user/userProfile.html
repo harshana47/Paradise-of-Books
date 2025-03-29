@@ -4,13 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f2f2f2;
+        }
+        .navbar {
+            background: linear-gradient(45deg, #1668dd, #144fac);
+            height: 80px;
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: white;
+            margin: 5px;
+            font-size: 18px;
+            font-weight: 500;
+            gap: 25px;
         }
         .profile-container {
             width: 80%;
@@ -70,10 +87,74 @@
         .profile-section div {
             width: 48%;
         }
+        .change-password-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+            margin-right: 0;
+        }
+        .change-password-btn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
-
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="homePage.html" style="font-family: 'Monotype Corsiva';font-size: 37px">Paradise of Books</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="biddingPage.html">Bids</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Categories</a>
+                    <ul class="dropdown-menu" id="categoryDropdown"></ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="bidCart.html">
+                        <i class="fas fa-gavel"></i> <!-- Bidding Icon -->
+                        <span class="bidCart-count">0</span>
+                        Wins
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link position-relative" href="bookCart.html">
+                        Cart <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">My Sales</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="mySales.html">sales</a></li>
+                        <li><a class="dropdown-item" href="myBids.html">bids</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Profile</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="../login.html">Sign In</a></li>
+                        <li><a class="dropdown-item" href="#">Manage Profile</a></li>
+                        <li><a class="dropdown-item" id="logOut">Log Out</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="saleBook.html">
+                        <i class="fas fa-plus-circle"></i> Post Book
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 <div class="profile-container">
     <div class="profile-header">
         <h2>Manage Your Profile</h2>
@@ -92,6 +173,8 @@
             <div>
                 <textarea id="address" placeholder="Address" rows="5" ></textarea>
                 <input type="password" id="password" placeholder="Password" value="*******" >
+                <button type="button" class="change-password-btn" id="changePasswordBtn" style="background-color: #3636cc;margin-left: 380px;font-size: 14px;font-weight: bolder">Change Password</button>
+
             </div>
         </div>
 
@@ -100,6 +183,10 @@
 </div>
 
 <script>
+    document.getElementById('changePasswordBtn').addEventListener('click', function() {
+        // Redirect to the forgot password page
+        window.location.href = 'forgotPassword.html';  // Replace with the actual URL of your forgot password page
+    });
     // Get the form and alert elements
     const profileForm = document.getElementById('profileForm');
     const alertMessage = document.getElementById('alertMessage');
