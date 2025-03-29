@@ -261,6 +261,17 @@
         fetchCartCount();
         fetchBidCartCount();
     };
+
+    document.getElementById("logOut").addEventListener("click", function () {
+        // Clear authentication-related data
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userEmail")
+
+        // Redirect to the login page
+        window.location.href = "../login.html";
+    });
+
     // Function to fetch cart count from API
     function fetchCartCount() {
         let userId = localStorage.getItem("userId"); // Get logged-in user ID

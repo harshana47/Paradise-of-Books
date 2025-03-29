@@ -6,54 +6,79 @@
     <title>Book Cart</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0f0f0, #d6cdcd);
             text-align: center;
             margin: 0;
             padding: 0;
         }
         .cart-container {
-            width: 60%;
+            width: 50%;
             margin: auto;
             background: white;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 1s ease-in-out;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-in-out;
         }
         .cart-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px;
+            padding: 15px;
             border-bottom: 1px solid #ddd;
             transition: transform 0.3s ease-in-out;
         }
+        .cart-item:hover {
+            transform: scale(1.02);
+        }
         .cart-item img {
-            width: 50px;
-            height: 50px;
-            border-radius: 5px;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .cart-details {
+            flex: 1;
+            text-align: left;
+            padding-left: 15px;
+        }
+        .cart-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .cart-price {
+            color: #16a085;
+            font-weight: bold;
         }
         .btn {
-            padding: 10px;
+            padding: 10px 15px;
             border: none;
             cursor: pointer;
-            margin: 5px;
+            border-radius: 6px;
+            font-size: 14px;
             transition: 0.3s;
         }
         .btn-remove {
-            background-color: red;
+            background-color: #e74c3c;
             color: white;
         }
         .btn-remove:hover {
-            background-color: darkred;
+            background-color: #c0392b;
         }
         .btn-checkout {
-            background-color: green;
+            background-color: #27ae60;
             color: white;
         }
         .btn-checkout:hover {
-            background-color: darkgreen;
+            background-color: #219150;
+        }
+        .btn-continue {
+            background-color: #2980b9;
+            color: white;
+        }
+        .btn-continue:hover {
+            background-color: #2471a3;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
@@ -62,14 +87,14 @@
     </style>
 </head>
 <body>
-<h1>Book Cart</h1>
+<h1>Shopping Cart</h1>
 <div class="cart-container" id="cartContainer">
     <h2>Your Books</h2>
     <div id="cartItems"></div>
     <h3>Total: $<span id="totalPrice">0.00</span></h3>
     <button class="btn btn-checkout" onclick="checkout()">Checkout</button>
     <button class="btn btn-remove" onclick="clearCart()">Clear Cart</button>
-    <button class="btn" onclick="continueShopping()">Continue Shopping</button>
+    <button class="btn btn-continue" onclick="continueShopping()">Continue Shopping</button>
 </div>
 
 <script>

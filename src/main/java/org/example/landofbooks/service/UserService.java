@@ -2,6 +2,7 @@ package org.example.landofbooks.service;
 
 
 import org.example.landofbooks.dto.UserDTO;
+import org.example.landofbooks.entity.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,4 +18,8 @@ public interface UserService {
     boolean updateUserRole(UUID userId, String role);
 
     boolean resetPassword(String email, String password);
+
+    UserDTO updateUser(UUID userId, UserDTO userDTO);
+
+    public Optional<User> getUserById(UUID userId);
 }

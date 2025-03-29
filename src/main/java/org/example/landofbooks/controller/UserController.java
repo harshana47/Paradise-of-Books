@@ -5,11 +5,13 @@ import org.example.landofbooks.dto.AuthDTO;
 import org.example.landofbooks.dto.CategoryDTO;
 import org.example.landofbooks.dto.ResponseDTO;
 import org.example.landofbooks.dto.UserDTO;
+import org.example.landofbooks.entity.User;
 import org.example.landofbooks.service.UserService;
 import org.example.landofbooks.util.JwtUtil;
 import org.example.landofbooks.util.VarList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -123,4 +125,45 @@ public class UserController {
             return ResponseEntity.badRequest().body("Failed to update user role.");
         }
     }
+    @PutMapping("update/{userId}")
+    public ResponseEntity<Object> updateUser(@PathVariable("userId") UUID userId, @RequestBody UserDTO userDTO) {
+        UserDTO updatedUser = userService.updateUser(userId, userDTO);
+
+        if (updatedUser != null) {
+            // Return success and the updated user data
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("user", updatedUser); // Include updated user data
+            return ResponseEntity.ok(response);
+        } else {
+            // Return failure response with error message
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "User not found");
+            return ResponseEntity.status(404).body(response);
+        }
+    }
+
+    @GetMapping("getById/{userId}")
+    public ResponseEntity<Object> getUser(@PathVariable("userId") UUID userId) {
+        Optional<User> userOptional = userService.getUserById(userId);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            // Convert the user entity to UserDTO before returning
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUid(user.getUid());
+            userDTO.setName(user.getName());
+            userDTO.setEmail(user.getEmail());
+            userDTO.setContact(user.getContact());
+            userDTO.setAddress(user.getAddress());
+            userDTO.setRole(user.getRole());
+
+            return ResponseEntity.ok(userDTO);
+        } else {
+            return ResponseEntity.status(404).body("User not found");
+        }
+    }
+
+
 }

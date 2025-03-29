@@ -1,5 +1,6 @@
 package org.example.landofbooks.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class User implements Serializable {
     private String role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Book> books;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

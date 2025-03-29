@@ -47,6 +47,8 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/authenticate",
                                 "/api/v1/user/register",
                                 "/api/v1/user/findByEmail",
+                                "/api/v1/user/update/**",
+                                "/api/v1/user/getById/**",
                                 "/api/v1/user/getAll",
                                 "/api/v1/auth/refreshToken",
                                 "/api/v1/admin/test1",

@@ -94,6 +94,42 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return true;
     }
 
+    @Override
+    @Transactional // Keep the session open for lazy loading
+    public UserDTO updateUser(UUID userId, UserDTO userDTO) {
+        Optional<User> existingUserOptional = userRepository.findById(userId);
+
+        if (existingUserOptional.isPresent()) {
+            User existingUser = existingUserOptional.get();
+
+            // Keep the existing password and role
+            String existingPassword = existingUser.getPassword();
+            String existingRole = existingUser.getRole();
+
+            // Update only the fields that can be changed
+            existingUser.setName(userDTO.getName());
+            existingUser.setEmail(userDTO.getEmail());
+            existingUser.setContact(userDTO.getContact());
+            existingUser.setAddress(userDTO.getAddress());
+
+            // Set the original password and role back after updating
+            existingUser.setPassword(existingPassword);
+            existingUser.setRole(existingRole);
+
+            User user = userRepository.save(existingUser);
+            return modelMapper.map(user,UserDTO.class);
+
+        }
+
+        return null; // User not found
+    }
+
+
+    @Override
+    public Optional<User> getUserById(UUID userId) {
+        return userRepository.findById(userId);
+    }
+
 
     @Override
     public int saveUser(UserDTO userDTO) {
