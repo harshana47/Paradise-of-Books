@@ -252,7 +252,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Profile</a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="../login.html">Sign In</a></li>
+                        <li><a class="dropdown-item" href="../index.html">Sign In</a></li>
                         <li><a class="dropdown-item" href="#">Manage Profile</a></li>
                         <li><a class="dropdown-item" id="logOut">Log Out</a></li>
                     </ul>
@@ -327,12 +327,12 @@
     console.log(userId)
     if (!userId) {
         console.error("User ID not found. Redirecting to login...");
-        window.location.href = "../login.html";
+        window.location.href = "../index.html";
     }
     let token = localStorage.getItem("authToken");
     if (!token) {
         console.error("Token not found. Redirecting to login...");
-        window.location.href = "../login.html";
+        window.location.href = "../index.html";
     }
 
     function showCheckoutModal() {
