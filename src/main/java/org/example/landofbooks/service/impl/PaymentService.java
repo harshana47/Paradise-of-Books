@@ -20,7 +20,8 @@ public class PaymentService {
 
     public Map<String, String> createPaymentRequest(Orders order) {
         Map<String, String> params = new HashMap<>();
-
+        System.out.println("Merchant ID: " + merchantId);
+        System.out.println("Secret Key: " + secretKey);
         params.put("merchant_id", merchantId);
         params.put("return_url", "http://localhost:8080/api/v1/payment-success");  // Update for local testing
         params.put("cancel_url", "http://localhost:8080/payment-cancel");    // Update for local testing
@@ -36,18 +37,16 @@ public class PaymentService {
 
         return params;
     }
-
-
     private String generatePaymentHash(Map<String, String> params) {
-        // Generating hash based on the PayHere API requirements
         String data = String.join("|",
                 params.get("merchant_id"),
                 params.get("order_id"),
                 params.get("amount"),
                 params.get("currency"),
-                DigestUtils.md5Hex(params.toString()).toUpperCase()
-        );
+                // Adding more fields if necessary for hash calculation
+                params.get("items"));
 
         return HmacUtils.hmacSha256Hex(secretKey, data);
     }
+
 }

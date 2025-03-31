@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://sandbox.payhere.lk https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://www.google-analytics.com;">
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -263,7 +265,7 @@
     <button class="btn" onclick="continueShopping()">Continue Shopping</button>
 </div>
 
-<script>
+<script nonce="randomNonceValue">
     let userId = localStorage.getItem("userId");
     console.log(userId)
     if (!userId) {
@@ -288,30 +290,75 @@
         });
 
     }
-    document.getElementById("checkoutBtn").addEventListener("click", async function() {
+    document.getElementById("checkoutBtn").addEventListener("click", async function () {
         const paymentMethod = document.getElementById("paymentMethod").value;
 
         if (paymentMethod === "pay_now") {
-            // Initialize the PayHere payment
             await initializePayment();
         } else if (paymentMethod === "cash_on_delivery") {
-            // Handle the Cash on Delivery logic
             alert("You have selected Cash on Delivery.");
         }
     });
 
-    // Function to initialize payment and populate the payment form
     async function initializePayment() {
-        const response = await fetch('http://localhost:8080/api/v1/payment/create-payment', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'}
-        });
+        try {
+            const addressOption = document.querySelector('input[name="addressOption"]:checked').id;
+            let address = "";
+            let contact = "";
 
-        const paymentData = await response.json();
+            if (addressOption === 'customAddress') {
+                address = document.getElementById('address').value;
+                contact = document.getElementById('contact').value;
+            }
 
-        // Ensure paymentData contains the necessary fields from your backend
-        if (paymentData) {
-            // Populate the hidden form fields with data from the backend
+            // Fetch cart data first (before order placement)
+            const cartResponse = await fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+
+            if (!cartResponse.ok) throw new Error("Failed to fetch cart data");
+
+            const cartData = await cartResponse.json();
+            if (!cartData || cartData.length === 0) {
+                throw new Error("Cart is empty. Cannot proceed with checkout.");
+            }
+
+            // Create a temporary payment request
+            const paymentRequest = {
+                userId: userId,
+                totalPrice: cartData.reduce((sum, item) => sum + item.maxPrice, 0),
+                orderDetailsList: cartData.map(item => ({
+                    price: item.maxPrice,
+                    title: item.title
+                })),
+                address: addressOption === 'defaultAddress' ? null : address,
+                contact: addressOption === 'defaultAddress' ? null : contact
+            };
+
+            const paymentResponse = await fetch("http://localhost:8080/api/v1/payment/create-payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify(paymentRequest)
+            });
+
+            if (!paymentResponse.ok) {
+                throw new Error("Payment initialization failed");
+            }
+
+            const paymentData = await paymentResponse.json();
+            console.log("Payment API Response:", paymentData);
+            if (!paymentData) {
+                throw new Error("Invalid payment data received");
+            }
+
+            // Populate PayHere form and submit
             document.getElementById("merchant_id").value = paymentData.merchant_id;
             document.getElementById("return_url").value = paymentData.return_url;
             document.getElementById("cancel_url").value = paymentData.cancel_url;
@@ -322,17 +369,12 @@
             document.getElementById("amount").value = paymentData.amount;
             document.getElementById("hash").value = paymentData.hash;
 
-            // Submit the payment form
-            document.getElementById("paymentForm").submit();
-        } else {
-            console.error("Payment data is invalid.");
+            document.getElementById("paymentForm").submit(); // Redirect to PayHere
+        } catch (error) {
+            console.error("Error initializing payment:", error.message);
+            alert("Error initializing payment. Please try again.");
         }
     }
-
-
-    // Call this function when the user clicks "Pay Now" or during checkout
-    initializePayment();
-
 
     function loadCart() {
         fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`, {

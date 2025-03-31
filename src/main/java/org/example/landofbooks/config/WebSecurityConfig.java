@@ -41,7 +41,15 @@ public class WebSecurityConfig {
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection (if needed)
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(
+                                "default-src 'self'; " +
+                                        "script-src 'self' 'unsafe-inline' https://sandbox.payhere.lk; " +
+                                        "connect-src 'self' https://sandbox.payhere.lk; " +
+                                        "img-src 'self' data:; " +
+                                        "style-src 'self' 'unsafe-inline';"))
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/auth/authenticate",
@@ -105,12 +113,19 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/resend-otp",
                                 "/api/v1/payment/create-payment",
                                 "api/v1/payment/payment-success",
-                                "api/v1/payment-webhook"
+                                "api/v1/payment-webhook",
+                                "/api/v1/auth/authenticate",
+                                "/api/v1/user/register",
+                                // Other endpoints to be allowed
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers("/uploads/**", "/api/v1/images/**", "/uploads/images/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
