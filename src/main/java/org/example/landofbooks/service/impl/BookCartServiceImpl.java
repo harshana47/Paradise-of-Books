@@ -47,10 +47,10 @@ public class BookCartServiceImpl implements BookCartService {
             throw new RuntimeException("Insufficient quantity available for the book: " + book.getTitle());
         }
 
-        // Decrease the quantity of the book by the quantity added to the cart
         book.setQty(book.getQty() - bookCartDTO.getQty());
-
-        // Save the updated Book entity to reflect the reduced quantity
+        if (book.getQty()==0){
+            book.setBookStatus("SOLD OUT");
+        }
         booksRepo.save(book);
 
         // Map the DTO to the entity and set the Book and User relationships

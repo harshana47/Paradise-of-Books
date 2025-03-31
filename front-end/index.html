@@ -298,10 +298,13 @@
                 if (response.code === 201 && response.data && response.data.token) {
                     let token = response.data.token;
                     let userEmail = response.data.email;
+                    let userRole = response.data.role;
 
                     // Save token only after login success
                     localStorage.setItem("authToken", token);
                     localStorage.setItem("userEmail", userEmail);
+                    localStorage.setItem("userRole", userRole);
+                    console.log("role "+userRole)
                     console.log("Token and User Email saved:", token, userEmail);
 
                     // After saving token, proceed to fetch user data

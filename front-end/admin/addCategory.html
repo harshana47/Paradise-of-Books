@@ -11,15 +11,12 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: Arial, sans-serif;
         }
         body {
-            background: linear-gradient(45deg, #003366, #0059b3);
-            min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            height: 100vh;
+            background-color: #f4f4f4;
         }
         .container {
             background-color: #fff;
@@ -62,10 +59,51 @@
         .alert {
             display: none;
         }
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+        }
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .sidebar ul li:hover {
+            background: #34495e;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
     </style>
 </head>
 <body>
-
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <ul>
+        <li><a href="adminDashBoard.html">Dashboard</a></li>
+        <li><a href="handleOrders.html">Orders</a></li>
+        <li><a href="adminManage.html">Users</a></li>
+        <li><a href="booksManage.html">Books Manage</a></li>
+        <li><a href="biddingManage.html">Bids Manage</a></li>
+        <li><a href="addCategory.html">Categories</a></li>
+        <li><a href="#">Settings</a></li>
+    </ul>
+</div>
 <div class="container">
     <h2 class="title">Category Management</h2>
     <div class="alert alert-success" id="success-alert">Category saved successfully!</div>
@@ -92,7 +130,12 @@
     // Save Category with AJAX
     $('#categoryForm').submit(function(e) {
         e.preventDefault();
+        const userRole = localStorage.getItem("userRole");
 
+        if (userRole !== "ADMIN") {
+            console.error("Unauthorized access!");
+            return;
+        }
         var categoryName = $('#categoryName').val();
         $.ajax({
             url: 'http://localhost:8080/api/v1/category/save', // Adjust the endpoint according to your backend
@@ -114,6 +157,12 @@
 
     // Function to fetch and display the categories
     function loadCategories() {
+        const userRole = localStorage.getItem("userRole");
+
+        if (userRole !== "ADMIN") {
+            console.error("Unauthorized access!");
+            return;
+        }
         fetch("http://localhost:8080/api/v1/category/list")
             .then(response => response.json())
             .then(data => {

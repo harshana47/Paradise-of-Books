@@ -92,6 +92,12 @@
 
     // Fetch orders from backend
     async function fetchOrders() {
+        const userRole = localStorage.getItem("userRole");
+
+        if (userRole !== "ADMIN") {
+            console.error("Unauthorized access!");
+            return;
+        }
         try {
             let response = await fetch(`${API_BASE_URL}/getAll`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem("authToken")}` }

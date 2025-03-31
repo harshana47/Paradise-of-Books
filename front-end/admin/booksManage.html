@@ -143,7 +143,7 @@
     <h2>Admin Panel</h2>
     <ul>
         <li><a href="adminDashBoard.html">Dashboard</a></li>
-        <li><a href="#">Orders</a></li>
+        <li><a href="handleOrders.html">Orders</a></li>
         <li><a href="adminManage.html">Users</a></li>
         <li><a href="booksManage.html">Books Manage</a></li>
         <li><a href="biddingManage.html">Bids Manage</a></li>
@@ -158,6 +158,12 @@
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        const userRole = localStorage.getItem("userRole");
+
+        if (userRole !== "ADMIN") {
+            console.error("Unauthorized access!");
+            return;
+        }
         fetch("http://localhost:8080/api/v1/books/byStatus?status=DEACTIVATED")  // Adjust API URL
             .then(response => response.json())
             .then(data => displaySales(data))
