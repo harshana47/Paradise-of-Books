@@ -229,6 +229,31 @@
         </div>
     </div>
 </div>
+<!-- Payment Form for PayHere -->
+<form id="paymentForm" method="POST" action="https://sandbox.payhere.lk/pay/checkout" style="display:none;">
+    <input type="hidden" name="merchant_id" id="merchant_id">
+    <input type="hidden" name="return_url" id="return_url">
+    <input type="hidden" name="cancel_url" id="cancel_url">
+    <input type="hidden" name="notify_url" id="notify_url">
+    <input type="hidden" name="order_id" id="order_id">
+    <input type="hidden" name="items" id="items">
+    <input type="hidden" name="currency" id="currency">
+    <input type="hidden" name="amount" id="amount">
+    <input type="hidden" name="hash" id="hash">
+    <button type="submit">Pay Now</button>
+</form>
+
+<!-- Option to select payment method -->
+<div id="paymentOptions">
+    <label for="paymentMethod">Select Payment Method:</label>
+    <select id="paymentMethod">
+        <option value="cash_on_delivery">Cash on Delivery</option>
+        <option value="pay_now">Pay Now (PayHere)</option>
+    </select>
+    <button id="checkoutBtn">Proceed</button>
+</div>
+
+
 <div class="cart-container" id="cartContainer">
     <h2>Your Bids</h2>
     <div id="cartItems"></div>
@@ -263,6 +288,51 @@
         });
 
     }
+    document.getElementById("checkoutBtn").addEventListener("click", async function() {
+        const paymentMethod = document.getElementById("paymentMethod").value;
+
+        if (paymentMethod === "pay_now") {
+            // Initialize the PayHere payment
+            await initializePayment();
+        } else if (paymentMethod === "cash_on_delivery") {
+            // Handle the Cash on Delivery logic
+            alert("You have selected Cash on Delivery.");
+        }
+    });
+
+    // Function to initialize payment and populate the payment form
+    async function initializePayment() {
+        const response = await fetch('http://localhost:8080/api/v1/payment/create-payment', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        });
+
+        const paymentData = await response.json();
+
+        // Ensure paymentData contains the necessary fields from your backend
+        if (paymentData) {
+            // Populate the hidden form fields with data from the backend
+            document.getElementById("merchant_id").value = paymentData.merchant_id;
+            document.getElementById("return_url").value = paymentData.return_url;
+            document.getElementById("cancel_url").value = paymentData.cancel_url;
+            document.getElementById("notify_url").value = paymentData.notify_url;
+            document.getElementById("order_id").value = paymentData.order_id;
+            document.getElementById("items").value = paymentData.items;
+            document.getElementById("currency").value = paymentData.currency;
+            document.getElementById("amount").value = paymentData.amount;
+            document.getElementById("hash").value = paymentData.hash;
+
+            // Submit the payment form
+            document.getElementById("paymentForm").submit();
+        } else {
+            console.error("Payment data is invalid.");
+        }
+    }
+
+
+    // Call this function when the user clicks "Pay Now" or during checkout
+    initializePayment();
+
 
     function loadCart() {
         fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`, {
