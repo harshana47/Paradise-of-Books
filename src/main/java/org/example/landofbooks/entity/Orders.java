@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.UUID;
 
@@ -25,5 +26,7 @@ public class Orders {
     private User user;
     private String address;
     private String contact;
+    @ColumnDefault("'INCOMPLETE'")
+    private String status;
 
 }

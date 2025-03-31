@@ -2,6 +2,7 @@ package org.example.landofbooks.controller;
 
 import org.example.landofbooks.dto.OrderDetailsDTO;
 import org.example.landofbooks.dto.OrderRequestDTO;
+import org.example.landofbooks.dto.OrdersDTO;
 import org.example.landofbooks.entity.User;
 import org.example.landofbooks.repo.UserRepository;
 import org.example.landofbooks.service.OrderService;
@@ -59,5 +60,24 @@ public class OrderController {
     @GetMapping("/daily-count")
     public ResponseEntity<List<Map<String, Object>>> getDailyStats() {
         return ResponseEntity.ok(orderService.getDailyOrdersWithRevenue());
+    }
+    @GetMapping("/getAll")
+    public ResponseEntity<List<OrdersDTO>> getAllOrders() {
+        List<OrdersDTO> orders = orderService.getAllOrders();
+        return ResponseEntity.ok(orders);
+    }
+    @PutMapping("/updateStatus/{orderId}")
+    public ResponseEntity<Object> updateOrderStatus(
+            @PathVariable("orderId") UUID orderId,
+            @RequestBody Map<String, String> request) {
+
+        String status = request.get("status");
+        boolean isUpdated = orderService.updateOrderStatus(orderId, status);
+
+        if (isUpdated) {
+            return ResponseEntity.ok("Order status updated successfully");
+        } else {
+            return ResponseEntity.status(404).body("Order not found");
+        }
     }
 }

@@ -117,6 +117,105 @@
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .custom-modal {
+            border-radius: 12px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .modal-header {
+            background: linear-gradient(45deg, #1668dd, #144fac);
+            color: white;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            padding: 20px;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 20px;
+            font-size: 16px;
+        }
+
+        .address-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .address-option:hover {
+            background: #e0f7fa;
+            transform: scale(1.02);
+        }
+
+        .custom-radio {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #1668dd;
+            border-radius: 50%;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .custom-radio:checked {
+            background-color: #1668dd;
+            border: 5px solid white;
+            box-shadow: 0px 0px 0px 2px #1668dd;
+        }
+
+        .custom-address-form {
+            display: none;
+            padding: 15px;
+            border-top: 2px dashed #ddd;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #27ae60, #219150);
+            color: white;
+            font-weight: bold;
+            transition: 0.3s ease-in-out;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(45deg, #219150, #1b7845);
+            transform: scale(1.05);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -162,31 +261,35 @@
         </div>
     </div>
 </nav>
-<!-- Add a modal for checkout -->
+<!-- Checkout Modal -->
 <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal">
             <div class="modal-header">
-                <h5 class="modal-title" id="checkoutModalLabel">Checkout</h5>
+                <h5 class="modal-title" id="checkoutModalLabel">
+                    <i class="fas fa-shopping-bag"></i> Secure Checkout
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Select the address option:</p>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="addressOption" id="defaultAddress" checked>
-                    <label class="form-check-label" for="defaultAddress">
-                        Use default address and contact
+                <p class="text-muted">Choose your delivery address:</p>
+
+                <div class="address-option">
+                    <input type="radio" id="defaultAddress" name="addressOption" class="custom-radio" checked>
+                    <label for="defaultAddress">
+                        <i class="fas fa-home"></i> Use Default Address
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="addressOption" id="customAddress">
-                    <label class="form-check-label" for="customAddress">
-                        Use custom address and contact
+
+                <div class="address-option">
+                    <input type="radio" id="customAddress" name="addressOption" class="custom-radio">
+                    <label for="customAddress">
+                        <i class="fas fa-map-marker-alt"></i> Enter New Address
                     </label>
                 </div>
 
                 <!-- Custom Address Form -->
-                <div id="customAddressForm" style="display: none;">
+                <div id="customAddressForm" class="custom-address-form">
                     <div class="mb-3">
                         <label for="address" class="form-label">Address</label>
                         <input type="text" class="form-control" id="address" placeholder="Enter your address">
@@ -198,8 +301,10 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="placeOrder()">Place Order</button>
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="placeOrder()">
+                    <i class="fas fa-credit-card"></i> Place Order
+                </button>
             </div>
         </div>
     </div>
@@ -234,14 +339,14 @@
         const modal = new bootstrap.Modal(document.getElementById('checkoutModal'));
         modal.show();
 
-        // Handle address option change
-        document.getElementById('defaultAddress').addEventListener('change', () => {
-            document.getElementById('customAddressForm').style.display = 'none';
+        document.getElementById("customAddress").addEventListener("change", function () {
+            document.getElementById("customAddressForm").style.display = "block";
         });
 
-        document.getElementById('customAddress').addEventListener('change', () => {
-            document.getElementById('customAddressForm').style.display = 'block';
+        document.getElementById("defaultAddress").addEventListener("change", function () {
+            document.getElementById("customAddressForm").style.display = "none";
         });
+
     }
 
     function loadCart() {

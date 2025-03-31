@@ -15,4 +15,5 @@ public class OrdersDTO {
     private double totalPrice;
     private String address;
     private String contact;
+    private String status;
 }

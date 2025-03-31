@@ -2,6 +2,8 @@ package org.example.landofbooks.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.example.landofbooks.dto.OrderDetailsDTO;
+import org.example.landofbooks.dto.OrdersDTO;
+import org.example.landofbooks.dto.UserDTO;
 import org.example.landofbooks.entity.OrderDetails;
 import org.example.landofbooks.entity.Orders;
 import org.example.landofbooks.entity.User;
@@ -10,6 +12,7 @@ import org.example.landofbooks.repo.OrderDetailsRepository;
 import org.example.landofbooks.repo.OrderRepository;
 import org.example.landofbooks.repo.UserRepository;
 import org.example.landofbooks.service.OrderService;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Create a new Order and set the address and contact
-        Orders savedOrder = orderRepository.save(new Orders(null, totalPrice, user, address, contact));
+        Orders savedOrder = orderRepository.save(new Orders(null, totalPrice, user, address, contact,"INCOMPLETE"));
 
         // Convert the OrderDetailsDTOs to OrderDetails entities
         List<OrderDetails> orderDetailsEntities = orderDetailsList.stream()
@@ -84,6 +87,25 @@ public class OrderServiceImpl implements OrderService {
                     return resultMap;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<OrdersDTO> getAllOrders() {
+        return modelMapper.map(orderRepository.findAll(), new TypeToken<List<OrdersDTO>>() {}.getType());
+    }
+
+    @Override
+    public boolean updateOrderStatus(UUID orderId, String status) {
+        Optional<Orders> optionalOrder = orderRepository.findById(orderId);
+
+        if (optionalOrder.isPresent()) {
+            Orders order = optionalOrder.get();
+            order.setStatus(status); // Update only status
+            orderRepository.save(order);
+            return true;
+        }
+
+        return false;
     }
 }
 

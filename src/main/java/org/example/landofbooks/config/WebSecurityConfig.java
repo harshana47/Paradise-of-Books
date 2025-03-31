@@ -87,6 +87,8 @@ public class WebSecurityConfig {
                                 "api/v1/bookCart/deleteAll/**",
                                 "api/v1/bookCart/delete/**",
                                 "api/v1/orders/place",
+                                "api/v1/orders/getAll",
+                                "api/v1/orders/updateStatus/**",
                                 "api/v1/category/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
