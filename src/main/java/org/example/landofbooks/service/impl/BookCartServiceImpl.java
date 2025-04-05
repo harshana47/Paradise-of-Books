@@ -48,11 +48,12 @@ public class BookCartServiceImpl implements BookCartService {
         }
 
         book.setQty(book.getQty() - bookCartDTO.getQty());
+
+        booksRepo.save(book);
         if (book.getQty()==0){
-            book.setBookStatus("SOLD OUT");
+            book.setActiveStatus("SOLD OUT");
         }
         booksRepo.save(book);
-
         // Map the DTO to the entity and set the Book and User relationships
         BookCart bookCart = modelMapper.map(bookCartDTO, BookCart.class);
         bookCart.setBook(book);  // Set the Book entity
