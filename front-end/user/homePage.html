@@ -89,6 +89,7 @@
         .product-card .btn {
             font-size: 14px;
             padding: 6px 12px;
+            background: linear-gradient(45deg, #090043, #144fac);
             margin-top: 20px;
         }
 
@@ -252,6 +253,7 @@
         .copyright-area{
             background: #202020;
             padding: 25px 0;
+            max-height: 151px;
         }
         .copyright-text p {
             margin: 0;
@@ -271,6 +273,9 @@
         .footer-menu li a {
             font-size: 14px;
             color: #878787;
+        }
+        .gmp-map {
+            height: 100%;
         }
     </style>
 </head>
@@ -364,6 +369,63 @@
         </div>
     </div>
 </div>
+
+<section id="library-map" style="padding: 40px 0; background: #f9f9f9;">
+    <div style="max-width: 1200px; margin: auto; padding: 20px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background: white;">
+        <h2 style="text-align: center; font-family: 'Garamond'; font-size: 32px; margin-bottom: 20px; color: #0d47a1;">
+            📍 Explore Libraries in Sri Lanka
+        </h2>
+        <div id="map" style="width: 100%; height: 500px; border-radius: 15px;">
+            <!-- Map Container -->
+        </div>
+    </div>
+</section>
+
+<!-- Leaflet.js Library -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script>
+    var map = L.map('map').setView([7.8731, 80.7718], 7);  // Center on Sri Lanka
+
+    // OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Function to search libraries
+    function searchLibraries(query) {
+        var url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&countrycodes=LK&limit=1000';
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Check if data is valid
+                if (data && data.length > 0) {
+                    data.forEach(function(place) {
+                        var lat = place.lat;
+                        var lon = place.lon;
+                        var title = place.display_name;
+
+                        // Log each place to ensure data is correct
+                        console.log('Library found: ', title, lat, lon);
+
+                        // Add marker for each place found
+                        L.marker([lat, lon]).addTo(map)
+                            .bindPopup(title)
+                            .openPopup();
+                    });
+                } else {
+                    console.log('No libraries found!');
+                }
+            })
+            .catch(error => console.error('Error searching libraries:', error));
+    }
+
+    var queries = ['library', 'book store', 'reading room' ,'libraries'];  // Multiple search terms
+    queries.forEach(query => searchLibraries(query));
+
+</script>
 <footer class="footer-section">
     <div class="container">
         <div class="footer-cta pt-5 pb-5">
