@@ -114,12 +114,15 @@ public class WebSecurityConfig {
                                 "/api/v1/payment/create-payment",
                                 "api/v1/payment/payment-success",
                                 "api/v1/payment-webhook",
+                                "/api/v1/payment-notify",
                                 "/api/v1/auth/authenticate",
                                 "/api/v1/user/register",
                                 // Other endpoints to be allowed
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/api/v1/payment-success/**",
+                                "/api/v1/payment-success"
                         ).permitAll()
                         .requestMatchers("/uploads/**", "/api/v1/images/**", "/uploads/images/**").permitAll()
                         .anyRequest().authenticated()

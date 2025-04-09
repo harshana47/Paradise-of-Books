@@ -15,4 +15,6 @@ public interface OrderService {
     List<OrdersDTO> getAllOrders();
 
     boolean updateOrderStatus(UUID orderId, String status);
+
+    boolean updateOrderStatusToSuccess(String orderId);
 }
