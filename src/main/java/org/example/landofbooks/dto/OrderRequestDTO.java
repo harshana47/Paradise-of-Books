@@ -11,6 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 public class OrderRequestDTO {
+    private UUID orderId;
     private UUID userId;
     private double totalPrice;
     private List<OrderDetailsDTO> orderDetailsList;

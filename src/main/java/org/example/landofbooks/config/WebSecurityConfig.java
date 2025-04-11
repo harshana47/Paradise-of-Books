@@ -122,10 +122,17 @@ public class WebSecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/api/v1/payment-success/**",
-                                "/api/v1/payment-success"
+                                "/api/v1/payment-success",
+                                "/api/v1/payments/notify",
+                                "/api/v1/payments/notify/**",
+                                "/api/v1/payments/success"
                         ).permitAll()
+                        .requestMatchers("/user/return.html").permitAll()
                         .requestMatchers("/uploads/**", "/api/v1/images/**", "/uploads/images/**").permitAll()
+                        .requestMatchers("/", "/index.html", "/return.html", "/user/**", "/css/**", "/js/**").permitAll()
+
                         .anyRequest().authenticated()
+
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 

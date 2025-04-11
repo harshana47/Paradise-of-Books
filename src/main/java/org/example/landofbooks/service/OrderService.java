@@ -16,5 +16,5 @@ public interface OrderService {
 
     boolean updateOrderStatus(UUID orderId, String status);
 
-    boolean updateOrderStatusToSuccess(String orderId);
+    boolean updateOrderStatusToSuccess(UUID orderId);
 }

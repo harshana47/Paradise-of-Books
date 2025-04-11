@@ -15,7 +15,7 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:63342"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:63342","http://localhost:8080"," https://db76-2402-d000-a400-134d-f4a6-2330-386b-edd3.ngrok-free.app"));
         corsConfiguration.setAllowedHeaders(List.of(
                 "Authorization", "Content-Type", "Accept", "Origin",
                 "X-Requested-With", "Cache-Control", "Pragma"

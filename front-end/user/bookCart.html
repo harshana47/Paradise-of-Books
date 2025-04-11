@@ -462,12 +462,13 @@
                 const amountFormatted = parseFloat(totally).toFixed(2).replaceAll(',', '');
                 const hashedSecret = CryptoJS.MD5(merchantSecret).toString(CryptoJS.enc.Hex).toUpperCase();
                 const hash = CryptoJS.MD5(merchantId + tempOrderId + amountFormatted + currency + hashedSecret).toString(CryptoJS.enc.Hex).toUpperCase();
+                const returnUrl = "http://localhost:8080/api/v1/payments/success"; // or ngrok URL if in production
 
                 const postData = {
                     merchant_id: merchantId,
-                    return_url: "http://localhost:8080/api/v1/payment-success",
+                    return_url: returnUrl,
                     cancel_url: "https://8e5a-2402-d000-a400-1eaf-3c29-86ae-94ae-7c2f.ngrok-free.app/payment-cancel",
-                    notify_url: "http://localhost:8080/api/v1/payment-success",
+                    notify_url: " https://db76-2402-d000-a400-134d-f4a6-2330-386b-edd3.ngrok-free.app/api/v1/payments/notify",
                     first_name: namee,
                     last_name: namee,
                     email: email,
@@ -511,12 +512,6 @@
         console.log(localStorage.getItem("pendingOrder")); // Log to see if it's stored
 
         const orderData = JSON.parse(localStorage.getItem('pendingOrder'));
-
-        if (!orderData) {
-            alert("Missing order data. Cannot confirm order.");
-            return;
-        }
-
 
         orderData.status = "paid";
 
