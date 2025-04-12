@@ -1,5 +1,7 @@
 package org.example.landofbooks.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +21,8 @@ public class BookDTO {
     private int qty;
     private String description;
     private String image;
+    @NotBlank(message = "Published year is required")
+    @Pattern(regexp = "^(19|20)\\d{2}$", message = "Year must be a valid 4-digit year between 1900 and 2099")
     private String publishedYear;
     private UUID categoryId;
     private UUID userId;

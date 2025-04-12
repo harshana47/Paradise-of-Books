@@ -101,7 +101,6 @@
         <li><a href="booksManage.html">Books Manage</a></li>
         <li><a href="biddingManage.html">Bids Manage</a></li>
         <li><a href="addCategory.html">Categories</a></li>
-        <li><a href="#">Settings</a></li>
     </ul>
 </div>
 <div class="container">
@@ -109,7 +108,6 @@
     <div class="alert alert-success" id="success-alert">Category saved successfully!</div>
     <div class="alert alert-danger" id="error-alert"></div>
 
-    <!-- Form to add/save category -->
     <form id="categoryForm">
         <div class="form-group">
             <label for="categoryName">Category Name</label>
@@ -120,7 +118,6 @@
     </form>
 
     <div id="category-list" class="mt-4">
-        <!-- Categories will be displayed here -->
     </div>
 </div>
 
@@ -138,7 +135,7 @@
         }
         var categoryName = $('#categoryName').val();
         $.ajax({
-            url: 'http://localhost:8080/api/v1/category/save', // Adjust the endpoint according to your backend
+            url: 'http://localhost:8080/api/v1/category/save',
             method: 'POST',
             data: JSON.stringify({ name: categoryName }),
             contentType: 'application/json',
@@ -146,7 +143,7 @@
                 $('#success-alert').fadeIn();
                 $('#error-alert').hide();
                 $('#categoryName').val('');
-                loadCategories(); // Refresh the category list after adding
+                loadCategories();
             },
             error: function(xhr, status, error) {
                 $('#error-alert').text('Error: ' + xhr.responseText).fadeIn();
@@ -155,7 +152,6 @@
         });
     });
 
-    // Function to fetch and display the categories
     function loadCategories() {
         const userRole = localStorage.getItem("userRole");
 
@@ -167,7 +163,7 @@
             .then(response => response.json())
             .then(data => {
                 const categoryList = document.getElementById("category-list");
-                categoryList.innerHTML = ""; // Clear existing categories
+                categoryList.innerHTML = "";
 
                 if (data && data.data) {
                     data.data.forEach(category => {
@@ -190,12 +186,10 @@
             return;
         }
 
-        const yourAuthToken = localStorage.getItem('authToken'); // Replace 'authToken' with your actual token key
+        const yourAuthToken = localStorage.getItem('authToken');
 
-        // Ensure the ID is a string (UUID is typically a string, but we handle it here explicitly)
         const categoryId = String(id);
 
-        // Make sure the backend endpoint is expecting a UUID
         fetch(`/api/v1/category/delete/${categoryId}`, {
             method: 'DELETE',
             headers: {

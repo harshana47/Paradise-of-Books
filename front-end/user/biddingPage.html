@@ -624,7 +624,7 @@
 
         bids.forEach(bid => {
             const imageFilename = bid.image ? bid.image.split("\\").pop() : "default.jpg";
-            const imageUrl = `http://localhost:8080/uploads/images/${imageFilename}`;
+            const imageUrl = `http://localhost:8080/api/v1/images/${imageFilename}`;
 
             fetch(`http://localhost:8080/api/v1/bidStorage/maxBid/${bid.bidId}`)
                 .then(response => {

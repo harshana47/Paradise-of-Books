@@ -721,7 +721,7 @@
                         booksContainer.append(`
                         <div class="col-lg-3 col-md-4 col-sm-6 col-12">
                             <div class="card product-card" style="margin-bottom: 40px">
-                                <img src="http://localhost:8080/uploads/images/${imageFilename}" class="card-img-top" alt="${book.title}">
+                                <img src="http://localhost:8080/api/v1/images/${imageFilename}" class="card-img-top" alt="${book.title}">
                                 <div class="card-body text-center">
                                     <h5 class="card-title" style="margin-bottom: 20px">${book.title}</h5>
                                     <p class="card-text">$${book.price}</p>
@@ -747,7 +747,7 @@
         selectedBook = books.find(book => book.bid == $(this).data('id'));
 
         $('#modalTitle').text(selectedBook.title);
-        $('#modalImage').attr('src', `http://localhost:8080/uploads/images/${selectedBook.image.split("\\").pop()}`);
+        $('#modalImage').attr('src', `http://localhost:8080/api/v1/images/${selectedBook.image.split("\\").pop()}`);
         $('#modalDescription').text(selectedBook.description || "No description available.");
         $('#modalPrice').text(`Price: $${selectedBook.price}`);
         $('#quantity').text(1);

@@ -129,7 +129,7 @@ public class WebSecurityConfig {
                                 "/api/v1/payments/successY"
                         ).permitAll()
                         .requestMatchers("/user/return.html").permitAll()
-                        .requestMatchers("/uploads/**", "/api/v1/images/**", "/uploads/images/**").permitAll()
+                        .requestMatchers("/uploads/**", "/api/v1/images/**", "src/main/resources/uploads/images/**").permitAll()
                         .requestMatchers("/", "/index.html", "/return.html", "/user/**", "/css/**", "/js/**").permitAll()
 
                         .anyRequest().authenticated()

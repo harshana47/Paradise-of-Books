@@ -344,13 +344,13 @@
 <body>
 <nav class="navbar navbar-expand-lg">
     <div class="container">
-        <a class="navbar-brand" href="#" style="font-family: 'Monotype Corsiva';font-size: 37px">Paradise of Books</a>
+        <a class="navbar-brand" href="homePage.html" style="font-family: 'Monotype Corsiva';font-size: 37px">Paradise of Books</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="homePage.html">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="biddingPage.html">Bids</a></li>
                 <li class="nav-item">
                     <a class="nav-link" href="bidCart.html">
@@ -376,7 +376,7 @@
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Profile</a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="../index.html">Sign In</a></li>
-                        <li><a class="dropdown-item" href="#">Manage Profile</a></li>
+                        <li><a class="dropdown-item" href="userProfile.html">Manage Profile</a></li>
                         <li><a class="dropdown-item" id="logOut">Log Out</a></li>
                     </ul>
                 </li>
@@ -556,7 +556,7 @@
                 }
 
                 card.innerHTML = `
-                <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${sale.title}">
+                <img src="http://localhost:8080/api/v1/images/${imageFilename}" alt="${sale.title}">
                 <h3>${sale.title}</h3>
                 <p><strong>Author:</strong> ${sale.author}</p>
                 <p><strong>Price:</strong> $${sale.bidAmount}</p>

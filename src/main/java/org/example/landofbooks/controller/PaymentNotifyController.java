@@ -27,13 +27,13 @@ public class PaymentNotifyController {
     public ResponseEntity<?> handlePaymentSuccess(@RequestParam Map<UUID, String> params) {
 //        String orderId = params.get("order_id");
         UUID orderId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
-        String paymentStatus = params.get("status_code"); // status_code == 2 means success
+        String paymentStatus = params.get("status_code");
 
         if (orderId == null || paymentStatus == null) {
             return ResponseEntity.badRequest().body("Missing payment details");
         }
 
-        // Only save the order if payment was successful
+        //save the order if payment was successful
         if (paymentStatus.equals("2")) {
             boolean updated = orderService.updateOrderStatusToSuccess(orderId);
             if (updated) {

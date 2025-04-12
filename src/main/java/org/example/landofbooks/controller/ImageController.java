@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 @CrossOrigin(origins = "*")
 public class ImageController {
 
-    private static final String IMAGE_DIRECTORY = "uploads/images/";
+    private static final String IMAGE_DIRECTORY = "src/main/resources/uploads/images/";
 
     @GetMapping("/{filename}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {

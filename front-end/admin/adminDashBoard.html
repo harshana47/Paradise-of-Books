@@ -142,13 +142,11 @@
         <li><a href="booksManage.html">Books Manage</a></li>
         <li><a href="biddingManage.html">Bids Manage</a></li>
         <li><a href="addCategory.html">Categories</a></li>
-        <li><a href="#">Settings</a></li>
     </ul>
 </div>
 
 <!-- Main Content -->
 <div class="main-content">
-    <!-- Header -->
     <div class="header">
         <h2>Dashboard Overview</h2>
         <span>Welcome, Admin</span>
@@ -163,13 +161,11 @@
             </ul>
         </div>
     </div>
-    <!-- Header -->
 
-    <!-- Cards Section -->
     <div class="cards">
         <div class="card">
             <h3>Total Orders</h3>
-            <p id="totalOrders">Loading...</p>  <!-- Dynamically Updated -->
+            <p id="totalOrders">Loading...</p>
         </div>
         <div class="card">
             <h3>New Users</h3>
@@ -177,11 +173,10 @@
         </div>
         <div class="card">
             <h3>Revenue</h3>
-            <p id="revenue">Loading...</p>  <!-- Dynamically Updated -->
+            <p id="revenue">Loading...</p>
         </div>
     </div>
 
-    <!-- Chart Section -->
     <div class="chart-container">
         <h3>Orders This Week</h3>
         <canvas id="myChart"></canvas>
@@ -190,15 +185,12 @@
 
 <script>
     document.getElementById("logOut").addEventListener("click", function () {
-        // Clear authentication-related data
         localStorage.removeItem("authToken");
         localStorage.removeItem("userId");
         localStorage.removeItem("userEmail")
 
-        // Redirect to the login page
         window.location.href = "../index.html";
     });
-    // Fetch daily order stats and update chart
     async function fetchDailyOrderStats() {
         try {
             const userRole = localStorage.getItem("userRole");
@@ -208,13 +200,13 @@
                 return;
             }
 
-            const authToken = localStorage.getItem("authToken"); // Get the token from localStorage (or sessionStorage)
+            const authToken = localStorage.getItem("authToken");
 
             const response = await fetch("http://localhost:8080/api/v1/orders/daily-count", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${authToken}` // Send token in Authorization header
+                    "Authorization": `Bearer ${authToken}`
                 }
             });
 
@@ -224,17 +216,16 @@
 
             const data = await response.json();
 
-            console.log(data); // Log the entire response data to check the structure
+            console.log(data);
 
             const labels = data.map(item => item.orderDate);
             const orderCounts = data.map(item => item.orderCount);
             const revenues = data.map(item => item.revenue);
 
-            console.log("Order Counts: ", orderCounts);  // Log the order counts to verify they're being populated
+            console.log("Order Counts: ", orderCounts);
 
             updateChart(labels, orderCounts, revenues);
 
-            // Update the card with the total orders and revenue
             document.getElementById("totalOrders").textContent = orderCounts.reduce((acc, curr) => acc + curr, 0);
             document.getElementById("revenue").textContent = "$" + revenues.reduce((acc, curr) => acc + curr, 0).toFixed(2);
         } catch (error) {
@@ -243,7 +234,6 @@
     }
 
 
-    // Update chart with fetched data
     function updateChart(labels, orderCounts, revenues) {
         const ctx = document.getElementById('myChart');
         if (!ctx) {
@@ -276,7 +266,6 @@
         }
     }
 
-    // Run once the DOM is fully loaded
     document.addEventListener("DOMContentLoaded", function () {
         fetchDailyOrderStats();
     });

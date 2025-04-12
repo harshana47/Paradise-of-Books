@@ -84,7 +84,7 @@ public class BookServiceImpl implements BookService {
 
             String projectRootPath = System.getProperty("user.dir");
 
-            Path path = Paths.get(projectRootPath, "uploads", "images", fileName + fileExtension);
+            Path path = Paths.get(projectRootPath, "src", "main", "resources", "uploads", "images", fileName + fileExtension);
 
             Files.createDirectories(path.getParent());
 

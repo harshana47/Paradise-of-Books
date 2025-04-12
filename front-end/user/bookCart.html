@@ -223,13 +223,13 @@
 <body>
 <nav class="navbar navbar-expand-lg">
     <div class="container">
-        <a class="navbar-brand" href="#" style="font-family: 'Monotype Corsiva';font-size: 37px">Paradise of Books</a>
+        <a class="navbar-brand" href="homePage.html" style="font-family: 'Monotype Corsiva';font-size: 37px">Paradise of Books</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="homePage.html">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="biddingPage.html">Bids</a></li>
                 <li class="nav-item">
                     <a class="nav-link" href="bidCart.html">
@@ -255,7 +255,7 @@
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Profile</a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="../index.html">Sign In</a></li>
-                        <li><a class="dropdown-item" href="#">Manage Profile</a></li>
+                        <li><a class="dropdown-item" href="userProfile.html">Manage Profile</a></li>
                         <li><a class="dropdown-item" id="logOut">Log Out</a></li>
                     </ul>
                 </li>
@@ -373,7 +373,7 @@
                     const imageFilename = item.image ? item.image.split("\\").pop() : "default.jpg";
                     cartHTML += `
                 <div class="cart-item" id="item-${item.bkcid}">
-                    <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${item.title}">
+                    <img src="http://localhost:8080/api/v1/images/${imageFilename}" alt="${item.title}">
                     <span>${item.title} - $${item.price}</span>
                     <button class="btn btn-remove" onclick="removeItem('${item.bkcid}')">Remove</button>
                 </div>`;
@@ -467,8 +467,8 @@
                 const postData = {
                     merchant_id: merchantId,
                     return_url: returnUrl,
-                    cancel_url: "https://2e38-2402-d000-a500-4965-b880-33ef-494a-f5de.ngrok-free.app/payment-cancel",
-                    notify_url: " https://2e38-2402-d000-a500-4965-b880-33ef-494a-f5de.ngrok-free.app/api/v1/payments/notify",
+                    cancel_url: "https://38db-2402-d000-a400-c583-f865-d863-de79-9000.ngrok-free.app/payment-cancel",
+                    notify_url: " https://38db-2402-d000-a400-c583-f865-d863-de79-9000.ngrok-free.app/api/v1/payments/notify",
                     first_name: namee,
                     last_name: namee,
                     email: email,

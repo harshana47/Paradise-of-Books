@@ -37,7 +37,8 @@ public class SaleBookController {
     }
 
     @PostMapping("/place")
-    public ResponseEntity<ResponseDTO> addBook(@RequestPart("userId") String userId,
+    public ResponseEntity<ResponseDTO> addBook(@Valid
+                                                   @RequestPart("userId") String userId,
                                                @RequestPart("categoryId") String categoryId,
                                                @RequestPart("bookStatus") String bookStatus,
                                                @RequestPart("author") String author,
