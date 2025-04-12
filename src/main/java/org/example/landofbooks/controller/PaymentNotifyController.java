@@ -25,7 +25,6 @@ public class PaymentNotifyController {
 
     @PostMapping("/notify")
     public ResponseEntity<?> handlePaymentSuccess(@RequestParam Map<UUID, String> params) {
-        // Required PayHere parameters
 //        String orderId = params.get("order_id");
         UUID orderId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
         String paymentStatus = params.get("status_code"); // status_code == 2 means success
@@ -59,6 +58,28 @@ public class PaymentNotifyController {
         </head>
         <body>
             Redirecting to bookCart...
+        </body>
+        </html>
+    """;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_HTML);
+
+        return new ResponseEntity<>(redirectScript, headers, HttpStatus.OK);
+    }
+    @GetMapping("/successY")
+    public ResponseEntity<String> handlePaymentSuccess1(@RequestParam("order_id") String orderId) {
+        System.out.println("Payment successful for Order ID: " + orderId);
+
+        String redirectScript = """
+        <html>
+        <head>
+            <script>
+                window.location.href = "http://localhost:63342/land-of-books/front-end/user/bidCart.html";
+            </script>
+        </head>
+        <body>
+            Redirecting to bidCart...
         </body>
         </html>
     """;

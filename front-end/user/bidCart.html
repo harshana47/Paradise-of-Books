@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
 
     <title>Bid Cart</title>
     <style>
@@ -246,14 +247,13 @@
 </form>
 
 <!-- Option to select payment method -->
-<div id="paymentOptions">
-    <label for="paymentMethod">Select Payment Method:</label>
-    <select id="paymentMethod">
-        <option value="cash_on_delivery">Cash on Delivery</option>
-        <option value="pay_now">Pay Now (PayHere)</option>
-    </select>
-    <button id="checkoutBtn">Proceed</button>
-</div>
+<!--<div id="paymentOptions">-->
+<!--    <label for="paymentMethod">Select Payment Method:</label>-->
+<!--    <select id="paymentMethod">-->
+<!--        <option value="cash_on_delivery">Cash on Delivery</option>-->
+<!--        <option value="pay_now">Pay Now (PayHere)</option>-->
+<!--    </select>-->
+<!--</div>-->
 
 
 <div class="cart-container" id="cartContainer">
@@ -262,57 +262,60 @@
     <h3>Total: $<span id="totalPrice">0.00</span></h3>
     <button class="btn btn-checkout" onclick="showCheckoutModal()">Checkout</button>
     <button class="btn btn-remove" onclick="clearCart()">Clear Cart</button>
-    <button class="btn" onclick="continueShopping()">Continue Shopping</button>
+    <button id="checkoutBtn" class="btn btn-continue" onclick="continueShopping()">Continue Shopping</button>
 </div>
 
 <script nonce="randomNonceValue">
     let userId = localStorage.getItem("userId");
-    console.log(userId)
-    if (!userId) {
-        console.error("User ID not found. Redirecting to login...");
-        window.location.href = "../index.html";
-    }
     let token = localStorage.getItem("authToken");
-    if (!token) {
-        console.error("Token not found. Redirecting to login...");
+
+    if (!userId || !token) {
+        console.error("Authentication data missing. Redirecting...");
         window.location.href = "../index.html";
     }
+
+    // Show checkout modal and handle address toggling
     function showCheckoutModal() {
         const modal = new bootstrap.Modal(document.getElementById('checkoutModal'));
         modal.show();
 
-        document.getElementById("customAddress").addEventListener("change", function () {
+        document.getElementById("customAddress").addEventListener("change", () => {
             document.getElementById("customAddressForm").style.display = "block";
         });
 
-        document.getElementById("defaultAddress").addEventListener("change", function () {
+        document.getElementById("defaultAddress").addEventListener("change", () => {
             document.getElementById("customAddressForm").style.display = "none";
         });
-
     }
-    document.getElementById("checkoutBtn").addEventListener("click", async function () {
-        const paymentMethod = document.getElementById("paymentMethod").value;
 
-        if (paymentMethod === "pay_now") {
-            await initializePayment();
-        } else if (paymentMethod === "cash_on_delivery") {
-            alert("You have selected Cash on Delivery.");
+    // // Checkout button action
+    // document.getElementById("checkoutBtn").addEventListener("click", async () => {
+    //     const paymentMethod = document.getElementById("paymentMethod").value;
+    //
+    //     if (paymentMethod === "pay_now") {
+    //         await placeOrder();
+    //     } else if (paymentMethod === "cash_on_delivery") {
+    //         await addEventListener();
+    //     }
+    // });
+
+    //payment via PayHere
+    async function placeOrder() {
+        const addressOption = document.querySelector('input[name="addressOption"]:checked')?.id;
+        let address = "", contact = "", totally = 0;
+
+        if (!addressOption) {
+            alert("Please select an address option.");
+            return;
         }
-    });
 
-    async function initializePayment() {
+        if (addressOption === 'customAddress') {
+            address = document.getElementById('address').value;
+            contact = document.getElementById('contact').value;
+        }
+
         try {
-            const addressOption = document.querySelector('input[name="addressOption"]:checked').id;
-            let address = "";
-            let contact = "";
-
-            if (addressOption === 'customAddress') {
-                address = document.getElementById('address').value;
-                contact = document.getElementById('contact').value;
-            }
-
-            // Fetch cart data first (before order placement)
-            const cartResponse = await fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`, {
+            const response = await fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -320,62 +323,81 @@
                 }
             });
 
-            if (!cartResponse.ok) throw new Error("Failed to fetch cart data");
+            if (!response.ok) throw new Error("Failed to fetch cart data");
+            const data = await response.json();
 
-            const cartData = await cartResponse.json();
-            if (!cartData || cartData.length === 0) {
-                throw new Error("Cart is empty. Cannot proceed with checkout.");
+            if (!data || data.length === 0) {
+                alert("Your cart is empty.");
+                return;
             }
 
-            // Create a temporary payment request
+            totally = data.reduce((sum, item) => sum + item.maxPrice, 0);
+            const orderDetails = data.map(item => ({
+                price: item.maxPrice,
+                title: item.title
+            }));
+
             const paymentRequest = {
-                userId: userId,
-                totalPrice: cartData.reduce((sum, item) => sum + item.maxPrice, 0),
-                orderDetailsList: cartData.map(item => ({
-                    price: item.maxPrice,
-                    title: item.title
-                })),
+                userId,
+                totalPrice: totally,
+                orderDetailsList: orderDetails,
                 address: addressOption === 'defaultAddress' ? null : address,
                 contact: addressOption === 'defaultAddress' ? null : contact
             };
+            console.log("Order data saved to localStorage:", paymentRequest);
+            localStorage.setItem("pendingOrder", JSON.stringify(paymentRequest));
+            const tempOrderId = `OID-${Date.now()}`;
+            const name = localStorage.getItem('name') || 'Customer';
+            const email = localStorage.getItem('userEmail') || 'example@mail.com';
+            const currency = "LKR";
+            const amountFormatted = parseFloat(totally).toFixed(2);
+            const merchantId = "1229934";
+            const merchantSecret = "MjE1MTA0MzQ5NjE5MTIyMzU4MTAzMDk0NzM4NDY0MjE0MzAyNTE=";
 
-            const paymentResponse = await fetch("http://localhost:8080/api/v1/payment/create-payment", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-                body: JSON.stringify(paymentRequest)
-            });
+            const hashedSecret = CryptoJS.MD5(merchantSecret).toString(CryptoJS.enc.Hex).toUpperCase();
+            const hash = CryptoJS.MD5(merchantId + tempOrderId + amountFormatted + currency + hashedSecret).toString(CryptoJS.enc.Hex).toUpperCase();
 
-            if (!paymentResponse.ok) {
-                throw new Error("Payment initialization failed");
+            const postData = {
+                merchant_id: merchantId,
+                return_url: "http://localhost:8080/api/v1/payments/successY",
+                cancel_url: "https://2e38-2402-d000-a500-4965-b880-33ef-494a-f5de.ngrok-free.app/payment-cancel",
+                notify_url: "https://2e38-2402-d000-a500-4965-b880-33ef-494a-f5de.ngrok-free.app/api/v1/payments/notify",
+                first_name: name,
+                last_name: name,
+                email,
+                phone: contact,
+                address,
+                city: "Colombo",
+                country: "Sri Lanka",
+                order_id: tempOrderId,
+                items: "Book Order",
+                currency,
+                amount: amountFormatted,
+                hash
+            };
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://sandbox.payhere.lk/pay/checkout';
+
+            for (const key in postData) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = postData[key];
+                form.appendChild(input);
             }
 
-            const paymentData = await paymentResponse.json();
-            console.log("Payment API Response:", paymentData);
-            if (!paymentData) {
-                throw new Error("Invalid payment data received");
-            }
+            document.body.appendChild(form);
+            form.submit();
 
-            // Populate PayHere form and submit
-            document.getElementById("merchant_id").value = paymentData.merchant_id;
-            document.getElementById("return_url").value = paymentData.return_url;
-            document.getElementById("cancel_url").value = paymentData.cancel_url;
-            document.getElementById("notify_url").value = paymentData.notify_url;
-            document.getElementById("order_id").value = paymentData.order_id;
-            document.getElementById("items").value = paymentData.items;
-            document.getElementById("currency").value = paymentData.currency;
-            document.getElementById("amount").value = paymentData.amount;
-            document.getElementById("hash").value = paymentData.hash;
-
-            document.getElementById("paymentForm").submit(); // Redirect to PayHere
         } catch (error) {
-            console.error("Error initializing payment:", error.message);
-            alert("Error initializing payment. Please try again.");
+            console.error("Checkout failed:", error);
+            alert("Failed to proceed with payment.");
         }
     }
 
+    // Load and display cart items
     function loadCart() {
         fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`, {
             method: 'GET',
@@ -384,125 +406,101 @@
                 'Authorization': 'Bearer ' + token
             }
         })
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
-                let cartHTML = "";
-                let total = 0;
+                let cartHTML = "", total = 0;
                 data.forEach(item => {
                     total += item.maxPrice;
-
-                    // Assuming item.image contains the path or filename of the image
                     const imageFilename = item.image ? item.image.split("\\").pop() : "default.jpg";
-
                     cartHTML += `
-                <div class="cart-item" id="item-${item.bcid}">
-                    <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${item.title}">
-                    <span>${item.title} - $${item.maxPrice}</span>
-                    <button class="btn btn-remove" onclick="removeItem('${item.bcid}')">Remove</button>
-                </div>`;
+                        <div class="cart-item" id="item-${item.bcid}">
+                            <img src="http://localhost:8080/uploads/images/${imageFilename}" alt="${item.title}">
+                            <span>${item.title} - $${item.maxPrice}</span>
+                            <button class="btn btn-remove" onclick="removeItem('${item.bcid}')">Remove</button>
+                        </div>`;
                 });
+
                 document.getElementById("cartItems").innerHTML = cartHTML;
                 document.getElementById("totalPrice").innerText = total.toFixed(2);
             })
             .catch(error => console.error("Error loading cart:", error));
     }
 
-
-
-
+    // Remove item from cart
     function removeItem(bcid) {
-        fetch(`http://localhost:8080/api/v1/bidCart/delete/${bcid}`, { method: 'DELETE',
-            headers: { 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token}, })
-            .then(() => {
-                document.getElementById(`item-${bcid}`).style.transform = "scale(0)";
-                setTimeout(loadCart, 300);
-            });
-    }
-
-    function clearCart() {
-        fetch(`http://localhost:8080/api/v1/bidCart/deleteAll/${userId}`, { method: 'DELETE',
-            headers: { 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token},})
-            .then(() => {
-                document.getElementById("cartItems").innerHTML = "";
-                document.getElementById("totalPrice").innerText = "0.00";
-            });
-    }
-
-    function placeOrder() {
-        const addressOption = document.querySelector('input[name="addressOption"]:checked').id;
-        let address = "";
-        let contact = "";
-
-        if (addressOption === 'customAddress') {
-            address = document.getElementById('address').value;
-            contact = document.getElementById('contact').value;
-        }
-        fetch(`http://localhost:8080/api/v1/bidCart/user/${userId}`, {
-            method: 'GET',
+        fetch(`http://localhost:8080/api/v1/bidCart/delete/${bcid}`, {
+            method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token
             }
-        })
-            .then(response => {
-                if (!response.ok) throw new Error("Failed to fetch cart data");
-                return response.json();  // Parse the cart data as JSON
-            })
-            .then(data => {
-                if (!data || data.length === 0) {
-                    throw new Error("Cart is empty. Cannot proceed with checkout.");
-                }
-
-                let order = {
-                    userId: userId,
-                    totalPrice: data.reduce((sum, item) => sum + item.maxPrice, 0),
-                    orderDetailsList: data.map(item => ({
-                        price: item.maxPrice,
-                        title: item.title
-                    })),
-                    address: addressOption === 'defaultAddress' ? null : address, // send null instead of "Default Address"
-                    contact: addressOption === 'defaultAddress' ? null : contact // send null instead of "Default Contact"
-                };
-
-                if (!order.orderDetailsList || order.orderDetailsList.length === 0) {
-                    throw new Error("Order details cannot be empty");
-                }
-
-                return fetch(`http://localhost:8080/api/v1/orders/place`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
-                    body: JSON.stringify(order)
-                });
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Order placement failed");
-
-                return response.json().catch(e => {
-                    throw new Error("Received non-JSON response from server");
-                });
-            })
-            .then(jsonResponse => {
-                console.log(jsonResponse);
-                clearCart();
-                const modal = bootstrap.Modal.getInstance(document.getElementById('checkoutModal'));
-                modal.hide();
-            })
-            .catch(error => {
-                console.error("Error during checkout:", error);
-            });
+        }).then(() => {
+            document.getElementById(`item-${bcid}`).style.transform = "scale(0)";
+            setTimeout(loadCart, 300);
+        });
     }
 
+    // Clear the cart
+    function clearCart() {
+        fetch(`http://localhost:8080/api/v1/bidCart/deleteAll/${userId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        }).then(() => {
+            document.getElementById("cartItems").innerHTML = "";
+            document.getElementById("totalPrice").innerText = "0.00";
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('order_id');
+        const token = localStorage.getItem('authToken');
+        const orderDataStr = localStorage.getItem('pendingOrder');
+        if (!orderDataStr) return;
+
+        const orderData = JSON.parse(orderDataStr);
+        orderData.status = "paid";
+
+        fetch(`http://localhost:8080/api/v1/orders/place`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify(orderData)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Order save failed");
+                return res.json();
+            })
+            .then(() => {
+                alert("Order successfully placed!");
+                localStorage.removeItem("pendingOrder");
+
+                return fetch(`http://localhost:8080/api/v1/bookCart/deleteAll/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+            })
+            .then(() => window.location.href = "bookCart.html")
+            .catch(err => {
+                console.error("Error finalizing order:", err);
+                alert("Error finalizing your order.");
+            });
+    });
 
     function continueShopping() {
         window.location.href = "homePage.html";
     }
 
     document.addEventListener("DOMContentLoaded", loadCart);
+
 </script>
+
 </body>
 </html>

@@ -125,7 +125,8 @@ public class WebSecurityConfig {
                                 "/api/v1/payment-success",
                                 "/api/v1/payments/notify",
                                 "/api/v1/payments/notify/**",
-                                "/api/v1/payments/success"
+                                "/api/v1/payments/success",
+                                "/api/v1/payments/successY"
                         ).permitAll()
                         .requestMatchers("/user/return.html").permitAll()
                         .requestMatchers("/uploads/**", "/api/v1/images/**", "/uploads/images/**").permitAll()
