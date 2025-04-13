@@ -18,7 +18,6 @@ import java.util.UUID;
 @RequestMapping("/api/v1/bookCart")
 @CrossOrigin(origins = "*")
 public class BookCartController {
-
     @Autowired
     private BookCartService bookCartService;
 
