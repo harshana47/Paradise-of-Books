@@ -67,7 +67,6 @@ public class AuthController {
         String email = request.get("email");
         String otp = request.get("otp");
 
-        // Assuming otpService.verifyOtp is implemented correctly
         boolean isValid = otpService.verifyOtp(email, otp);
 
         if (isValid) {

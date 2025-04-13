@@ -47,19 +47,15 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Order details cannot be null or empty");
         }
 
-        // Fetch the user entity from the repository
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Create a new Order and set the address and contact
         Orders savedOrder = orderRepository.save(new Orders(null, totalPrice, user, address, contact,"INCOMPLETE"));
 
-        // Convert the OrderDetailsDTOs to OrderDetails entities
         List<OrderDetails> orderDetailsEntities = orderDetailsList.stream()
                 .map(dto -> modelMapper.map(dto, OrderDetails.class))
                 .collect(Collectors.toList());
 
-        // Set the order and user for each order detail, and save them
         orderDetailsEntities.forEach(orderDetails -> {
             orderDetails.setOrders(savedOrder);
             orderDetails.setUser(user);
@@ -68,7 +64,6 @@ public class OrderServiceImpl implements OrderService {
 
         orderDetailsRepository.saveAll(orderDetailsEntities);
 
-        // Clear the user's bid cart
         bidCartRepository.deleteByUser_uid(userId);
     }
 
@@ -77,13 +72,12 @@ public class OrderServiceImpl implements OrderService {
     public List<Map<String, Object>> getDailyOrdersWithRevenue() {
         List<Object[]> results = orderDetailsRepository.getDailyOrdersWithRevenue();
 
-        // Process the results and map to a List of Maps
         return results.stream()
                 .map(obj -> {
                     Map<String, Object> resultMap = new HashMap<>();
-                    resultMap.put("orderDate", ((java.sql.Date) obj[0]).toLocalDate()); // Date
-                    resultMap.put("orderCount", ((Number) obj[1]).longValue()); // Order count
-                    resultMap.put("revenue", ((Number) obj[2]).doubleValue()); // Revenue (10% of total price)
+                    resultMap.put("orderDate", ((java.sql.Date) obj[0]).toLocalDate());
+                    resultMap.put("orderCount", ((Number) obj[1]).longValue());
+                    resultMap.put("revenue", ((Number) obj[2]).doubleValue());
                     return resultMap;
                 })
                 .collect(Collectors.toList());
@@ -100,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
 
         if (optionalOrder.isPresent()) {
             Orders order = optionalOrder.get();
-            order.setStatus(status); // Update only status
+            order.setStatus(status);
             orderRepository.save(order);
             return true;
         }

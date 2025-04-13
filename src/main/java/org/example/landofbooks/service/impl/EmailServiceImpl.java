@@ -26,7 +26,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendOtpEmail(String to) {
         String otp = generateOTP();
-        otpService.storeOtp(to, otp); // Store OTP for verification
+        otpService.storeOtp(to, otp);
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -36,7 +36,7 @@ public class EmailServiceImpl implements EmailService {
             helper.setText("Your OTP code is: " + otp);
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send OTP email: " + e.getMessage(), e);  // Improved error message
+            throw new RuntimeException("Failed to send OTP email: " + e.getMessage(), e);
         }
     }
     @Override

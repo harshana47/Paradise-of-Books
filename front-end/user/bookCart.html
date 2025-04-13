@@ -439,7 +439,6 @@
                     title: item.title
                 }));
 
-                // Store order data in localStorage (do not save to backend yet)
                 const tempOrder = {
                     userId,
                     totalPrice: totally,
@@ -450,10 +449,8 @@
                 console.log("Order data saved to localStorage:", tempOrder);
                 localStorage.setItem("pendingOrder", JSON.stringify(tempOrder));
 
-                // Generate temp order ID
                 const tempOrderId = `OID-${Date.now()}`;
 
-                // Prepare PayHere data
                 const merchantId = "1229934";
                 const merchantSecret = "MjE1MTA0MzQ5NjE5MTIyMzU4MTAzMDk0NzM4NDY0MjE0MzAyNTE=";
                 const namee = localStorage.getItem('name');
@@ -462,13 +459,13 @@
                 const amountFormatted = parseFloat(totally).toFixed(2).replaceAll(',', '');
                 const hashedSecret = CryptoJS.MD5(merchantSecret).toString(CryptoJS.enc.Hex).toUpperCase();
                 const hash = CryptoJS.MD5(merchantId + tempOrderId + amountFormatted + currency + hashedSecret).toString(CryptoJS.enc.Hex).toUpperCase();
-                const returnUrl = "http://localhost:8080/api/v1/payments/success"; // or ngrok URL if in production
+                const returnUrl = "http://localhost:8080/api/v1/payments/success";
 
                 const postData = {
                     merchant_id: merchantId,
                     return_url: returnUrl,
-                    cancel_url: "https://38db-2402-d000-a400-c583-f865-d863-de79-9000.ngrok-free.app/payment-cancel",
-                    notify_url: " https://38db-2402-d000-a400-c583-f865-d863-de79-9000.ngrok-free.app/api/v1/payments/notify",
+                    cancel_url: "http://localhost:8080/api/v1/payment-cancel",
+                    notify_url: " http://localhost:8080/api/v1/payments/notify",
                     first_name: namee,
                     last_name: namee,
                     email: email,
@@ -509,8 +506,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const orderId = urlParams.get('order_id');
         const token = localStorage.getItem('authToken');
-        console.log(localStorage.getItem("pendingOrder")); // Log to see if it's stored
-
+        console.log(localStorage.getItem("pendingOrder"));
         const orderData = JSON.parse(localStorage.getItem('pendingOrder'));
 
         orderData.status = "paid";
@@ -532,7 +528,6 @@
                 console.log("Order save response:", savedOrder);
                 localStorage.removeItem("pendingOrder");
 
-                // Optional: clear cart
                 fetch(`http://localhost:8080/api/v1/bookCart/deleteAll/${orderData.userId}`, {
                     method: 'DELETE',
                     headers: {
@@ -540,7 +535,6 @@
                     }
                 });
 
-                // Redirect or show confirmation UI
                 window.location.href = "bookCart.html";
             })
             .catch(err => {

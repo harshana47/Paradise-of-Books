@@ -185,13 +185,11 @@
 <script>
     document.getElementById('changePasswordBtn').addEventListener('click', function() {
         // Redirect to the forgot password page
-        window.location.href = 'forgotPassword.html';  // Replace with the actual URL of your forgot password page
+        window.location.href = 'forgotPassword.html';
     });
-    // Get the form and alert elements
     const profileForm = document.getElementById('profileForm');
     const alertMessage = document.getElementById('alertMessage');
 
-    // Function to handle form submission and AJAX request
     profileForm.addEventListener('submit', function(event) {
         event.preventDefault();
 
@@ -202,13 +200,11 @@
             address: document.getElementById('address').value,
         };
 
-        // Perform AJAX request to update profile
         updateProfile(user);
     });
 
-    // AJAX function to update profile
     function updateProfile(user) {
-        const userId = localStorage.getItem("userId");  // Assuming userId is stored in localStorage
+        const userId = localStorage.getItem("userId");
 
         // Show loading alert
         alertMessage.style.display = 'block';
@@ -227,11 +223,11 @@
                 if (data.success) {
                     alertMessage.textContent = 'Profile updated successfully!';
                     alertMessage.classList.add('success');
-                    alertMessage.style.color = '#5bc0de'; // Success message color
+                    alertMessage.style.color = '#5bc0de';
                 } else {
                     alertMessage.textContent = 'Error updating profile. Please try again.';
                     alertMessage.classList.remove('success');
-                    alertMessage.style.color = '#d9534f'; // Error message color
+                    alertMessage.style.color = '#d9534f';
                 }
             })
             .catch(error => {
@@ -241,14 +237,12 @@
             });
     }
 
-    // Pre-fill user data on page load
     window.addEventListener('DOMContentLoaded', function() {
         const userId = localStorage.getItem("userId");
         if (!userId) {
-            window.location.href = "../index.html";  // Redirect to login if no userId is found
+            window.location.href = "../index.html";
         }
 
-        // Fetch user data from the server to pre-fill the form
         fetch(`http://localhost:8080/api/v1/user/getById/${userId}`, {
             method: 'GET',
             headers: {

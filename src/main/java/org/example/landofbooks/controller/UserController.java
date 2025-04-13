@@ -81,7 +81,7 @@ public class UserController {
         List<UserDTO> users = userService.getAllUsers();
         Map<String, Object> response = new HashMap<>();
         response.put("status", "success");
-        response.put("users", users); // 👈 Causes issue (nested array)
+        response.put("users", users);
         return ResponseEntity.ok(response);
     }
 
@@ -110,10 +110,8 @@ public class UserController {
     }
     @PutMapping("/{userId}/role")
     public ResponseEntity<String> updateUserRole(@PathVariable UUID userId, @RequestBody UserDTO userDTO) {
-        // Extract role from the received UserDTO
         String newRole = userDTO.getRole();
 
-        // Check if the role is provided
         if (newRole == null || newRole.isEmpty()) {
             return ResponseEntity.badRequest().body("Role must be provided.");
         }
@@ -130,13 +128,11 @@ public class UserController {
         UserDTO updatedUser = userService.updateUser(userId, userDTO);
 
         if (updatedUser != null) {
-            // Return success and the updated user data
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("user", updatedUser); // Include updated user data
+            response.put("user", updatedUser);
             return ResponseEntity.ok(response);
         } else {
-            // Return failure response with error message
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "User not found");
@@ -150,7 +146,6 @@ public class UserController {
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            // Convert the user entity to UserDTO before returning
             UserDTO userDTO = new UserDTO();
             userDTO.setUid(user.getUid());
             userDTO.setName(user.getName());

@@ -23,7 +23,7 @@ public class PlaceBidController {
 
     @PostMapping("/placeBid")
     public ResponseEntity<?> placeBid(@RequestBody BiddingDTO biddingDTO) {
-        System.out.println("Received BiddingDTO: " + biddingDTO);  // Log the entire object
+        System.out.println("Received BiddingDTO: " + biddingDTO);
         String responseMessage = biddingService.placeBids(biddingDTO);
 
         Map<String, Object> response = new HashMap<>();

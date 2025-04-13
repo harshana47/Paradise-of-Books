@@ -31,27 +31,21 @@ public class OrderController {
             return ResponseEntity.badRequest().body(Map.of("error", "Order details cannot be null or empty"));
         }
 
-        // Retrieve the userId from the orderRequest
         UUID userId = orderRequest.getUserId();
 
-        // Fetch the User entity from the database (User should have the actual address and contact)
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Use custom address if provided in the orderRequestDTO, otherwise use the user's default address
         String addressToUse = (orderRequest.getAddress() != null && !orderRequest.getAddress().isEmpty())
                 ? orderRequest.getAddress()
                 : user.getAddress();
 
-        // Use custom contact if provided in the orderRequestDTO, otherwise use the user's default contact
         String contactToUse = (orderRequest.getContact() != null && !orderRequest.getContact().isEmpty())
                 ? orderRequest.getContact()
                 : user.getContact();
-// Add logging for address and contact to check if the right values are passed
         System.out.println("Address to Use: " + addressToUse);
         System.out.println("Contact to Use: " + contactToUse);
 
-        // Now call the service method with the correct address and contact values
         orderService.placeOrder(userId, orderRequest.getTotalPrice(), orderRequest.getOrderDetailsList(), addressToUse, contactToUse);
 
         return ResponseEntity.ok(Map.of("message", "Order placed successfully"));
