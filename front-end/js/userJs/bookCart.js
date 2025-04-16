@@ -2,13 +2,13 @@ let userId = localStorage.getItem("userId");
 console.log(userId);
 if (!userId) {
     console.error("User ID not found. Redirecting to login...");
-    window.location.href = "../index.html";
+    window.location.href = "../../index.html";
 }
 
 let token = localStorage.getItem("authToken");
 if (!token) {
     console.error("Token not found. Redirecting to login...");
-    window.location.href = "../index.html";
+    window.location.href = "../../index.html";
 }
 
 function showCheckoutModal() {

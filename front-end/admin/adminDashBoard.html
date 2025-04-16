@@ -8,131 +8,10 @@
     <title>Admin Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            display: flex;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background: #2c3e50;
-            color: white;
-            padding: 20px;
-            position: fixed;
-            height: 100%;
-        }
-        .sidebar h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-        .sidebar ul li {
-            padding: 15px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .sidebar ul li:hover {
-            background: #34495e;
-        }
-        .sidebar ul li a {
-            text-decoration: none;
-            color: white;
-            display: block;
-        }
-        /* Main content */
-        .main-content {
-            margin-left: 250px;
-            flex-grow: 1;
-            padding: 20px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-        .header h2 {
-            color: #333;
-        }
-        /* Cards */
-        .cards {
-            display: flex;
-            gap: 20px;
-            justify-content: space-between;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            flex: 1;
-            text-align: center;
-        }
-        .card h3 {
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-        .card p {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        /* Chart container */
-        .chart-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-            .main-content {
-                margin-left: 200px;
-            }
-            .cards {
-                flex-direction: column;
-            }
-        }
-        .dropdown-toggle {
-            background: none;
-            border: none;
-            color: #333;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .dropdown-toggle i {
-            font-size: 24px;
-        }
-
-        .dropdown-menu {
-            min-width: 150px;
-        }
-
-    </style>
+    <link href="../css/adminCss/adminDashBoard.css" rel="stylesheet">
 </head>
 <body>
 
-<!-- Sidebar -->
 <div class="sidebar">
     <h2>Admin Panel</h2>
     <ul>
@@ -145,7 +24,6 @@
     </ul>
 </div>
 
-<!-- Main Content -->
 <div class="main-content">
     <div class="header">
         <h2>Dashboard Overview</h2>
@@ -183,93 +61,7 @@
     </div>
 </div>
 
-<script>
-    document.getElementById("logOut").addEventListener("click", function () {
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("userEmail")
-
-        window.location.href = "../index.html";
-    });
-    async function fetchDailyOrderStats() {
-        try {
-            const userRole = localStorage.getItem("userRole");
-
-            if (userRole !== "ADMIN") {
-                console.error("Unauthorized access!");
-                return;
-            }
-
-            const authToken = localStorage.getItem("authToken");
-
-            const response = await fetch("http://localhost:8080/api/v1/orders/daily-count", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${authToken}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            console.log(data);
-
-            const labels = data.map(item => item.orderDate);
-            const orderCounts = data.map(item => item.orderCount);
-            const revenues = data.map(item => item.revenue);
-
-            console.log("Order Counts: ", orderCounts);
-
-            updateChart(labels, orderCounts, revenues);
-
-            document.getElementById("totalOrders").textContent = orderCounts.reduce((acc, curr) => acc + curr, 0);
-            document.getElementById("revenue").textContent = "$" + revenues.reduce((acc, curr) => acc + curr, 0).toFixed(2);
-        } catch (error) {
-            console.error("Error fetching daily order stats:", error);
-        }
-    }
-
-
-    function updateChart(labels, orderCounts, revenues) {
-        const ctx = document.getElementById('myChart');
-        if (!ctx) {
-            console.error("Canvas element not found!");
-            return;
-        }
-        const context = ctx.getContext('2d');
-
-        if (context) {
-            new Chart(context, {
-                type: "line",
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: "Daily Orders",
-                            data: orderCounts,
-                            borderColor: "blue",
-                            fill: false
-                        },
-                        {
-                            label: "Revenue (10%)",
-                            data: revenues,
-                            borderColor: "green",
-                            fill: false
-                        }
-                    ]
-                }
-            });
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        fetchDailyOrderStats();
-    });
-</script>
+<script src="../js/adminJs/adminDashBoard.js"></script>
 
 </body>
 </html>

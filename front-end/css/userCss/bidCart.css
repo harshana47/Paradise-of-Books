@@ -1,0 +1,169 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+h1 {
+    font-size: 36px;
+    margin-top: 30px;
+    margin-bottom: 40px;
+    color: #333;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #0644b5 60%, #537cd5 40%);
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4), 0px 0px 15px rgba(0, 100, 255, 0.5); /* Add multiple shadow layers */
+}
+.cart-container {
+    width: 60%;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out;
+}
+.cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    transition: transform 0.3s ease-in-out;
+}
+.cart-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+}
+.btn {
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+    transition: 0.3s;
+}
+.btn-remove {
+    background-color: red;
+    color: white;
+}
+.btn-remove:hover {
+    background-color: darkred;
+}
+.btn-checkout {
+    background-color: green;
+    color: white;
+}
+.btn-checkout:hover {
+    background-color: darkgreen;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.custom-modal {
+    border-radius: 12px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.5s ease-in-out;
+}
+
+.modal-header {
+    background: linear-gradient(45deg, #1668dd, #144fac);
+    color: white;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    padding: 20px;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 20px;
+    font-size: 16px;
+}
+
+.address-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.address-option:hover {
+    background: #e0f7fa;
+    transform: scale(1.02);
+}
+
+.custom-radio {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #1668dd;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.custom-radio:checked {
+    background-color: #1668dd;
+    border: 5px solid white;
+    box-shadow: 0px 0px 0px 2px #1668dd;
+}
+
+.custom-address-form {
+    display: none;
+    padding: 15px;
+    border-top: 2px dashed #ddd;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+}
+
+.btn-success {
+    background: linear-gradient(45deg, #27ae60, #219150);
+    color: white;
+    font-weight: bold;
+    transition: 0.3s ease-in-out;
+}
+
+.btn-success:hover {
+    background: linear-gradient(45deg, #219150, #1b7845);
+    transform: scale(1.05);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+    

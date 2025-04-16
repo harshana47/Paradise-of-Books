@@ -4,7 +4,7 @@ let token = localStorage.getItem("authToken");
 
 if (!userId || !token) {
     console.error("Authentication data missing. Redirecting...");
-    window.location.href = "../index.html";
+    window.location.href = "../../index.html";
 }
 
 function showCheckoutModal() {

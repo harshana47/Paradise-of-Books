@@ -54,7 +54,7 @@ function updateProfile(user) {
 window.addEventListener('DOMContentLoaded', function() {
     const userId = localStorage.getItem("userId");
     if (!userId) {
-        window.location.href = "../index.html";
+        window.location.href = "../../index.html";
     }
 
     fetch(`http://localhost:8080/api/v1/user/getById/${userId}`, {

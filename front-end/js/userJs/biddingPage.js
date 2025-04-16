@@ -10,7 +10,7 @@ document.getElementById("logOut").addEventListener("click", function () {
     localStorage.removeItem("userId");
     localStorage.removeItem("userEmail")
 
-    window.location.href = "../index.html";
+    window.location.href = "../../index.html";
 });
 
 function fetchCartCount() {

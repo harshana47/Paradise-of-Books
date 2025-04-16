@@ -42,7 +42,7 @@ async function resetPassword() {
     const result = await response.json();
     if (result.success) {
         alert("Password changed successfully!");
-        window.location.href = "../index.html";
+        window.location.href = "../../index.html";
     } else {
         document.getElementById("password-error").innerText = "Error resetting password!";
     }

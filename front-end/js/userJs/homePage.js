@@ -3,7 +3,7 @@ document.getElementById("logOut").addEventListener("click", function () {
     localStorage.removeItem("userId");
     localStorage.removeItem("userEmail")
 
-    window.location.href = "../index.html";
+    window.location.href = "../../index.html";
 });
 $(document).ready(function () {
     fetchCartCount();
@@ -207,7 +207,7 @@ $('#decreaseQty').click(function () {
 
 $('#confirmAddToCart').click(function () {
     if (!localStorage.getItem('authToken')) {
-        window.location.href = '../index.html';
+        window.location.href = '../../index.html';
         return;
     }
     let quantity = parseInt($('#quantity').text());
