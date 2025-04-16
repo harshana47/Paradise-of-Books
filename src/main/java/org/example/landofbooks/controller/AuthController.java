@@ -81,7 +81,6 @@ public class AuthController {
         String email = request.get("email");
         String password = request.get("password");
 
-        // Call your service method to reset the password here
         boolean isResetSuccessful = userService.resetPassword(email, password);
 
         if (isResetSuccessful) {
