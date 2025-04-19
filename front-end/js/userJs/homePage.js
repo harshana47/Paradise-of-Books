@@ -181,7 +181,6 @@ function displayBooks(filteredBooks = books) {
     }
 }
 
-// Handle adding books to cart
 $(document).on('click', '.add-to-cart', function () {
     selectedBook = books.find(book => book.bid == $(this).data('id'));
 

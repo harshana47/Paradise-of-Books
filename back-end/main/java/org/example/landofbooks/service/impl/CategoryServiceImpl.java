@@ -75,16 +75,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO getCategoryById(UUID categoryId) {
-        // Fetch the Category entity by ID
         Optional<Category> categoryOpt = categoryRepo.findById(categoryId);
 
-        // If the category exists, map it to CategoryDTO, else return null
         if (categoryOpt.isPresent()) {
             Category category = categoryOpt.get();
-            // Create and return the CategoryDTO
             return new CategoryDTO(category.getCid(), category.getName());
         }
 
-        return null; // Return null if category not found
+        return null;
     }
 }

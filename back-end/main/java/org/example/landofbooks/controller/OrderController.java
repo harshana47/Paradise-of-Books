@@ -5,6 +5,7 @@ import org.example.landofbooks.dto.OrderRequestDTO;
 import org.example.landofbooks.dto.OrdersDTO;
 import org.example.landofbooks.entity.User;
 import org.example.landofbooks.repo.UserRepository;
+import org.example.landofbooks.service.EmailService;
 import org.example.landofbooks.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +26,15 @@ public class OrderController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     @PostMapping("/place")
     public ResponseEntity<Object> placeOrder(@RequestBody OrderRequestDTO orderRequest) {
         if (orderRequest.getOrderDetailsList() == null || orderRequest.getOrderDetailsList().isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Order details cannot be null or empty"));
         }
-
+        String email = orderRequest.getEmail();
         UUID userId = orderRequest.getUserId();
 
         User user = userRepository.findById(userId)
@@ -45,7 +49,7 @@ public class OrderController {
                 : user.getContact();
         System.out.println("Address to Use: " + addressToUse);
         System.out.println("Contact to Use: " + contactToUse);
-
+        emailService.sendOrderMail(email);
         orderService.placeOrder(userId, orderRequest.getTotalPrice(), orderRequest.getOrderDetailsList(), addressToUse, contactToUse);
 
         return ResponseEntity.ok(Map.of("message", "Order placed successfully"));

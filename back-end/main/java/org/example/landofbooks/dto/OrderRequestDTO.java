@@ -18,5 +18,6 @@ public class OrderRequestDTO {
     private String address;
     private String contact;
     private boolean useDefaultAddress;
+    private String email;
 }
 

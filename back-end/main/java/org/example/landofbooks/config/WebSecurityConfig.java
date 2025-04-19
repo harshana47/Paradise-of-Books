@@ -41,7 +41,7 @@ public class WebSecurityConfig {
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection (if needed)
+                .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers
                         .contentSecurityPolicy(csp -> csp.policyDirectives(
                                 "default-src 'self'; " +

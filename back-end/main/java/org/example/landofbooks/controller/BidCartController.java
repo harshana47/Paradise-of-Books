@@ -36,6 +36,6 @@ public class BidCartController {
 
     @GetMapping("/count/{userId}")
     public int getCartCount(@PathVariable UUID userId) {
-        return bidCartService.getBidCartItemCount(userId); // Return the count of cart items
+        return bidCartService.getBidCartItemCount(userId);
     }
 }

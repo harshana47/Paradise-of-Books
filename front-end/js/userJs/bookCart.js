@@ -180,8 +180,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
     console.log(localStorage.getItem("pendingOrder"));
     const orderData = JSON.parse(localStorage.getItem('pendingOrder'));
-
+    const email = localStorage.getItem("userEmail");
     orderData.status = "paid";
+    orderData.email = email;
 
     fetch(`http://localhost:8080/api/v1/orders/place`, {
         method: 'POST',

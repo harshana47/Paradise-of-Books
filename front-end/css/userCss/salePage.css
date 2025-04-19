@@ -1,6 +1,6 @@
 
 body {
-    background-image: url('images/img.png');
+    background-image: url('../../user/images/img.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

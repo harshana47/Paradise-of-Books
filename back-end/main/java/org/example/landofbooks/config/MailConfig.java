@@ -14,18 +14,16 @@ public class MailConfig {
     public JavaMailSender javaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
-        // Set Gmail SMTP server details
         mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587); // Port for TLS
-        mailSender.setUsername("timberntaste@gmail.com"); // Replace with your email address
-        mailSender.setPassword("pqqj vgon czew gthh"); // Use App Password if 2FA is enabled
+        mailSender.setPort(587);
+        mailSender.setUsername("timberntaste@gmail.com");
+        mailSender.setPassword("pqqj vgon czew gthh");
 
-        // Set SMTP properties for TLS connection
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true"); // Enable STARTTLS for secure connection
-        props.put("mail.smtp.ssl.trust", "smtp.gmail.com"); // Trust the Gmail SMTP server
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
 
-        return mailSender; // Return configured mailSender
+        return mailSender;
     }
 }

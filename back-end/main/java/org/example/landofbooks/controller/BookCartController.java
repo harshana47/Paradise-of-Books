@@ -41,7 +41,7 @@ public class BookCartController {
             }
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseDTO(VarList.Bad_Request, e.getMessage(), null));  // Returning specific error message
+                    .body(new ResponseDTO(VarList.Bad_Request, e.getMessage(), null));
         }
     }
 
@@ -65,6 +65,6 @@ public class BookCartController {
     @GetMapping("/count/{userId}")
     public int getCartCount(@PathVariable UUID
                                         userId) {
-        return bookCartService.getBookCartItemCount(userId); // Return the count of cart items
+        return bookCartService.getBookCartItemCount(userId);
     }
 }

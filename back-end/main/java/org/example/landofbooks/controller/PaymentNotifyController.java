@@ -33,7 +33,6 @@ public class PaymentNotifyController {
             return ResponseEntity.badRequest().body("Missing payment details");
         }
 
-        //save the order if payment was successful
         if (paymentStatus.equals("2")) {
             boolean updated = orderService.updateOrderStatusToSuccess(orderId);
             if (updated) {
@@ -53,7 +52,7 @@ public class PaymentNotifyController {
         <html>
         <head>
             <script>
-                window.location.href = "http://localhost:63342/land-of-books/front-end/user/bookCart.html";
+                window.location.href = "http://localhost:63342/Paradise-of-Bookss/front-end/user/bookCart.html";
             </script>
         </head>
         <body>
@@ -75,7 +74,7 @@ public class PaymentNotifyController {
         <html>
         <head>
             <script>
-                window.location.href = "http://localhost:63342/land-of-books/front-end/user/bidCart.html";
+                window.location.href = "http://localhost:63342/Paradise-of-Bookss/front-end/user/bidCart.html";
             </script>
         </head>
         <body>
