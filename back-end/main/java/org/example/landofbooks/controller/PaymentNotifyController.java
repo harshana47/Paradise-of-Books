@@ -20,8 +20,12 @@ import java.util.UUID;
 @CrossOrigin("*")
 public class PaymentNotifyController {
 
+    private final OrderService orderService;
+
     @Autowired
-    private OrderService orderService;
+    public PaymentNotifyController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     @PostMapping("/notify")
     public ResponseEntity<?> handlePaymentSuccess(@RequestParam Map<UUID, String> params) {

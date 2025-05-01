@@ -8,6 +8,7 @@ import org.example.landofbooks.entity.Book;
 import org.example.landofbooks.service.BookService;
 import org.example.landofbooks.service.EmailService;
 import org.example.landofbooks.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,12 +30,14 @@ public class SaleBookController {
     private final UserService userService;
     private final EmailService emailService;
 
+    @Autowired
     public SaleBookController(BookService bookService, ResponseDTO responseDTO, UserService userService, EmailService emailService) {
         this.bookService = bookService;
         this.responseDTO = responseDTO;
         this.userService = userService;
         this.emailService = emailService;
     }
+
 
     @PostMapping("/place")
     public ResponseEntity<ResponseDTO> addBook(@Valid

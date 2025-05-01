@@ -9,6 +9,7 @@ import org.example.landofbooks.entity.User;
 import org.example.landofbooks.service.UserService;
 import org.example.landofbooks.util.JwtUtil;
 import org.example.landofbooks.util.VarList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,11 +25,13 @@ public class UserController {
     private final JwtUtil jwtUtil;
     private final ResponseDTO responseDTO;
 
-    public UserController(UserService userService, JwtUtil jwtUtil) {
+    @Autowired
+    public UserController(UserService userService, JwtUtil jwtUtil, ResponseDTO responseDTO) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
-        this.responseDTO = new ResponseDTO();
+        this.responseDTO = responseDTO;
     }
+
     @PostMapping(value = "/register")
     public ResponseEntity<ResponseDTO> registerUser(@RequestBody @Valid UserDTO userDTO) {
         try {

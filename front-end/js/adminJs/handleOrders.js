@@ -1,22 +1,27 @@
 
 const API_BASE_URL = "http://localhost:8080/api/v1/orders";
 
-async function fetchOrders() {
+function fetchOrders() {
     const userRole = localStorage.getItem("userRole");
 
     if (userRole !== "ADMIN") {
         console.error("Unauthorized access!");
         return;
     }
-    try {
-        let response = await fetch(`${API_BASE_URL}/getAll`, {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem("authToken")}` }
-        });
-        let orders = await response.json();
-        loadOrders(orders);
-    } catch (error) {
-        console.error("Error fetching orders:", error);
-    }
+
+    $.ajax({
+        url: `${API_BASE_URL}/getAll`,
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem("authToken")}`
+        },
+        success: function (orders) {
+            loadOrders(orders);
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching orders:", error);
+        }
+    });
 }
 
 function loadOrders(orders) {
@@ -47,29 +52,26 @@ function updateStatus(orderId, selectElement) {
     localStorage.setItem(`order-${orderId}`, JSON.stringify(order));
 }
 
-async function saveStatus(orderId) {
+function saveStatus(orderId) {
     let orderData = JSON.parse(localStorage.getItem(`order-${orderId}`));
     if (!orderData) return alert("No changes detected");
 
-    try {
-        let response = await fetch(`${API_BASE_URL}/updateStatus/${orderId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem("authToken")}`
-            },
-            body: JSON.stringify({ status: orderData.status })
-        });
-
-        if (response.ok) {
+    $.ajax({
+        url: `${API_BASE_URL}/updateStatus/${orderId}`,
+        method: 'PUT',
+        contentType: 'application/json',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem("authToken")}`
+        },
+        data: JSON.stringify({ status: orderData.status }),
+        success: function () {
             alert(`Order ${orderId} status updated to: ${orderData.status}`);
             fetchOrders();
-        } else {
+        },
+        error: function () {
             alert("Failed to update order status");
         }
-    } catch (error) {
-        console.error("Error updating order:", error);
-    }
+    });
 }
 
 window.onload = fetchOrders;

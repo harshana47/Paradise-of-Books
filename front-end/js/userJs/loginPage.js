@@ -180,6 +180,13 @@ $('#register-btn').on('click', function(event) {
         success: function(response) {
             console.log("Registration Response:", response);
             alert("Registration successful!");
+            $('#fullName').val('');
+            $('#emailR').val('');
+            $('#address').val('');
+            $('#contactR').val('');
+            $('#passwordR').val('');
+            $('#confirmPassword').val('');
+            loginBtn.click();
         },
         error: function(xhr) {
             console.log("Registration failed:", xhr.responseText);

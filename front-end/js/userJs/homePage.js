@@ -144,7 +144,7 @@ function displayBooks(filteredBooks = books) {
             }
             booksByCategory[book.categoryId].books.push(book);
         });
-
+        //return an array of givrn object
         Object.keys(booksByCategory).forEach(categoryId => {
             const category = booksByCategory[categoryId];
 

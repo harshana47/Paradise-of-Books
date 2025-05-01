@@ -20,7 +20,7 @@ profileForm.addEventListener('submit', function(event) {
 function updateProfile(user) {
     const userId = localStorage.getItem("userId");
 
-    // Show loading alert
+    // loading alert
     alertMessage.style.display = 'block';
     alertMessage.textContent = 'Updating profile...';
 

@@ -20,14 +20,16 @@ import java.util.UUID;
 @CrossOrigin("*")
 public class OrderController {
 
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
+    private final UserRepository userRepository;
+    private final EmailService emailService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private EmailService emailService;
+    public OrderController(OrderService orderService, UserRepository userRepository, EmailService emailService) {
+        this.orderService = orderService;
+        this.userRepository = userRepository;
+        this.emailService = emailService;
+    }
 
     @PostMapping("/place")
     public ResponseEntity<Object> placeOrder(@RequestBody OrderRequestDTO orderRequest) {

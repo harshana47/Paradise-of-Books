@@ -7,6 +7,7 @@ import org.example.landofbooks.entity.Bidding;
 import org.example.landofbooks.service.BidStorageService;
 import org.example.landofbooks.service.BiddingService;
 import org.example.landofbooks.service.EmailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ public class BidController {
     private final BidStorageService bidStorageService;
     private final EmailService emailService;
 
+    @Autowired
     public BidController(BiddingService biddingService, ResponseDTO responseDTO, BidStorageService bidStorageService, EmailService emailService) {
         this.biddingService = biddingService;
         this.responseDTO = responseDTO;

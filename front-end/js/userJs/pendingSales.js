@@ -28,7 +28,6 @@ function displaySales(sales) {
         const imageFilename = sale.image ? sale.image.split("\\").pop() : "default.jpg";
         const statusClass = sale.bookStatus.toLowerCase();
 
-        // Add the "pending" class to the card if the book status is pending
         if (statusClass === "pending") {
             card.classList.add("pending");
         }
